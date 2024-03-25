@@ -33,11 +33,13 @@ const pqxx::result coneccionBd::query(const std::string &sql)
     pqxx::work consulta(this->conexion);
     try
     {
-        return consulta.exec(sql);
+        auto r = consulta.exec(sql);
+        consulta.commit();
+        return r;
     }
     catch (pqxx::sql_error const &e)
     {
-        std::cout << e.query() << "\n"<< e.what() << "\n";
-        return {}; 
+        throw(e.query() + "\n" + e.what() + "\n");
+        return {};
     }
 }

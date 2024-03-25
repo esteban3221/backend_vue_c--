@@ -22,8 +22,8 @@ void main_service::fn(struct mg_connection *c, int ev, void *ev_data, void *)
         struct mg_http_message *hm = (struct mg_http_message *)ev_data;
         if (mg_strcmp(hm->method, mg_str("OPTIONS")) == 0)
         {
-            //cabecera completa para peticiones anteriores a POST 
-            //Methdo Opcion
+            // cabecera completa para peticiones anteriores a POST
+            // Methdo Opcion
             mg_http_reply(c, 200,
                           "Access-Control-Allow-Headers: content-type\r\n"
                           "Access-Control-Allow-Methods: POST\r\n"

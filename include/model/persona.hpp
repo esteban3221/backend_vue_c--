@@ -11,7 +11,7 @@ public:
     persona(/* args */);
     ~persona();
     const nlohmann::json getPersonaList();
-
+    void insertaPersona(const nlohmann::json &);
     // virtual void eliminaPersona(int ) = 0;
     // virtual void actualizaPersona(int ) = 0;
 };
