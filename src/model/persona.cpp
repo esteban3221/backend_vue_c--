@@ -2,14 +2,17 @@
 
 persona::persona(/* args */)
 {
+    std::cout << "Model for table Persona init.\n";
 }
 
 persona::~persona()
 {
+    std::cout << "Delete model for table Persona.\n";
 }
 
 const nlohmann::json persona::getPersonaList()
 {
+    personaModel.clear();
     auto sql = this->connpq->query("select * from usuarios");
 
     for (const auto &f : sql)
@@ -27,16 +30,14 @@ const nlohmann::json persona::getPersonaList()
 
 void persona::insertaPersona(const nlohmann::json &json)
 {
-
-    std::string nombre = json.at("nombre");
-    std::string apellido = json.at("apellido");
-    std::string edad = json.at("edad");
-    std::string correo = json.at("correo");
+    if (!json.contains("nombre") || !json.contains("apellido") || !json.contains("edad") || !json.contains("correo") )
+        throw std::runtime_error("Formato de json mal formado o con datos faltantes. \n");
+    
 
     std::string sql = "insert into usuarios (nombre, apellido, edad, email) values ("
-    "'"+ json["nombre"].get<std::string>() + "',"
-    "'"+ json["apellido"].get<std::string>() + "', "
-    "'" + json["edad"].get<std::string>() + "', "
+    "'" + json["nombre"].get<std::string>() + "',"
+    "'" + json["apellido"].get<std::string>() + "',"
+    "'" + json["edad"].get<std::string>() + "',"
     "'" + json["correo"].get<std::string>() + "')";
 
     std::cout << "\n" << sql << "\n";

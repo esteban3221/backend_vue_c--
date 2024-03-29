@@ -1,3 +1,4 @@
+#pragma once
 #include "persona.hpp"
 #include <mongoose.h>
 #include <iostream>

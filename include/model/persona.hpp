@@ -1,3 +1,4 @@
+#pragma once
 #include <nlohmann/json.hpp>
 #include <memory>
 #include "coneccionBd.hpp"
@@ -6,7 +7,7 @@ class persona
 {
 private:
     nlohmann::json  personaModel;
-    std::unique_ptr<coneccionBd> connpq = std::make_unique<coneccionBd>("test", "admin", "junomava3842", "127.0.0.1", "5432");
+    std::unique_ptr<coneccionBd> connpq = std::make_unique<coneccionBd>("test", "admin", "junomava3842");
 public:
     persona(/* args */);
     ~persona();

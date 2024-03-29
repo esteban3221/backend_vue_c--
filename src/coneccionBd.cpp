@@ -39,7 +39,6 @@ const pqxx::result coneccionBd::query(const std::string &sql)
     }
     catch (pqxx::sql_error const &e)
     {
-        throw(e.query() + "\n" + e.what() + "\n");
-        return {};
+        throw std::runtime_error (e.query() + "\n" + e.what() + "\n");
     }
 }
