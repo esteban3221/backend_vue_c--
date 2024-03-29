@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.15)
+cmake_minimum_required(VERSION 3.27)
 project(Backend)
 
 set(CMAKE_CXX_STANDARD 17)
@@ -10,7 +10,6 @@ find_package(nlohmann_json REQUIRED)
 
 pkg_check_modules(PQXX REQUIRED IMPORTED_TARGET libpqxx)
 
-# Define las fuentes de tu proyecto
 set(SOURCES
     src/main.cpp
     src/coneccionBd.cpp
