@@ -1,29 +1,25 @@
 cmake_minimum_required(VERSION 3.27)
 project(Backend)
 
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-find_package(PostgreSQL REQUIRED)
+find_package(Crow REQUIRED)
 find_package(PkgConfig REQUIRED)
-find_package(nlohmann_json REQUIRED)
+pkg_check_modules(GTKMM gtkmm-4.0)
 
-pkg_check_modules(PQXX REQUIRED IMPORTED_TARGET libpqxx)
 
 set(SOURCES
     src/main.cpp
-    src/coneccionBd.cpp
-    src/model/persona.cpp
-    src/service/main.service.cpp
-    src/service/persona.service.cpp
 )
 
 include_directories(include 
-                    include/service 
-                    include/model
+                    include/controller
+                    include/view
 )
 
 
 add_executable(back_api_c_plus_plus ${SOURCES})
 
-target_link_libraries(back_api_c_plus_plus PUBLIC PkgConfig::PQXX PostgreSQL::PostgreSQL PRIVATE ${nlohmann_json_LIBRARIES} mongoose)
+target_link_libraries(back_api_c_plus_plus PUBLIC PRIVATE ${GTKMM_LIBRARIES} Crow::Crow)
+target_include_directories(back_api_c_plus_plus PRIVATE ${GTKMM_INCLUDE_DIRS})

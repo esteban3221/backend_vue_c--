@@ -1,12 +1,11 @@
 
-#include <iostream>
-#include "main.service.hpp"
+#include "main.controller.hpp"
+// #include "main.controller.hpp"
 
-// g++ -I./include -I./include/service -I./include/model src/main.cpp src/coneccionBd.cpp src/model/persona.cpp src/service/main.service.cpp src/service/persona.service.cpp -o mai  $(pkg-config nlohmann_json --cflags) -lmongoose -lpqxx -lpq
-
-int main(void)
+int main(int argc, char *argv[])
 {
-    main_service s1;
-
-    return 0;
+    // std::unique_ptr<main_controller> endpointserver= std::make_unique<main_controller>(); 
+    // std::thread([&](){endpointserver->run();}).detach();
+    auto app = Gtk::Application::create("MaxiCajero.www");
+    return app->make_window_and_run<main_controller>(argc, argv);
 }
