@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.27)
+cmake_minimum_required(VERSION 3.25)
 project(Backend)
 
 set(CMAKE_CXX_STANDARD 20)
@@ -11,6 +11,8 @@ pkg_check_modules(GTKMM gtkmm-4.0)
 
 set(SOURCES
     src/main.cpp
+    src/controller/test.controller.cpp
+    src/view/main.controller_view.cpp
 )
 
 include_directories(include 
