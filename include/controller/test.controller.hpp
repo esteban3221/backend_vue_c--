@@ -8,12 +8,19 @@
 class test_controller : public Gtk::Box
 {
 private:
-    Gtk::Stack &main_stack_;
-    Gtk::Label lbl_hijo;
-    Gtk::Label &lbl_main_;
+    //referencia de atributos principales
+    Gtk::Stack &main_stack;
+    Gtk::Box &contenedor_main;
     crow::SimpleApp &app;
 
+    //Widgets propios de la clase
+    Gtk::Label lbl_hijo;
+
+    //handlers
+    crow::response testjson(const crow::request &req);
+    std::string runTest();
+
 public:
-    test_controller(crow::SimpleApp &App, Gtk::Stack &main_stack,Gtk::Label &lbl_main);
+    test_controller(crow::SimpleApp &app_, Gtk::Stack &main_stack_,Gtk::Box &contenedor_main_);
     ~test_controller();
 };

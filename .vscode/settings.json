@@ -85,5 +85,6 @@
         "csignal": "cpp",
         "strstream": "cpp",
         "coroutine": "cpp"
-    }
+    },
+    "C_Cpp.default.compilerPath": "/usr/bin/g++"
 }
