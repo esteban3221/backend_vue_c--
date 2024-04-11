@@ -1,9 +1,8 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <!-- Created with Cambalache 0.16.0 -->
 <interface>
-  <!-- interface-name maxicajero ui.ui -->
   <requires lib="gtk" version="4.12"/>
-  <object class="GtkBox" id="main_box">
+  <object class="GtkBox">
     <property name="hexpand">True</property>
     <property name="homogeneous">True</property>
     <property name="orientation">vertical</property>
