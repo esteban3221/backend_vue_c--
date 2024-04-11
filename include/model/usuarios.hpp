@@ -1,3 +1,4 @@
+#pragma once
 #include "conectbd.hpp"
 #include <vector>
 

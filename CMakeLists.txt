@@ -20,6 +20,7 @@ set(SOURCES
 
     src/controller/test.controller.cpp
     src/controller/session.controller.cpp
+    src/controller/venta.controller.cpp
     
     #src/controller/base.controller.cpp
     src/view/main.controller_view.cpp

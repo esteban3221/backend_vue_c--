@@ -3,6 +3,7 @@
 #include "sqlite.hpp"
 #include "test.controller.hpp"
 #include "session.controller.hpp"
+#include "venta.controller.hpp"
 #include <memory>
 #include <gtkmm.h>
 
@@ -24,6 +25,7 @@ private:
     // std::unique_ptr<test_controller> a = std::make_unique<test_controller>(app_,main_stack,box_principal);
 
     std::unique_ptr<session_controller> session = std::make_unique<session_controller>(app);
+    std::unique_ptr<venta_controller> venta = std::make_unique<venta_controller>();
 
     // funciones padre
     std::string runTest();
