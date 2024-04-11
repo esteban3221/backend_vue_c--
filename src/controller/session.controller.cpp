@@ -3,7 +3,7 @@
 session_controller::session_controller(crow::App<crow::CookieParser, Session> &app_) : app(app_)
 {
     // test
-    // CROW_ROUTE(app, "/session/verToken").methods("GET"_method)(sigc::mem_fun(*this, &session_controller::verTokens));
+    CROW_ROUTE(app, "/session/verToken").methods("GET"_method)(sigc::mem_fun(*this, &session_controller::verTokens));
 
     CROW_ROUTE(app, "/session/login").methods("POST"_method)(sigc::mem_fun(*this, &session_controller::login));
     CROW_ROUTE(app, "/session/altaUsuario").methods("POST"_method)(sigc::mem_fun(*this, &session_controller::altaUsuario));
@@ -15,6 +15,7 @@ session_controller::~session_controller()
 {
 }
 
+// solo test
 std::string session_controller::verTokens(const crow::request &req)
 {
     auto &session = app.get_context<Session>(req);
@@ -32,51 +33,77 @@ crow::response session_controller::login(const crow::request &req)
     try
     {
         if (req.body.empty())
-            return crow::response(crow::status::EXPECTATION_FAILED); // same as crow::response(400)
+            return crow::response(crow::status::BAD_REQUEST);
 
-        // grant_type=password
-        if (auto x = req.get_body_params(); x.get("grant_type") == "password")
+        auto &session = app.get_context<Session>(req);
+        auto bodyParams = req.get_body_params();
+        std::string grantType {bodyParams.pop("grant_type")};
+        std::string username {bodyParams.pop("username")};
+        std::string password {bodyParams.pop("password")};
+
+        auto token = jwt::create()
+                         .set_type("JWS")
+                         .set_issuer("auth0")
+                         .sign(jwt::algorithm::hs256{Glib::DateTime::create_now_local().format("%Y-%m-%d %H:%M:%S")});
+
+        if (grantType == "password")
         {
-            auto &session = app.get_context<Session>(req);
-
-            auto key = x.get("username");
-            auto value = x.pop("password");
-
-            session.set(key, value);
-
-            auto keys = session.keys();
-
-            crow::json::wvalue response_json;
-
-            response_json["access_token"] = "Prueba de tokens xD";
-            response_json["expires_in"] = 3600000;
-            response_json["token_type"] = "bearer";
-            response_json["userName"] = x.pop("username");
-
-            // std::cout << x << " | " << y << " | " << z <<std::endl;
-            return crow::response{response_json};
+            if (M_usuarios.validaUsuario(username, password))
+            {
+                session.set(username, token);
+                crow::json::wvalue response_json;
+                response_json["access_token"] = token;
+                response_json["expires_in"] = 3600000;
+                response_json["token_type"] = "bearer";
+                response_json["userName"] = username;
+                return crow::response{response_json};
+            }
+            else
+            {
+                return crow::response(crow::status::UNAUTHORIZED);
+            }
         }
-        return crow::response(crow::status::UNAVAILABLE_FOR_LEGAL_REASONS);
+        else if (grantType == "fingerprint")
+        {
+            if (M_usuarios.validaUsuario(username))
+            {
+                session.set(username, token);
+                crow::json::wvalue response_json;
+                response_json["access_token"] = token;
+                response_json["expires_in"] = 3600000;
+                response_json["token_type"] = "bearer";
+                response_json["userName"] = username;
+                return crow::response{response_json};
+            }
+            else
+            {
+                return crow::response(crow::status::UNAUTHORIZED);
+            }
+        }
+        else
+        {
+            return crow::response(crow::status::UNAVAILABLE_FOR_LEGAL_REASONS);
+        }
     }
     catch (const std::exception &e)
     {
         std::cerr << e.what() << '\n';
-        return crow::response(crow::status::RANGE_NOT_SATISFIABLE);
+        return crow::response(crow::status::INTERNAL_SERVER_ERROR);
     }
 }
 
-crow::response session_controller::altaUsuario(const crow::request &req) 
+crow::response session_controller::altaUsuario(const crow::request &req)
 {
     if (req.body.empty())
-            return crow::response(crow::status::EXPECTATION_FAILED);
+        return crow::response(crow::status::EXPECTATION_FAILED);
     auto x = crow::json::load(req.body);
-    
+    return crow::response(crow::status::EXPECTATION_FAILED);
 }
-crow::response session_controller::bajaUsuario(const crow::request &req) 
+crow::response session_controller::bajaUsuario(const crow::request &req)
 {
-
+    return crow::response(crow::status::EXPECTATION_FAILED);
 }
-crow::response session_controller::logout(const crow::request &req) 
+crow::response session_controller::logout(const crow::request &req)
 {
-
+    return crow::response(crow::status::EXPECTATION_FAILED);
 }

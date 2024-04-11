@@ -1,8 +1,11 @@
 #pragma once
 #include <crow.h>
+#include <crow/middlewares/session.h>
 #include <sigc++/sigc++.h>
 #include <map>
-#include <crow/middlewares/session.h>
+#include "usuarios.hpp"
+#include <glibmm.h>
+#include <jwt-cpp/jwt.h>
 
 
 using Session = crow::SessionMiddleware<crow::InMemoryStore>;
@@ -12,6 +15,7 @@ private:
     //referencia de atributos principales
     // crow::SimpleApp &app;
     crow::App<crow::CookieParser, Session> &app;
+    model::usuarios M_usuarios;
 
     crow::response login(const crow::request &req);
     crow::response altaUsuario(const crow::request &req);

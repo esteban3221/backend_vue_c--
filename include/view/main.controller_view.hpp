@@ -1,6 +1,6 @@
 #pragma once
 #include <crow/app.h>
-#include "gtkmm/stack.h"
+#include "sqlite.hpp"
 #include "test.controller.hpp"
 #include "session.controller.hpp"
 #include <memory>
@@ -18,7 +18,7 @@ private:
     //crow::SimpleApp app_;
 
     crow::App<crow::CookieParser, Session> app{Session{crow::CookieParser::Cookie("session").
-    max_age(/*una hora*/ 60 * 60).
+    max_age(/*15 minutos vida maxima de tokena*/ 15*60).
     path("/"), 64, crow::InMemoryStore{}}};
 
     // std::unique_ptr<test_controller> a = std::make_unique<test_controller>(app_,main_stack,box_principal);

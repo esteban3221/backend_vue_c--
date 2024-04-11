@@ -3,22 +3,25 @@
 #include <iostream>
 #include <vector>
 
-class SQLite
+namespace SQLite3
 {
-private:
-    sqlite3 *db;
-    char *zErrMsg = 0;
-    int rc;
-    std::string sql;
-    std::string file_database;
-    static int callback(void *, int , char **, char **);
-    static inline std::vector<std::vector<std::string>> result;
+    class SQLite
+    {
+    private:
+        sqlite3 *db;
+        char *zErrMsg = 0;
+        int rc;
+        std::string sql;
+        std::string file_database;
+        static int callback(void *, int, char **, char **);
+        static inline std::vector<std::vector<std::string>> result;
 
-public:
-    SQLite(const std::string &file_database_);
-    ~SQLite();
-    bool open();
-    void command(std::string);
-    int get_rc() const;
-    const std::vector<std::vector<std::string>> get_result() const;
-};
+    public:
+        SQLite(const std::string &file_database_);
+        ~SQLite();
+        bool open();
+        void command(const std::string &);
+        int get_rc() const;
+        const std::vector<std::vector<std::string>> &get_result() const;
+    };
+} // namespace SQLite3
