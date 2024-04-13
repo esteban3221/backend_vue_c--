@@ -4,9 +4,9 @@ test_controller::test_controller(crow::SimpleApp &app_, Gtk::Stack &main_stack_,
 {
     this->append(lbl_hijo);
 
-
-    //registri de apis
-    CROW_ROUTE(app, "/rutaTest")(sigc::mem_fun(*this, &test_controller::runTest));
+    // registri de apis
+    CROW_ROUTE(app, "/rutaTest")
+    (sigc::mem_fun(*this, &test_controller::runTest));
     CROW_ROUTE(app, "/add_json").methods("POST"_method)(sigc::mem_fun(*this, &test_controller::testjson));
 }
 
@@ -24,9 +24,11 @@ crow::response test_controller::testjson(const crow::request &req)
     auto x = crow::json::load(req.body);
     if (!x)
         return crow::response(crow::status::EXPECTATION_FAILED); // same as crow::response(400)
-    int sum = x["a"].i() + x["b"].i();
+
+    auto lambda = [](crow::json::rvalue x) -> int
+    { return x["a"].i() + x["b"].i(); };
     std::ostringstream os;
-    os << sum;
+    os << lambda(x);
     return crow::response{os.str()};
 }
 

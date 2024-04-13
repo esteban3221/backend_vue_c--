@@ -1,0 +1,678 @@
+using Gtk 4.0;
+
+Box {
+  orientation: horizontal;
+
+  StackSidebar {
+    stack: stack_confi;
+  }
+
+  Stack stack_confi {
+    hexpand: true;
+
+    StackPage {
+      name: 'page0';
+      title: 'General';
+      icon-name: 'display-symbolic';
+
+      child: Box {};
+    }
+
+    StackPage {
+      name: 'page1';
+      title: 'Datos de Empresa';
+      icon-name: 'display-symbolic';
+
+      child: Box {
+        orientation: vertical;
+        vexpand: true;
+        hexpand: true;
+
+        ListBox list_config_datos {
+          hexpand: true;
+          selection-mode: none;
+
+          ListBoxRow {
+            activatable: false;
+
+            Box {
+              Label entry_label_7 {
+                xalign: 0;
+                width-request: 110;
+                label: 'Razón social';
+              }
+
+              Entry ety_conf_razon {
+                placeholder-text: 'Type here…';
+                hexpand: true;
+              }
+            }
+          }
+
+          ListBoxRow {
+            activatable: false;
+
+            Box {
+              Label entry_label_3 {
+                xalign: 0;
+                width-request: 110;
+                label: 'Direccion';
+              }
+
+              Entry ety_conf_direccion {
+                placeholder-text: 'Type here…';
+                hexpand: true;
+              }
+            }
+          }
+
+          ListBoxRow {
+            activatable: false;
+
+            Box {
+              Label entry_label {
+                xalign: 0;
+                width-request: 110;
+                label: 'RFC';
+              }
+
+              Entry ety_conf_rfc {
+                placeholder-text: 'Type here…';
+                hexpand: true;
+              }
+            }
+          }
+
+          ListBoxRow {
+            activatable: false;
+
+            Box {
+              Label entry_label_4 {
+                xalign: 0;
+                width-request: 110;
+                label: 'Contacto';
+              }
+
+              Entry ety_conf_contacto {
+                placeholder-text: 'Type here…';
+                hexpand: true;
+              }
+            }
+          }
+
+          ListBoxRow {
+            activatable: false;
+
+            Box {
+              Label entry_label_5 {
+                xalign: 0;
+                width-request: 110;
+                label: 'Agradecimiento';
+              }
+
+              Entry ety_conf_thanks {
+                placeholder-text: 'Type here…';
+                hexpand: true;
+              }
+            }
+          }
+
+          styles [
+            "rich-list",
+            "boxed-list",
+          ]
+        }
+
+        Button {
+          label: "Guardar";
+          valign: end;
+          vexpand: true;
+          margin-bottom: 30;
+
+          styles [
+            "suggested-action"
+          ]
+        }
+      };
+    }
+
+    StackPage {
+      name: 'page2';
+      title: 'Impresora';
+      icon-name: 'printer-symbolic';
+
+      child: Box {
+        ScrolledWindow {
+          hexpand: false;
+          hscrollbar-policy: never;
+          min-content-height: 200;
+          vexpand: true;
+
+          Viewport {
+            scroll-to-focus: true;
+
+            Box {
+              margin-bottom: 30;
+              margin-end: 60;
+              margin-start: 60;
+              margin-top: 30;
+              orientation: vertical;
+
+              Label {
+                label: 'Activar';
+                margin-bottom: 10;
+                margin-top: 30;
+                xalign: 0;
+
+                styles [
+                  "title-2",
+                ]
+              }
+
+              ListBox list_config {
+                selection-mode: none;
+                margin-bottom: 30;
+
+                ListBoxRow {
+                  Box {
+                    Label entry_label_activar {
+                      halign: start;
+                      hexpand: true;
+                      label: 'Activar Impresión';
+                      valign: center;
+                      xalign: 0;
+                    }
+
+                    Switch {
+                      halign: end;
+                      valign: center;
+                    }
+                  }
+                }
+
+                styles [
+                  "rich-list",
+                  "boxed-list",
+                ]
+              }
+
+              Label {
+                label: 'Visualización';
+                margin-bottom: 10;
+                xalign: 0;
+
+                styles [
+                  "title-2",
+                ]
+              }
+
+              ListBox list_config_visualizacion {
+                selection-mode: none;
+
+                ListBoxRow {
+                  Box {
+                    Label switch_label {
+                      halign: start;
+                      hexpand: true;
+                      label: 'Mensaje de Agradecimiento';
+                      valign: center;
+                      xalign: 0;
+                    }
+
+                    CheckButton check_config_1 {
+                      active: true;
+                      halign: end;
+                      margin-end: 10;
+                      margin-start: 10;
+                      valign: center;
+                    }
+                  }
+                }
+
+                ListBoxRow {
+                  Box {
+                    Label check_label {
+                      halign: start;
+                      hexpand: true;
+                      label: 'Fecha';
+                      valign: center;
+                      xalign: 0;
+                    }
+
+                    CheckButton check_config_2 {
+                      active: true;
+                      halign: end;
+                      margin-end: 10;
+                      margin-start: 10;
+                      valign: center;
+                    }
+                  }
+                }
+
+                ListBoxRow {
+                  Box {
+                    Label check_label_2 {
+                      halign: start;
+                      hexpand: true;
+                      label: 'Direccion';
+                      valign: center;
+                      xalign: 0;
+                    }
+
+                    CheckButton check_config_3 {
+                      active: true;
+                      halign: end;
+                      margin-end: 10;
+                      margin-start: 10;
+                      valign: center;
+                    }
+                  }
+                }
+
+                ListBoxRow {
+                  Box {
+                    Label check_label_3 {
+                      halign: start;
+                      hexpand: true;
+                      label: 'RFC';
+                      valign: center;
+                      xalign: 0;
+                    }
+
+                    CheckButton check_config_4 {
+                      active: true;
+                      halign: end;
+                      margin-end: 10;
+                      margin-start: 10;
+                      valign: center;
+                    }
+                  }
+                }
+
+                ListBoxRow {
+                  Box {
+                    Label check_label_4 {
+                      halign: start;
+                      hexpand: true;
+                      label: 'Vendedor';
+                      valign: center;
+                      xalign: 0;
+                    }
+
+                    CheckButton check_config_5 {
+                      active: true;
+                      halign: end;
+                      margin-end: 10;
+                      margin-start: 10;
+                      valign: center;
+                    }
+                  }
+                }
+
+                ListBoxRow {
+                  Box {
+                    Label check_label_5 {
+                      halign: start;
+                      hexpand: true;
+                      label: 'Contacto';
+                      valign: center;
+                      xalign: 0;
+                    }
+
+                    CheckButton check_config_6 {
+                      active: true;
+                      halign: end;
+                      margin-end: 10;
+                      margin-start: 10;
+                      valign: center;
+                    }
+                  }
+                }
+
+                styles [
+                  "rich-list",
+                  "boxed-list",
+                ]
+              }
+
+              Label {
+                label: 'Test';
+                margin-bottom: 10;
+                margin-top: 30;
+                xalign: 0;
+
+                styles [
+                  "title-2",
+                ]
+              }
+
+              ListBox list_config_test {
+                selection-mode: none;
+
+                ListBoxRow {
+                  Box {
+                    Label entry_label_8 {
+                      halign: start;
+                      hexpand: true;
+                      label: 'Impresion de Prueba';
+                      valign: center;
+                      xalign: 0;
+                    }
+
+                    Image {
+                      halign: end;
+                      icon-name: 'printer-symbolic';
+                    }
+                  }
+                }
+
+                styles [
+                  "rich-list",
+                  "boxed-list",
+                ]
+              }
+            }
+          }
+        }
+
+        ScrolledWindow {
+          hexpand: true;
+          margin-bottom: 20;
+          margin-end: 10;
+          margin-start: 30;
+          margin-top: 20;
+
+          TextView text_ticket {
+            cursor-visible: false;
+            editable: false;
+            input-purpose: pin;
+            left-margin: 5;
+            monospace: true;
+            pixels-above-lines: 5;
+            pixels-below-lines: 5;
+            pixels-inside-wrap: 5;
+            right-margin: 5;
+            top-margin: 5;
+            wrap-mode: word_char;
+          }
+        }
+      };
+    }
+
+    //=======================Usuarios===================================
+    StackPage {
+      name: 'page3';
+      title: 'Usuarios';
+      icon-name: 'display-symbolic';
+
+      child: Box {
+        spacing :10 ;
+        ScrolledWindow {
+          vexpand: true;
+          vexpand-set: true;
+
+          TreeView tree_venta {
+            enable-grid-lines: vertical;
+            enable-search: false;
+          }
+        }
+
+        Frame {
+        hexpand: true;
+          label: "Permisos";
+
+          Grid {
+          column-homogeneous : true;
+            CheckButton check_rol_1 {
+              label: "Venta";
+              halign: start;
+              margin-end: 10;
+              margin-start: 10;
+              valign: center;
+
+              layout {
+                column: 0;
+                row :0 ;
+              }
+            }
+            
+            CheckButton check_rol_2 {
+              label: "Pago";
+              halign: start;
+              margin-end: 10;
+              margin-start: 10;
+              valign: center;
+
+              layout {
+                column: 0;
+                row :1 ;
+              }
+            }
+            CheckButton check_rol_3 {
+              label: "Carga";
+              halign: start;
+              margin-end: 10;
+              margin-start: 10;
+              valign: center;
+
+              layout {
+                column: 0;
+                row :2 ;
+              }
+            }
+            CheckButton check_rol_4 {
+              label: "Retirada";
+              halign: start;
+              margin-end: 10;
+              margin-start: 10;
+              valign: center;
+
+              layout {
+                column: 0;
+                row :3 ;
+              }
+            }
+            CheckButton check_rol_5 {
+              label: "Cambio Manual";
+              halign: start;
+              margin-end: 10;
+              margin-start: 10;
+              valign: center;
+
+              layout {
+                column: 0;
+                row :4 ;
+              }
+            }
+            CheckButton check_rol_6 {
+              label: "Cambio Automatico";
+              halign: start;
+              margin-end: 10;
+              margin-start: 10;
+              valign: center;
+
+              layout {
+                column: 0;
+                row :5 ;
+              }
+            }
+            CheckButton check_rol_7 {
+              label: "Ingresos";
+              halign: start;
+              margin-end: 10;
+              margin-start: 10;
+              valign: center;
+
+              layout {
+                column: 0;
+                row :6 ;
+              }
+            }
+          //================== segunda linea ==========================
+          
+          CheckButton check_rol_8 {
+              label: "Enviar a casette";
+              halign: start;
+              margin-end: 10;
+              margin-start: 10;
+              valign: center;
+
+              layout {
+                column: 1;
+                row :0 ;
+              }
+            }
+            CheckButton check_rol_9 {
+              label: "Retirada Casette";
+              halign: start;
+              margin-end: 10;
+              margin-start: 10;
+              valign: center;
+
+              layout {
+                column: 1;
+                row :1;
+              }
+            }
+            CheckButton check_rol_10 {
+              label: "Consulta de Efectivo";
+              halign: start;
+              margin-end: 10;
+              margin-start: 10;
+              valign: center;
+
+              layout {
+                column: 1;
+                row :2 ;
+              }
+            }
+            CheckButton check_rol_11{
+              label: "Mov. Pendientes";
+              halign: start;
+              margin-end: 10;
+              margin-start: 10;
+              valign: center;
+
+              layout {
+                column: 1;
+                row :3 ;
+              }
+            }
+            CheckButton check_rol_12 {
+              label: "Consulta Movimiento";
+              halign: start;
+              margin-end: 10;
+              margin-start: 10;
+              valign: center;
+
+              layout {
+                column: 1;
+                row :4 ;
+              }
+            }
+            CheckButton check_rol_13 {
+              label: "Cierre con Faltantes";
+              halign: start;
+              margin-end: 10;
+              margin-start: 10;
+              valign: center;
+
+              layout {
+                column: 1;
+                row :5 ;
+              }
+            }
+            //========================= tercera linea ===================
+            
+            CheckButton check_rol_14 {
+              label: "Cierre con Faltantes";
+              halign: start;
+              margin-end: 10;
+              margin-start: 10;
+              valign: center;
+
+              layout {
+                column: 2;
+                row :0 ;
+              }
+            }
+            CheckButton check_rol_15 {
+              label: "Estadisticas";
+              halign: start;
+              margin-end: 10;
+              margin-start: 10;
+              valign: center;
+
+              layout {
+                column: 2;
+                row :1 ;
+              }
+            }
+            
+            CheckButton check_rol_16 {
+              label: "Fianza";
+              halign: start;
+              margin-end: 10;
+              margin-start: 10;
+              valign: center;
+
+              layout {
+                column: 2;
+                row :2 ;
+              }
+            }
+            CheckButton check_rol_17 {
+              label: "Mostrar Reporter";
+              halign: start;
+              margin-end: 10;
+              margin-start: 10;
+              valign: center;
+
+              layout {
+                column: 2;
+                row :3 ;
+              }
+            }
+            CheckButton check_rol_18 {
+              label: "Configuracion";
+              halign: start;
+              margin-end: 10;
+              margin-start: 10;
+              valign: center;
+
+              layout {
+                column: 2;
+                row :4 ;
+              }
+            }
+            CheckButton check_rol_19 {
+              label: "Salir a Windows";
+              halign: start;
+              margin-end: 10;
+              margin-start: 10;
+              valign: center;
+
+              layout {
+                column: 2;
+                row :5 ;
+              }
+            }
+            CheckButton check_rol_20 {
+              label: "Apagar el equipo";
+              halign: start;
+              margin-end: 10;
+              margin-start: 10;
+              valign: center;
+
+              layout {
+                column: 2;
+                row :6 ;
+              }
+            }
+          }
+        }
+      };
+    }
+  }
+}
+

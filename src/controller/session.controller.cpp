@@ -37,9 +37,9 @@ crow::response session_controller::login(const crow::request &req)
 
         auto &session = app.get_context<Session>(req);
         auto bodyParams = req.get_body_params();
-        std::string grantType {bodyParams.pop("grant_type")};
-        std::string username {bodyParams.pop("username")};
-        std::string password {bodyParams.pop("password")};
+        std::string grantType{bodyParams.pop("grant_type")};
+        std::string username{bodyParams.pop("username")};
+        std::string password{bodyParams.pop("password")};
 
         auto token = jwt::create()
                          .set_type("JWS")
@@ -59,9 +59,7 @@ crow::response session_controller::login(const crow::request &req)
                 return crow::response{response_json};
             }
             else
-            {
                 return crow::response(crow::status::UNAUTHORIZED);
-            }
         }
         else if (grantType == "fingerprint")
         {
@@ -76,14 +74,10 @@ crow::response session_controller::login(const crow::request &req)
                 return crow::response{response_json};
             }
             else
-            {
                 return crow::response(crow::status::UNAUTHORIZED);
-            }
         }
         else
-        {
             return crow::response(crow::status::UNAVAILABLE_FOR_LEGAL_REASONS);
-        }
     }
     catch (const std::exception &e)
     {

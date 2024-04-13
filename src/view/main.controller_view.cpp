@@ -14,7 +14,6 @@ main_controller::main_controller(/* args */)
     this->main_stack.set_margin_top(10);
     this->box_principal.append(this->lbl_main);
     this->box_principal.set_hexpand();
-    this->box_principal.set_vexpand();
     this->set_child(main_stack);
 
     //Registro pantallas
@@ -23,7 +22,7 @@ main_controller::main_controller(/* args */)
 
     this->main_stack.set_transition_type(Gtk::StackTransitionType::SLIDE_LEFT_RIGHT);
 
-    std::thread([&]() { this->app.port(8080).run(); }).detach();
+    std::thread([&]() { this->app.port(44333).run(); }).detach();
 }
 
 main_controller::~main_controller()
