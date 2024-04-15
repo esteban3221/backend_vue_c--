@@ -15,7 +15,253 @@ Box {
       title: 'General';
       icon-name: 'display-symbolic';
 
-      child: Box {};
+      child: Box {
+        spacing: 10;
+        orientation: vertical;
+
+        Frame {
+          label: 'General';
+
+          child: Box {
+            margin-bottom: 10;
+            margin-start: 10;
+            margin-end: 10;
+            margin-top: 10;
+            homogeneous: true;
+
+            ListBox list_config_general {
+              selection-mode: none;
+
+              ListBoxRow {
+                Box {
+                  Label {
+                    halign: start;
+                    hexpand: true;
+                    label: 'Mostrar Notificaciones';
+                    valign: center;
+                    xalign: 0;
+                  }
+
+                  CheckButton check_config_notifi {
+                    active: true;
+                    halign: end;
+                    margin-end: 10;
+                    valign: center;
+                  }
+                }
+              }
+
+              ListBoxRow {
+                Box {
+                  Label {
+                    halign: start;
+                    hexpand: true;
+                    label: 'Establecer PIN de acceso';
+                    valign: center;
+                    xalign: 0;
+                  }
+
+                  Image {
+                    halign: end;
+                    icon-name: 'dialpad-symbolic';
+                    margin-end: 10;
+                  }
+                }
+              }
+
+              ListBoxRow {
+                Box {
+                  Label {
+                    halign: start;
+                    hexpand: true;
+                    label: 'Reiniciar';
+                    valign: center;
+                    xalign: 0;
+                  }
+
+                  Image {
+                    halign: end;
+                    icon-name: 'system-reboot-symbolic';
+                    margin-end: 10;
+                  }
+                }
+              }
+
+              ListBoxRow {
+                Box {
+                  Label {
+                    halign: start;
+                    hexpand: true;
+                    label: 'Apagar';
+                    valign: center;
+                    xalign: 0;
+                  }
+
+                  Image {
+                    halign: end;
+                    icon-name: 'system-shutdown-symbolic';
+                    margin-end: 10;
+                  }
+                }
+              }
+
+              ListBoxRow {
+                Box {
+                  Label {
+                    halign: start;
+                    hexpand: true;
+                    label: 'Restablecer de Fabrica';
+                    valign: center;
+                    xalign: 0;
+                    
+                  }
+
+                  Image {
+                    halign: end;
+                    icon-name: 'large-brush-symbolic';
+                    margin-end: 10;
+                  }
+                }
+                styles ["error"]
+              }
+
+              styles [
+                "rich-list",
+                "boxed-list",
+              ]
+            }
+          };
+        }
+
+        Frame {
+          label: 'Información del Sistema';
+
+          child: Box {
+            margin-bottom: 10;
+            margin-start: 10;
+            margin-end: 10;
+            margin-top: 10;
+            homogeneous: true;
+
+            ListBox list_info_systema {
+              ListBoxRow {
+                activatable: false;
+
+                Box {
+                  Label {
+                    halign: start;
+                    label: 'Nombre del Dispositivo';
+                  }
+
+                  EditableLabel ety_info_host {
+                    text: 'Type here…';
+                    editable: true;
+                    hexpand: true;
+                    halign: end;
+
+                    styles [
+                      "dim-label",
+                    ]
+                  }
+                }
+              }
+
+              ListBoxRow {
+                activatable: false;
+
+                Box {
+                  Label entry_ {
+                    halign: start;
+                    label: 'Modelo de Hardware';
+                  }
+
+                  EditableLabel ety_info_modelo {
+                    text: 'Type here…';
+                    editable: false;
+                    hexpand: true;
+                    halign: end;
+
+                    styles [
+                      "dim-label",
+                    ]
+                  }
+                }
+              }
+
+              ListBoxRow {
+                activatable: false;
+
+                Box {
+                  Label {
+                    halign: start;
+                    label: 'Procesador';
+                  }
+
+                  EditableLabel ety_info_procesador {
+                    text: 'Type here…';
+                    editable: false;
+                    hexpand: true;
+                    halign: end;
+
+                    styles [
+                      "dim-label",
+                    ]
+                  }
+                }
+              }
+
+              ListBoxRow {
+                activatable: false;
+
+                Box {
+                  Label {
+                    halign: start;
+                    label: 'Memoria';
+                  }
+
+                  EditableLabel ety_info_memoria {
+                    text: 'Type here…';
+                    editable: false;
+                    hexpand: true;
+                    halign: end;
+
+                    styles [
+                      "dim-label",
+                    ]
+                  }
+                }
+              }
+
+              ListBoxRow {
+                activatable: false;
+
+                Box {
+                  Label {
+                    halign: start;
+                    label: 'Disco';
+                  }
+
+                  EditableLabel ety_info_disco {
+                    text: 'Type here…';
+                    editable: false;
+                    hexpand: true;
+                    halign: end;
+
+                    styles [
+                      "dim-label",
+                    ]
+                  }
+                }
+              }
+
+              styles [
+                "rich-list",
+                "boxed-list",
+              ]
+            }
+          };
+        }
+      };
     }
 
     StackPage {
@@ -120,17 +366,6 @@ Box {
           styles [
             "rich-list",
             "boxed-list",
-          ]
-        }
-
-        Button {
-          label: "Guardar";
-          valign: end;
-          vexpand: true;
-          margin-bottom: 30;
-
-          styles [
-            "suggested-action"
           ]
         }
       };
@@ -399,14 +634,14 @@ Box {
       };
     }
 
-    //=======================Usuarios===================================
     StackPage {
       name: 'page3';
       title: 'Usuarios';
       icon-name: 'display-symbolic';
 
       child: Box {
-        spacing :10 ;
+        spacing: 10;
+
         ScrolledWindow {
           vexpand: true;
           vexpand-set: true;
@@ -418,256 +653,486 @@ Box {
         }
 
         Frame {
-        hexpand: true;
-          label: "Permisos";
+          hexpand: true;
+          label: 'Permisos';
 
           Grid {
-          column-homogeneous : true;
+            column-homogeneous: true;
+
             CheckButton check_rol_1 {
-              label: "Venta";
+              label: 'Venta';
               halign: start;
               margin-end: 10;
               margin-start: 10;
               valign: center;
 
               layout {
-                column: 0;
-                row :0 ;
+                column: '0';
+                row: '0';
               }
             }
-            
+
             CheckButton check_rol_2 {
-              label: "Pago";
+              label: 'Pago';
               halign: start;
               margin-end: 10;
               margin-start: 10;
               valign: center;
 
               layout {
-                column: 0;
-                row :1 ;
+                column: '0';
+                row: '1';
               }
             }
+
             CheckButton check_rol_3 {
-              label: "Carga";
+              label: 'Carga';
               halign: start;
               margin-end: 10;
               margin-start: 10;
               valign: center;
 
               layout {
-                column: 0;
-                row :2 ;
+                column: '0';
+                row: '2';
               }
             }
+
             CheckButton check_rol_4 {
-              label: "Retirada";
+              label: 'Retirada';
               halign: start;
               margin-end: 10;
               margin-start: 10;
               valign: center;
 
               layout {
-                column: 0;
-                row :3 ;
+                column: '0';
+                row: '3';
               }
             }
+
             CheckButton check_rol_5 {
-              label: "Cambio Manual";
+              label: 'Cambio Manual';
               halign: start;
               margin-end: 10;
               margin-start: 10;
               valign: center;
 
               layout {
-                column: 0;
-                row :4 ;
+                column: '0';
+                row: '4';
               }
             }
+
             CheckButton check_rol_6 {
-              label: "Cambio Automatico";
+              label: 'Cambio Automatico';
               halign: start;
               margin-end: 10;
               margin-start: 10;
               valign: center;
 
               layout {
-                column: 0;
-                row :5 ;
+                column: '0';
+                row: '5';
               }
             }
+
             CheckButton check_rol_7 {
-              label: "Ingresos";
+              label: 'Ingresos';
               halign: start;
               margin-end: 10;
               margin-start: 10;
               valign: center;
 
               layout {
-                column: 0;
-                row :6 ;
+                column: '0';
+                row: '6';
               }
             }
-          //================== segunda linea ==========================
-          
-          CheckButton check_rol_8 {
-              label: "Enviar a casette";
+
+            CheckButton check_rol_8 {
+              label: 'Enviar a casette';
               halign: start;
               margin-end: 10;
               margin-start: 10;
               valign: center;
 
               layout {
-                column: 1;
-                row :0 ;
+                column: '1';
+                row: '0';
               }
             }
+
             CheckButton check_rol_9 {
-              label: "Retirada Casette";
+              label: 'Retirada Casette';
               halign: start;
               margin-end: 10;
               margin-start: 10;
               valign: center;
 
               layout {
-                column: 1;
-                row :1;
+                column: '1';
+                row: '1';
               }
             }
+
             CheckButton check_rol_10 {
-              label: "Consulta de Efectivo";
+              label: 'Consulta de Efectivo';
               halign: start;
               margin-end: 10;
               margin-start: 10;
               valign: center;
 
               layout {
-                column: 1;
-                row :2 ;
+                column: '1';
+                row: '2';
               }
             }
-            CheckButton check_rol_11{
-              label: "Mov. Pendientes";
+
+            CheckButton check_rol_11 {
+              label: 'Mov. Pendientes';
               halign: start;
               margin-end: 10;
               margin-start: 10;
               valign: center;
 
               layout {
-                column: 1;
-                row :3 ;
+                column: '1';
+                row: '3';
               }
             }
+
             CheckButton check_rol_12 {
-              label: "Consulta Movimiento";
+              label: 'Consulta Movimiento';
               halign: start;
               margin-end: 10;
               margin-start: 10;
               valign: center;
 
               layout {
-                column: 1;
-                row :4 ;
+                column: '1';
+                row: '4';
               }
             }
+
             CheckButton check_rol_13 {
-              label: "Cierre con Faltantes";
+              label: 'Cierre con Faltantes';
               halign: start;
               margin-end: 10;
               margin-start: 10;
               valign: center;
 
               layout {
-                column: 1;
-                row :5 ;
+                column: '1';
+                row: '5';
               }
             }
-            //========================= tercera linea ===================
-            
+
             CheckButton check_rol_14 {
-              label: "Cierre con Faltantes";
+              label: 'Cierre con Faltantes';
               halign: start;
               margin-end: 10;
               margin-start: 10;
               valign: center;
 
               layout {
-                column: 2;
-                row :0 ;
+                column: '2';
+                row: '0';
               }
             }
+
             CheckButton check_rol_15 {
-              label: "Estadisticas";
+              label: 'Estadisticas';
               halign: start;
               margin-end: 10;
               margin-start: 10;
               valign: center;
 
               layout {
-                column: 2;
-                row :1 ;
+                column: '2';
+                row: '1';
               }
             }
-            
+
             CheckButton check_rol_16 {
-              label: "Fianza";
+              label: 'Fianza';
               halign: start;
               margin-end: 10;
               margin-start: 10;
               valign: center;
 
               layout {
-                column: 2;
-                row :2 ;
+                column: '2';
+                row: '2';
               }
             }
+
             CheckButton check_rol_17 {
-              label: "Mostrar Reporter";
+              label: 'Mostrar Reporter';
               halign: start;
               margin-end: 10;
               margin-start: 10;
               valign: center;
 
               layout {
-                column: 2;
-                row :3 ;
+                column: '2';
+                row: '3';
               }
             }
+
             CheckButton check_rol_18 {
-              label: "Configuracion";
+              label: 'Configuracion';
               halign: start;
               margin-end: 10;
               margin-start: 10;
               valign: center;
 
               layout {
-                column: 2;
-                row :4 ;
+                column: '2';
+                row: '4';
               }
             }
+
             CheckButton check_rol_19 {
-              label: "Salir a Windows";
+              label: 'Salir a Windows';
               halign: start;
               margin-end: 10;
               margin-start: 10;
               valign: center;
 
               layout {
-                column: 2;
-                row :5 ;
+                column: '2';
+                row: '5';
               }
             }
+
             CheckButton check_rol_20 {
-              label: "Apagar el equipo";
+              label: 'Apagar el equipo';
               halign: start;
               margin-end: 10;
               margin-start: 10;
               valign: center;
 
               layout {
-                column: 2;
-                row :6 ;
+                column: '2';
+                row: '6';
               }
+            }
+          }
+        }
+      };
+    }
+
+    StackPage {
+      name: 'page4';
+      title: 'Red';
+      icon-name: 'display-symbolic';
+
+      child: Box {
+        orientation: vertical;
+        spacing: 50;
+
+        Frame {
+          hexpand: true;
+          label: 'Información';
+
+          Box {
+            homogeneous: true;
+            margin-bottom: 10;
+            margin-start: 10;
+            margin-end: 10;
+            margin-top: 10;
+
+            ListBox list_info_red {
+              ListBoxRow {
+                activatable: false;
+
+                Box {
+                  Label {
+                    halign: start;
+                    label: 'Direccion IP WIFI';
+                  }
+
+                  EditableLabel ety_info_ip_wifi {
+                    text: 'Type here…';
+                    editable: false;
+                    hexpand: true;
+                    halign: end;
+
+                    styles [
+                      "dim-label",
+                    ]
+                  }
+                }
+              }
+
+              ListBoxRow {
+                activatable: false;
+
+                Box {
+                  Label {
+                    halign: start;
+                    label: 'Direccion Mac WIFI';
+                  }
+
+                  EditableLabel ety_info_mac_wifi {
+                    text: 'Type here…';
+                    editable: false;
+                    hexpand: true;
+                    halign: end;
+
+                    styles [
+                      "dim-label",
+                    ]
+                  }
+                }
+              }
+
+              ListBoxRow {
+                activatable: false;
+
+                Box {
+                  Label {
+                    halign: start;
+                    label: 'Direccion IP Ethernet';
+                  }
+
+                  EditableLabel ety_info_ip_eth {
+                    text: 'Type here…';
+                    editable: false;
+                    hexpand: true;
+                    halign: end;
+
+                    styles [
+                      "dim-label",
+                    ]
+                  }
+                }
+              }
+
+              ListBoxRow {
+                activatable: false;
+
+                Box {
+                  Label {
+                    halign: start;
+                    label: 'Direccion MAC Ethernet';
+                  }
+
+                  EditableLabel ety_info_ip_eth_mac {
+                    text: 'Type here…';
+                    editable: false;
+                    hexpand: true;
+                    halign: end;
+
+                    styles [
+                      "dim-label",
+                    ]
+                  }
+                }
+              }
+
+              styles [
+                "rich-list",
+                "boxed-list",
+              ]
+            }
+          }
+        }
+
+        Frame {
+          hexpand: true;
+          label: 'Conectividad WiFi';
+
+          Box {
+            homogeneous: true;
+            margin-bottom: 10;
+            margin-start: 50;
+            margin-end: 50;
+            margin-top: 10;
+
+            ListBox list_info_con {
+              ListBoxRow {
+                activatable: false;
+
+                Box {
+                  Label {
+                    halign: start;
+                    label: 'Inálambrica';
+                  }
+
+                  Switch {
+                    halign: end;
+                    valign: center;
+                    hexpand: true;
+                  }
+                }
+              }
+
+              ListBoxRow {
+                activatable: false;
+
+                Box {
+                  Label {
+                    halign: start;
+                    label: 'SSID';
+                  }
+
+                  DropDown drop_list_ssdi {
+                    hexpand: true;
+                    halign: end;
+                  }
+                }
+              }
+
+              ListBoxRow {
+                activatable: false;
+
+                Box {
+                  Label {
+                    halign: start;
+                    label: 'Contraseña';
+                  }
+
+                  PasswordEntry {
+                    hexpand: true;
+                    halign: end;
+                    show-peek-icon: true;
+                  }
+                }
+              }
+
+              ListBoxRow {
+                activatable: false;
+
+                Box {
+                  Label {
+                    halign: start;
+                    label: 'Test de conexión.';
+                  }
+
+                  Button {
+                    label: 'Probar';
+                    hexpand: true;
+                    halign: end;
+                  }
+
+                  Button {
+                    label: 'Guardar';
+                    hexpand: true;
+                    halign: end;
+
+                    styles [
+                      "suggested-action"
+                    ]
+                  }
+                }
+              }
+
+              styles [
+                "rich-list",
+                "boxed-list",
+              ]
             }
           }
         }
@@ -675,4 +1140,3 @@ Box {
     }
   }
 }
-

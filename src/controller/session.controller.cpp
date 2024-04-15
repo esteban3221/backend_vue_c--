@@ -24,7 +24,7 @@ std::string session_controller::verTokens(const crow::request &req)
     std::string out;
     for (const auto &key : keys)
         // .string(key) converts a value of any type to a string
-        out += "<p> " + key + " = " + session.string(key) + "</p>";
+        out += key + " | " + session.string(key) ;
     return out;
 }
 
@@ -44,13 +44,14 @@ crow::response session_controller::login(const crow::request &req)
         auto token = jwt::create()
                          .set_type("JWS")
                          .set_issuer("auth0")
-                         .sign(jwt::algorithm::hs256{Glib::DateTime::create_now_local().format("%Y-%m-%d %H:%M:%S")});
+                         .sign(jwt::algorithm::hs256{Glib::DateTime::create_now_local().format("%Y%m%d%H%M%S")});
 
         if (grantType == "password")
         {
             if (M_usuarios.validaUsuario(username, password))
             {
                 session.set(username, token);
+
                 crow::json::wvalue response_json;
                 response_json["access_token"] = token;
                 response_json["expires_in"] = 3600000;
@@ -59,13 +60,14 @@ crow::response session_controller::login(const crow::request &req)
                 return crow::response{response_json};
             }
             else
-                return crow::response(crow::status::UNAUTHORIZED);
+                return crow::response(crow::status::UNAUTHORIZED,"UNAUTHORIZED");
         }
         else if (grantType == "fingerprint")
         {
             if (M_usuarios.validaUsuario(username))
             {
                 session.set(username, token);
+
                 crow::json::wvalue response_json;
                 response_json["access_token"] = token;
                 response_json["expires_in"] = 3600000;
@@ -74,7 +76,7 @@ crow::response session_controller::login(const crow::request &req)
                 return crow::response{response_json};
             }
             else
-                return crow::response(crow::status::UNAUTHORIZED);
+                return crow::response(crow::status::UNAUTHORIZED,"UNAUTHORIZED");
         }
         else
             return crow::response(crow::status::UNAVAILABLE_FOR_LEGAL_REASONS);
