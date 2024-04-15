@@ -1,0 +1,137 @@
+using Gtk 4.0;
+
+Box {
+  orientation: vertical;
+  spacing: 30;
+  homogeneous: false;
+  margin-bottom: 10;
+  margin-start: 100;
+  margin-end: 100;
+  margin-top: 10;
+
+  PasswordEntry {
+    hexpand: true;
+    halign: fill;
+    show-peek-icon: false;
+    placeholder-text: 'Digite NIP';
+    xalign: .5;
+    height-request: 100;
+    max-width-chars: 8;
+
+    styles [
+      "title-1",
+    ]
+  }
+
+  Grid {
+    vexpand: true;
+    column-homogeneous: true;
+    row-homogeneous: true;
+    column-spacing: 5;
+    row-spacing: 5;
+    halign: fill;
+    styles [
+      "title-1",
+    ]
+
+    Button btn_nip_1 {
+      label: '1';
+      
+
+      layout {
+        column: '0';
+        row: '0';
+      }
+    }
+
+    Button btn_nip_2 {
+      label: '2';
+
+      layout {
+        column: '1';
+        row: '0';
+      }
+    }
+
+    Button btn_nip_3 {
+      label: '3';
+
+      layout {
+        column: '2';
+        row: '0';
+      }
+    }
+
+    Button btn_nip_4 {
+      label: '4';
+
+      layout {
+        column: '0';
+        row: '1';
+      }
+    }
+
+    Button btn_nip_5 {
+      label: '5';
+
+      layout {
+        column: '1';
+        row: '1';
+      }
+    }
+
+    Button btn_nip_6 {
+      label: '6';
+
+      layout {
+        column: '2';
+        row: '1';
+      }
+    }
+
+    Button btn_nip_7 {
+      label: '7';
+
+      layout {
+        column: '0';
+        row: '2';
+      }
+    }
+
+    Button btn_nip_8 {
+      label: '8';
+
+      layout {
+        column: '1';
+        row: '2';
+      }
+    }
+
+    Button btn_nip_9 {
+      label: '9';
+
+      layout {
+        column: '2';
+        row: '2';
+      }
+    }
+
+    Button btn_nip_0 {
+      label: '0';
+
+      layout {
+        column: '1';
+        row: '3';
+      }
+    }
+
+    Button btn_nip_enter {
+      icon-name: 'keyboard-enter-symbolic';
+
+      layout {
+        column: '3';
+        row-span: '3';
+      }
+    }
+  }
+}
