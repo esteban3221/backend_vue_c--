@@ -1,9 +1,15 @@
 #pragma once
 #include <crow/app.h>
 #include "sqlite.hpp"
+
+//controllers
 #include "test.controller.hpp"
 #include "session.controller.hpp"
 #include "venta.controller.hpp"
+
+//views
+#include "nip_view.hpp"
+
 #include <memory>
 #include <gtkmm.h>
 
@@ -11,27 +17,107 @@ class main_controller : public Gtk::Window
 {
 private:
     // Widgets del front principal
+    const char *XML = "<interface>"
+                      "<requires lib=\"gtk\" version=\"4.0\"/>"
+                      "<object class=\"GtkBox\" id=\"box_principal\">"
+                      "<property name=\"orientation\">1</property>"
+                      "<property name=\"homogeneous\">false</property>"
+                      "<property name=\"margin-bottom\">10</property>"
+                      "<property name=\"margin-start\">10</property>"
+                      "<property name=\"margin-end\">10</property>"
+                      "<property name=\"margin-top\">10</property>"
+                      "<child>"
+                      "<object class=\"GtkBox\">"
+                      "<property name=\"homogeneous\">true</property>"
+                      "<property name=\"orientation\">1</property>"
+                      "<child>"
+                      "<object class=\"GtkLabel\">"
+                      "<property name=\"label\">Bienvenido</property>"
+                      "<style>"
+                      "<class name=\"title-1\"/>"
+                      "</style>"
+                      "</object>"
+                      "</child>"
+                      "<child>"
+                      "<object class=\"GtkOverlay\">"
+                      "<property name=\"child\">"
+                      "<object class=\"GtkImage\" id=\"img_main_logo\">"
+                      "<property name=\"file\">/home/esteban/Descargas/ll/TicketImages/logo_blanco.png</property>"
+                      "<property name=\"pixel-size\">150</property>"
+                      "<property name=\"use-fallback\">true</property>"
+                      "</object>"
+                      "</property>"
+                      "<child type=\"overlay\">"
+                      "<object class=\"GtkButton\" id=\"btn_logo_nip\">"
+                      "<property name=\"label\">Maxicajero</property>"
+                      "<property name=\"halign\">3</property>"
+                      "<property name=\"valign\">3</property>"
+                      "<property name=\"margin-bottom\">150</property>"
+                      "<property name=\"margin-start\">150</property>"
+                      "<property name=\"margin-end\">150</property>"
+                      "<property name=\"margin-top\">150</property>"
+                      "<property name=\"opacity\">0</property>"
+                      "</object>"
+                      "</child>"
+                      "</object>"
+                      "</child>"
+                      "</object>"
+                      "</child>"
+                      "<child>"
+                      "<object class=\"GtkButton\" id=\"btn_pill\">"
+                      "<property name=\"label\" translatable=\"true\">1</property>"
+                      "<property name=\"halign\">3</property>"
+                      "<property name=\"valign\">3</property>"
+                      "<property name=\"vexpand\">true</property>"
+                      "<property name=\"opacity\">0</property>"
+                      "<style>"
+                      "<class name=\"pill\"/>"
+                      "<class name=\"suggested-action\"/>"
+                      "</style>"
+                      "</object>"
+                      "</child>"
+                      "<child>"
+                      "<object class=\"GtkLabel\" id=\"lbl_version\">"
+                      "<property name=\"label\">Version ; 1.0.0.1</property>"
+                      "<property name=\"halign\">2</property>"
+                      "<property name=\"valign\">2</property>"
+                      "</object>"
+                      "</child>"
+                      "</object>"
+                      "</interface>";
+
+    Glib::RefPtr<Gtk::Builder> builder = Gtk::Builder::create();
+
     Gtk::Stack main_stack;
-    Gtk::Box box_principal;
-    Gtk::Label lbl_main;
+    Gtk::Box *box_principal = nullptr;
+    Gtk::Label *lbl_version = nullptr;
+    Gtk::Button * btn_logo_nip = nullptr, *btn_pill = nullptr;
 
-    // controladores test
-    //crow::SimpleApp app_;
 
-    crow::App<crow::CookieParser, Session> app{Session{crow::CookieParser::Cookie("session").
-    max_age(/*15 minutos vida maxima de tokena*/ 15*60).
-    path("/"), 64, crow::InMemoryStore{}}};
+    //interno
+    int cont_click_logo = 0;
 
+
+    crow::App<crow::CookieParser, Session> app{Session{crow::CookieParser::Cookie("session").max_age(/*15 minutos vida maxima de tokena*/ 15 * 60).path("/"), 64, crow::InMemoryStore{}}};
+
+    //Controllers
     // std::unique_ptr<test_controller> a = std::make_unique<test_controller>(app_,main_stack,box_principal);
-
     std::unique_ptr<session_controller> session = std::make_unique<session_controller>(app);
     std::unique_ptr<venta_controller> venta = std::make_unique<venta_controller>();
+
+    //View
+    std::unique_ptr<nip_view> nip = std::make_unique<nip_view>(box_principal, main_stack);
 
     // funciones padre
     std::string runTest();
     std::string reset();
 
+    void entra_config();
+
 public:
     main_controller(/* args */);
     ~main_controller();
+
+protected:
+    std::unique_ptr<Gtk::MessageDialog> m_pDialog;
 };

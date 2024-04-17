@@ -1,14 +1,46 @@
 using Gtk 4.0;
 
-Box {
+Box box_configuracion {
   orientation: horizontal;
 
-  StackSidebar {
-    stack: stack_confi;
+  Box {
+    spacing: 5;
+    orientation: vertical;
+
+    Button btn_back_config {
+      halign: fill;
+      margin-start: 10;
+      margin-end: 10 ;
+      has-frame : false;
+
+      child: Box {
+        spacing: 5;
+
+        Image {
+          icon-name: 'arrow-hook-left-horizontal-symbolic';
+        }
+
+        Label {
+          label: 'Regresar';
+        }
+      };
+    }
+
+    Separator {}
+
+    StackSidebar {
+      stack: stack_confi;
+      vexpand: true;
+    }
   }
 
   Stack stack_confi {
     hexpand: true;
+    margin-bottom: 10;
+    margin-start: 10;
+    margin-end: 10;
+    margin-top: 10;
+    transition-type : slide_up_down;
 
     StackPage {
       name: 'page0';
@@ -871,7 +903,7 @@ Box {
             }
 
             CheckButton check_rol_17 {
-              label: 'Mostrar Reporter';
+              label: 'Mostrar Reportes';
               halign: start;
               margin-end: 10;
               margin-start: 10;

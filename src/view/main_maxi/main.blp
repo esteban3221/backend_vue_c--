@@ -1,0 +1,62 @@
+using Gtk 4.0;
+
+Box box_principal {
+  orientation: vertical;
+  homogeneous: false;
+  margin-bottom: 10;
+  margin-start: 10;
+  margin-end: 10;
+  margin-top: 10;
+
+  Box {
+    homogeneous: true;
+    orientation: vertical;
+
+    Label {
+      label: 'Bienvenido';
+
+      styles [
+        "title-1",
+      ]
+    }
+
+    Overlay {
+      child: Image img_main_logo {
+        file: '/home/esteban/Descargas/ll/TicketImages/logo_blanco.png';
+        pixel-size: 150;
+        use-fallback: true;
+      };
+
+      [overlay]
+      Button btn_logo_nip {
+        label: 'Maxicajero';
+        halign: center;
+        valign: center;
+        margin-bottom: 100;
+        margin-start: 100;
+        margin-end: 100;
+        margin-top: 100;
+        opacity: 0;
+      }
+    }
+  }
+
+  Button btn_pill {
+    label: _('1');
+    halign: center;
+    valign: center;
+    vexpand: true;
+    opacity : 1;
+
+    styles [
+      "pill",
+      "suggested-action",
+    ]
+  }
+
+  Label lbl_version {
+    label: 'Version ; 1.0.0.1';
+    halign: end;
+    valign: end;
+  }
+}

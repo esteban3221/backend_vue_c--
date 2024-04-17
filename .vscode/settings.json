@@ -84,7 +84,9 @@
         "variant": "cpp",
         "csignal": "cpp",
         "strstream": "cpp",
-        "coroutine": "cpp"
+        "coroutine": "cpp",
+        "regex": "cpp",
+        "*.ipp": "cpp"
     },
     "C_Cpp.default.compilerPath": "/usr/bin/g++"
 }

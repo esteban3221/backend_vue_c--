@@ -24,6 +24,7 @@ set(SOURCES
     
     #src/controller/base.controller.cpp
     src/view/main.controller_view.cpp
+    src/view/nip_view.cpp
 
     src/model/usuarios.cpp
 

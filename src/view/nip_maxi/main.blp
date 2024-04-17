@@ -1,6 +1,6 @@
 using Gtk 4.0;
 
-Box {
+Box box_nip {
   orientation: vertical;
   spacing: 30;
   homogeneous: false;
@@ -9,12 +9,12 @@ Box {
   margin-end: 100;
   margin-top: 10;
 
-  PasswordEntry {
+  PasswordEntry ety_pin{
     hexpand: true;
     halign: fill;
     show-peek-icon: false;
     placeholder-text: 'Digite NIP';
-    xalign: .5;
+    xalign: 0.5;
     height-request: 100;
     max-width-chars: 8;
 
@@ -27,16 +27,16 @@ Box {
     vexpand: true;
     column-homogeneous: true;
     row-homogeneous: true;
-    column-spacing: 5;
-    row-spacing: 5;
+    column-spacing: 10;
+    row-spacing: 10;
     halign: fill;
+
     styles [
       "title-1",
     ]
 
     Button btn_nip_1 {
       label: '1';
-      
 
       layout {
         column: '0';
@@ -125,12 +125,30 @@ Box {
       }
     }
 
+    Button btn_nip_del {
+      icon-name: 'edit-clear-symbolic';
+
+      layout {
+        column: '3';
+        row: '3';
+      }
+    }
+
     Button btn_nip_enter {
       icon-name: 'keyboard-enter-symbolic';
 
       layout {
         column: '3';
         row-span: '3';
+      }
+    }
+
+    Button btn_nip_back {
+      icon-name: 'go-previous-symbolic';
+
+      layout {
+        column: '0';
+        row: '3';
       }
     }
   }
