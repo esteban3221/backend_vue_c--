@@ -10,14 +10,14 @@ Box box_configuracion {
     Button btn_back_config {
       halign: fill;
       margin-start: 10;
-      margin-end: 10 ;
-      has-frame : false;
+      margin-end: 10;
+      has-frame: false;
 
       child: Box {
         spacing: 5;
 
         Image {
-          icon-name: 'arrow-hook-left-horizontal-symbolic';
+          icon-name: 'go-previous-symbolic';
         }
 
         Label {
@@ -35,12 +35,11 @@ Box box_configuracion {
   }
 
   Stack stack_confi {
-    hexpand: true;
     margin-bottom: 10;
     margin-start: 10;
     margin-end: 10;
     margin-top: 10;
-    transition-type : slide_up_down;
+    transition-type: slide_up_down;
 
     StackPage {
       name: 'page0';
@@ -48,253 +47,325 @@ Box box_configuracion {
       icon-name: 'display-symbolic';
 
       child: Box {
-        spacing: 10;
         orientation: vertical;
+        spacing: 10;
 
-        Frame {
-          label: 'General';
-
-          child: Box {
-            margin-bottom: 10;
-            margin-start: 10;
-            margin-end: 10;
-            margin-top: 10;
-            homogeneous: true;
-
-            ListBox list_config_general {
-              selection-mode: none;
-
-              ListBoxRow {
-                Box {
-                  Label {
-                    halign: start;
-                    hexpand: true;
-                    label: 'Mostrar Notificaciones';
-                    valign: center;
-                    xalign: 0;
-                  }
-
-                  CheckButton check_config_notifi {
-                    active: true;
-                    halign: end;
-                    margin-end: 10;
-                    valign: center;
-                  }
-                }
+        ListBox list_configurable {
+          ListBoxRow {
+            Box {
+              Label {
+                halign: start;
+                hexpand: true;
+                label: 'Mostrar Notificaciones';
+                valign: center;
+                xalign: 0;
               }
 
-              ListBoxRow {
-                Box {
-                  Label {
-                    halign: start;
-                    hexpand: true;
-                    label: 'Establecer PIN de acceso';
-                    valign: center;
-                    xalign: 0;
-                  }
-
-                  Image {
-                    halign: end;
-                    icon-name: 'dialpad-symbolic';
-                    margin-end: 10;
-                  }
-                }
+              CheckButton check_config_notifi {
+                active: true;
+                halign: end;
+                valign: center;
               }
-
-              ListBoxRow {
-                Box {
-                  Label {
-                    halign: start;
-                    hexpand: true;
-                    label: 'Reiniciar';
-                    valign: center;
-                    xalign: 0;
-                  }
-
-                  Image {
-                    halign: end;
-                    icon-name: 'system-reboot-symbolic';
-                    margin-end: 10;
-                  }
-                }
-              }
-
-              ListBoxRow {
-                Box {
-                  Label {
-                    halign: start;
-                    hexpand: true;
-                    label: 'Apagar';
-                    valign: center;
-                    xalign: 0;
-                  }
-
-                  Image {
-                    halign: end;
-                    icon-name: 'system-shutdown-symbolic';
-                    margin-end: 10;
-                  }
-                }
-              }
-
-              ListBoxRow {
-                Box {
-                  Label {
-                    halign: start;
-                    hexpand: true;
-                    label: 'Restablecer de Fabrica';
-                    valign: center;
-                    xalign: 0;
-                  }
-
-                  Image {
-                    halign: end;
-                    icon-name: 'large-brush-symbolic';
-                    margin-end: 10;
-                  }
-                }
-
-                styles [
-                  "warning",
-                  "activatable"
-                ]
-              }
-
-              styles [
-                "rich-list",
-                "boxed-list",
-              ]
             }
-          };
+          }
+
+          ListBoxRow {
+            Box {
+              Label {
+                halign: start;
+                hexpand: true;
+                label: 'Logo Inicio';
+                valign: center;
+                xalign: 0;
+              }
+
+              Button btn_select_icon {
+                halign: end;
+                valign: center;
+
+                child: Box {
+                  spacing: 5;
+
+                  Image {
+                    icon-name: 'insert-image-symbolic';
+                  }
+
+                  Label  lbl_path_icon{
+                    label: 'Selecciona Imagen';
+                    ellipsize: start;
+                  }
+                };
+              }
+            }
+          }
+
+          ListBoxRow {
+            Box {
+              Label {
+                halign: start;
+                hexpand: true;
+                label: 'Mensaje de Inicio';
+                valign: center;
+                xalign: 0;
+              }
+
+              Entry ety_mensaje_inicio {
+                halign: end;
+                valign: center;
+              }
+            }
+          }
+
+          ListBoxRow {
+            Box {
+              Label {
+                halign: start;
+                hexpand: true;
+                label: 'Carrusel de imágenes';
+                valign: center;
+                xalign: 0;
+              }
+
+              Button btn_select_carrousel {
+                halign: end;
+                margin-end: 10;
+                valign: center;
+
+                child: Box {
+                  spacing: 5;
+
+                  Image {
+                    icon-name: 'inode-directory-symbolic';
+                  }
+
+                  Label lbl_path_carrousel{
+                    label: 'Selecciona Carpeta';
+                    ellipsize: start;
+                  }
+                };
+              }
+
+              DropDown Drop_temporizador {}
+            }
+          }
+
+          styles [
+            "rich-list",
+            "boxed-list",
+          ]
         }
 
-        Frame {
-          label: 'Información del Sistema';
+        ListBox list_config_general {
+          selection-mode: none;
 
-          child: Box {
-            margin-bottom: 10;
-            margin-start: 10;
-            margin-end: 10;
-            margin-top: 10;
-            homogeneous: true;
-
-            ListBox list_info_systema {
-              ListBoxRow {
-                activatable: false;
-
-                Box {
-                  Label {
-                    halign: start;
-                    label: 'Nombre del Dispositivo';
-                  }
-
-                  EditableLabel ety_info_host {
-                    text: 'Type here…';
-                    editable: true;
-                    hexpand: true;
-                    halign: end;
-
-                    styles [
-                      "dim-label",
-                    ]
-                  }
-                }
+          ListBoxRow {
+            Box {
+              Label {
+                halign: start;
+                hexpand: true;
+                label: 'Establecer PIN de acceso';
+                valign: center;
+                xalign: 0;
               }
 
-              ListBoxRow {
-                activatable: false;
-
-                Box {
-                  Label entry_ {
-                    halign: start;
-                    label: 'Modelo de Hardware';
-                  }
-
-                  EditableLabel ety_info_modelo {
-                    text: 'Type here…';
-                    editable: false;
-                    hexpand: true;
-                    halign: end;
-
-                    styles [
-                      "dim-label",
-                    ]
-                  }
-                }
+              Image {
+                halign: end;
+                icon-name: 'input-dialpad-symbolic';
+                margin-end: 10;
               }
-
-              ListBoxRow {
-                activatable: false;
-
-                Box {
-                  Label {
-                    halign: start;
-                    label: 'Procesador';
-                  }
-
-                  EditableLabel ety_info_procesador {
-                    text: 'Type here…';
-                    editable: false;
-                    hexpand: true;
-                    halign: end;
-
-                    styles [
-                      "dim-label",
-                    ]
-                  }
-                }
-              }
-
-              ListBoxRow {
-                activatable: false;
-
-                Box {
-                  Label {
-                    halign: start;
-                    label: 'Memoria';
-                  }
-
-                  EditableLabel ety_info_memoria {
-                    text: 'Type here…';
-                    editable: false;
-                    hexpand: true;
-                    halign: end;
-
-                    styles [
-                      "dim-label",
-                    ]
-                  }
-                }
-              }
-
-              ListBoxRow {
-                activatable: false;
-
-                Box {
-                  Label {
-                    halign: start;
-                    label: 'Disco';
-                  }
-
-                  EditableLabel ety_info_disco {
-                    text: 'Type here…';
-                    editable: false;
-                    hexpand: true;
-                    halign: end;
-
-                    styles [
-                      "dim-label",
-                    ]
-                  }
-                }
-              }
-
-              styles [
-                "rich-list",
-                "boxed-list",
-              ]
             }
-          };
+          }
+
+          ListBoxRow {
+            Box {
+              Label {
+                halign: start;
+                hexpand: true;
+                label: 'Reiniciar';
+                valign: center;
+                xalign: 0;
+              }
+
+              Image {
+                halign: end;
+                icon-name: 'system-reboot-symbolic';
+                margin-end: 10;
+              }
+            }
+          }
+
+          ListBoxRow {
+            Box {
+              Label {
+                halign: start;
+                hexpand: true;
+                label: 'Apagar';
+                valign: center;
+                xalign: 0;
+              }
+
+              Image {
+                halign: end;
+                icon-name: 'system-shutdown-symbolic';
+                margin-end: 10;
+              }
+            }
+          }
+
+          ListBoxRow {
+            Box {
+              Label {
+                halign: start;
+                hexpand: true;
+                label: 'Restablecer de Fabrica';
+                valign: center;
+                xalign: 0;
+              }
+
+              Image {
+                halign: end;
+                icon-name: 'computer-fail-symbolic';
+                margin-end: 10;
+              }
+            }
+
+            styles [
+              "warning",
+              "activatable",
+            ]
+          }
+
+          styles [
+            "rich-list",
+            "boxed-list",
+          ]
+        }
+      };
+    }
+
+    StackPage {
+      name: 'page6';
+      title: 'Inf. del Sistema';
+      icon-name: 'display-symbolic';
+
+      child: Box {
+        orientation: vertical;
+
+        ListBox list_info_systema {
+          ListBoxRow {
+            activatable: false;
+
+            Box {
+              Label {
+                halign: start;
+                label: 'Nombre del Dispositivo';
+              }
+
+              EditableLabel ety_info_host {
+                text: 'Type here…';
+                editable: true;
+                hexpand: true;
+                halign: end;
+
+                styles [
+                  "dim-label",
+                ]
+              }
+            }
+          }
+
+          ListBoxRow {
+            activatable: false;
+
+            Box {
+              Label entry_ {
+                halign: start;
+                label: 'Modelo de Hardware';
+              }
+
+              EditableLabel ety_info_modelo {
+                text: 'Type here…';
+                editable: false;
+                hexpand: true;
+                halign: end;
+
+                styles [
+                  "dim-label",
+                ]
+              }
+            }
+          }
+
+          ListBoxRow {
+            activatable: false;
+
+            Box {
+              Label {
+                halign: start;
+                label: 'Procesador';
+              }
+
+              EditableLabel ety_info_procesador {
+                text: 'Type here…';
+                editable: false;
+                hexpand: true;
+                halign: end;
+
+                styles [
+                  "dim-label",
+                ]
+              }
+            }
+          }
+
+          ListBoxRow {
+            activatable: false;
+
+            Box {
+              Label {
+                halign: start;
+                label: 'Memoria';
+              }
+
+              EditableLabel ety_info_memoria {
+                text: 'Type here…';
+                editable: false;
+                hexpand: true;
+                halign: end;
+
+                styles [
+                  "dim-label",
+                ]
+              }
+            }
+          }
+
+          ListBoxRow {
+            activatable: false;
+
+            Box {
+              Label {
+                halign: start;
+                label: 'Disco';
+              }
+
+              EditableLabel ety_info_disco {
+                text: 'Type here…';
+                editable: false;
+                hexpand: true;
+                halign: end;
+
+                styles [
+                  "dim-label",
+                ]
+              }
+            }
+          }
+
+          styles [
+            "rich-list",
+            "boxed-list",
+          ]
         }
       };
     }
@@ -306,11 +377,8 @@ Box box_configuracion {
 
       child: Box {
         orientation: vertical;
-        vexpand: true;
-        hexpand: true;
 
         ListBox list_config_datos {
-          hexpand: true;
           selection-mode: none;
 
           ListBoxRow {
@@ -415,7 +483,6 @@ Box box_configuracion {
         ScrolledWindow {
           hexpand: false;
           hscrollbar-policy: never;
-          min-content-height: 200;
           vexpand: true;
 
           Viewport {
@@ -423,15 +490,13 @@ Box box_configuracion {
 
             Box {
               margin-bottom: 30;
-              margin-end: 60;
-              margin-start: 60;
-              margin-top: 30;
+              margin-end: 10;
+              margin-start: 10;
               orientation: vertical;
 
               Label {
                 label: 'Activar';
                 margin-bottom: 10;
-                margin-top: 30;
                 xalign: 0;
 
                 styles [
@@ -453,7 +518,7 @@ Box box_configuracion {
                       xalign: 0;
                     }
 
-                    Switch {
+                    Switch switch_impresion {
                       halign: end;
                       valign: center;
                     }
@@ -863,16 +928,11 @@ Box box_configuracion {
               }
             }
 
-            CheckButton check_rol_14 {
-              label: 'Cierre con Faltantes';
-              halign: start;
-              margin-end: 10;
-              margin-start: 10;
-              valign: center;
-
+            Separator check_rol_14 {
               layout {
-                column: '2';
-                row: '0';
+                column: '0';
+                row: '8';
+                column-span: '2';
               }
             }
 
@@ -884,8 +944,8 @@ Box box_configuracion {
               valign: center;
 
               layout {
-                column: '2';
-                row: '1';
+                column: '0';
+                row: '9';
               }
             }
 
@@ -897,8 +957,8 @@ Box box_configuracion {
               valign: center;
 
               layout {
-                column: '2';
-                row: '2';
+                column: '0';
+                row: '10';
               }
             }
 
@@ -910,8 +970,8 @@ Box box_configuracion {
               valign: center;
 
               layout {
-                column: '2';
-                row: '3';
+                column: '0';
+                row: '11';
               }
             }
 
@@ -923,8 +983,8 @@ Box box_configuracion {
               valign: center;
 
               layout {
-                column: '2';
-                row: '4';
+                column: '1';
+                row: '9';
               }
             }
 
@@ -936,8 +996,8 @@ Box box_configuracion {
               valign: center;
 
               layout {
-                column: '2';
-                row: '5';
+                column: '1';
+                row: '10';
               }
             }
 
@@ -949,8 +1009,8 @@ Box box_configuracion {
               valign: center;
 
               layout {
-                column: '2';
-                row: '6';
+                column: '1';
+                row: '11';
               }
             }
           }
@@ -963,20 +1023,17 @@ Box box_configuracion {
       title: 'Red';
       icon-name: 'display-symbolic';
 
-      child: Box {
-        orientation: vertical;
-        spacing: 50;
+      child: ScrolledWindow {
+        hexpand: false;
+        hscrollbar-policy: never;
+        vexpand: true;
 
-        Frame {
-          hexpand: true;
-          label: 'Información';
+        Box {
+          orientation: vertical;
+          spacing: 10;
 
           Box {
             homogeneous: true;
-            margin-bottom: 10;
-            margin-start: 10;
-            margin-end: 10;
-            margin-top: 10;
 
             ListBox list_info_red {
               ListBoxRow {
@@ -1073,18 +1130,9 @@ Box box_configuracion {
               ]
             }
           }
-        }
-
-        Frame {
-          hexpand: true;
-          label: 'Conectividad WiFi';
 
           Box {
-            homogeneous: true;
-            margin-bottom: 10;
-            margin-start: 50;
-            margin-end: 50;
-            margin-top: 10;
+            orientation: vertical;
 
             ListBox list_info_con {
               ListBoxRow {
@@ -1096,7 +1144,7 @@ Box box_configuracion {
                     label: 'Inálambrica';
                   }
 
-                  Switch {
+                  Switch switch_active_wifi {
                     halign: end;
                     valign: center;
                     hexpand: true;
@@ -1129,7 +1177,7 @@ Box box_configuracion {
                     label: 'Contraseña';
                   }
 
-                  PasswordEntry {
+                  PasswordEntry ety_pass_wifi {
                     hexpand: true;
                     halign: end;
                     show-peek-icon: true;
@@ -1146,19 +1194,19 @@ Box box_configuracion {
                     label: 'Test de conexión.';
                   }
 
-                  Button {
+                  Button btn_probar_wifi {
                     label: 'Probar';
                     hexpand: true;
                     halign: end;
                   }
 
-                  Button {
+                  Button btn_guardar_wifi {
                     label: 'Guardar';
                     hexpand: true;
                     halign: end;
 
                     styles [
-                      "suggested-action"
+                      "suggested-action",
                     ]
                   }
                 }

@@ -1,6 +1,7 @@
 #pragma once
 #include <gtkmm.h>
 #include "binaryfile.hpp"
+#include "config_view.hpp"
 #include <vector>
 
 class nip_view : public Gtk::Frame
@@ -163,32 +164,41 @@ private:
         "</child>"
         "</object>"
         "</interface>";
-    //archivo binario local
-    //opt/maxicajero/src/data
-    std::binaryfile db = "datab";
-    //referencia nodo padre
+    
+    // referencia nodo padre
 
     Gtk::Box *&box_principal;
     Gtk::Stack &main_stack;
+    Gtk::Window &main_window;
+    Gtk::Label *&lbl_main;
+    Gtk::Image *&img_main_logo;
 
-    //Constructor desde XML
 
+    // Constructor desde XML
     Glib::RefPtr<Gtk::Builder> builder = Gtk::Builder::create();
 
-    //referencias de XML
+    // referencias de XML
 
     Gtk::Box *box_nip = nullptr;
     Gtk::Button *btn_nip_back = nullptr;
     Gtk::PasswordEntry *ety_pin = nullptr;
-    std::vector<Gtk::Button *> botonera_nip = {nullptr,nullptr,nullptr,nullptr,nullptr,nullptr,nullptr,nullptr,nullptr,nullptr};
+    std::vector<Gtk::Button *> botonera_nip = {nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr};
     Gtk::Button *btn_nip_del = nullptr;
     Gtk::Button *btn_nip_enter = nullptr;
 
-    //funciones internas
+    // funciones internas
 
     inline bool is_nip_ok();
+    void on_btn_nip_enter();
+
+    // salto hacia vista de configuracion
+
+    std::unique_ptr<config_view> configView = std::make_unique<config_view>(box_principal, main_stack, main_window, lbl_main, img_main_logo);
 
 public:
-    nip_view(Gtk::Box *&box_principal_, Gtk::Stack &main_stack_);
+    nip_view(Gtk::Box *&box_principal_, Gtk::Stack &main_stack_, Gtk::Window &main_window_, Gtk::Label *&lbl_main_, Gtk::Image *&img_main_logo_);
     ~nip_view();
+
+    const std::string set_image_path();
+    const std::string set_label_main_text();
 };

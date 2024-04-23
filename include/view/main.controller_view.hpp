@@ -31,7 +31,7 @@ private:
                       "<property name=\"homogeneous\">true</property>"
                       "<property name=\"orientation\">1</property>"
                       "<child>"
-                      "<object class=\"GtkLabel\">"
+                      "<object class=\"GtkLabel\" id=\"lbl_main\">"
                       "<property name=\"label\">Bienvenido</property>"
                       "<style>"
                       "<class name=\"title-1\"/>"
@@ -90,15 +90,16 @@ private:
 
     Gtk::Stack main_stack;
     Gtk::Box *box_principal = nullptr;
-    Gtk::Label *lbl_version = nullptr;
-    Gtk::Button * btn_logo_nip = nullptr, *btn_pill = nullptr;
+    Gtk::Label *lbl_version = nullptr, *lbl_main = nullptr;
+    Gtk::Button *btn_logo_nip = nullptr, *btn_pill = nullptr;
+    Gtk::Image *img_main_logo = nullptr;
 
 
     //interno
     int cont_click_logo = 0;
 
 
-    crow::App<crow::CookieParser, Session> app{Session{crow::CookieParser::Cookie("session").max_age(/*15 minutos vida maxima de tokena*/ 15 * 60).path("/"), 64, crow::InMemoryStore{}}};
+    crow::App<crow::CookieParser, Session> app{Session{crow::CookieParser::Cookie("session").max_age(/*15 minutos vida maxima de tokens*/ 15 * 60).path("/"), 64, crow::InMemoryStore{}}};
 
     //Controllers
     // std::unique_ptr<test_controller> a = std::make_unique<test_controller>(app_,main_stack,box_principal);
@@ -106,7 +107,7 @@ private:
     std::unique_ptr<venta_controller> venta = std::make_unique<venta_controller>();
 
     //View
-    std::unique_ptr<nip_view> nip = std::make_unique<nip_view>(box_principal, main_stack);
+    std::unique_ptr<nip_view> nip = std::make_unique<nip_view>(box_principal, main_stack, *this, lbl_main, img_main_logo);
 
     // funciones padre
     std::string runTest();

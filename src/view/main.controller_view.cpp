@@ -2,8 +2,9 @@
 
 main_controller::main_controller(/* args */)
 {
-    this->set_default_size(800, 600);
+    this->set_default_size(800, 480);
     this->set_title("MaxiCajero");
+    
     this->set_child(main_stack);
 
     try
@@ -25,6 +26,8 @@ main_controller::main_controller(/* args */)
     // obtencion widget desde XML
     this->box_principal = builder->get_widget<Gtk::Box>("box_principal");
     this->lbl_version = builder->get_widget<Gtk::Label>("lbl_version");
+    this->img_main_logo = builder->get_widget<Gtk::Image>("img_main_logo");
+    this->lbl_main = builder->get_widget<Gtk::Label>("lbl_main");
     this->btn_logo_nip = builder->get_widget<Gtk::Button>("btn_logo_nip");
     this->btn_pill = builder->get_widget<Gtk::Button>("btn_pill");
 
@@ -37,13 +40,19 @@ main_controller::main_controller(/* args */)
 
     std::thread([&]() { this->app.port(44333).run(); }).detach();
 
+    this->main_stack.set_visible_child(*this->box_principal);
+
     //señales
     this->btn_logo_nip->signal_clicked().connect(sigc::mem_fun (*this, &main_controller::entra_config));
+
+    //extrapolacion de datos desdde Config
+    this->img_main_logo->property_file() = nip->set_image_path();
+    this->lbl_main->set_text(nip->set_label_main_text());
 }
 
 void main_controller::entra_config()
 {
-    if(this->cont_click_logo > 3)
+    if(this->cont_click_logo >= 4)
     {
         this->main_stack.set_visible_child(*nip);
         this->cont_click_logo = 0;
