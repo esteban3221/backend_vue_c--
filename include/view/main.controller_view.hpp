@@ -9,6 +9,8 @@
 
 //views
 #include "nip_view.hpp"
+#include "nip_sett_view.hpp"
+#include "config_view.hpp"
 
 #include <memory>
 #include <gtkmm.h>
@@ -16,6 +18,7 @@
 class main_controller : public Gtk::Window
 {
 private:
+    std::binaryfile db = "data.bin";
     // Widgets del front principal
     const char *XML = "<interface>"
                       "<requires lib=\"gtk\" version=\"4.0\"/>"
@@ -106,8 +109,12 @@ private:
     std::unique_ptr<session_controller> session = std::make_unique<session_controller>(app);
     std::unique_ptr<venta_controller> venta = std::make_unique<venta_controller>();
 
-    //View
-    std::unique_ptr<nip_view> nip = std::make_unique<nip_view>(box_principal, main_stack, *this, lbl_main, img_main_logo);
+    //Views
+    Gtk::Frame *nip_set_view = nullptr;
+    Gtk::Frame *configView = Gtk::manage(new config_view(box_principal, main_stack, *this, lbl_main, img_main_logo, nip_set_view));
+    Gtk::Frame *nip = Gtk::manage(new nip_view(box_principal, main_stack, configView));
+    
+    
 
     // funciones padre
     std::string runTest();

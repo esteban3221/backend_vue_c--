@@ -1,10 +1,11 @@
 #include "config_view.hpp"
 
-config_view::config_view(Gtk::Box *&box_principal_, Gtk::Stack &main_stack_, Gtk::Window &main_window_, Gtk::Label *&lbl_main_, Gtk::Image *&img_main_logo_) : box_principal(box_principal_),
+config_view::config_view(Gtk::Box *&box_principal_, Gtk::Stack &main_stack_, Gtk::Window &main_window_, Gtk::Label *&lbl_main_, Gtk::Image *&img_main_logo_, Gtk::Frame *&nip_set_view_) : box_principal(box_principal_),
                                                                                                                                                                main_stack(main_stack_),
                                                                                                                                                                main_window(main_window_),
                                                                                                                                                                lbl_main(lbl_main_),
-                                                                                                                                                               img_main_logo(img_main_logo_)
+                                                                                                                                                               img_main_logo(img_main_logo_),
+                                                                                                                                                               nip_set_view(nip_set_view_)
 {
     db.init();
 
@@ -52,8 +53,7 @@ config_view::config_view(Gtk::Box *&box_principal_, Gtk::Stack &main_stack_, Gtk
 
     this->set_child(*box_configuracion);
 
-    this->btn_back_config->signal_clicked().connect([this]()
-                                                    { main_stack.set_visible_child(*box_principal); });
+    this->btn_back_config->signal_clicked().connect([this](){ main_stack.set_visible_child(*box_principal); });
 
     this->init_info_systema();
     this->init_signals_config();
@@ -61,20 +61,6 @@ config_view::config_view(Gtk::Box *&box_principal_, Gtk::Stack &main_stack_, Gtk
     this->init_signals_listas();
     this->init_signals_impresion();
 }
-
-const std::string config_view::get_nip()
-{
-    return db.get_string(1);
-}
-
-const std::string config_view::set_image_path(){
-    return db.get_string(16);
-}
-
-const std::string config_view::set_label_main_text(){
-    return db.get_string(17);
-}
-
 
 void config_view::on_file_dialog_response(int response_id, Gtk::FileChooserDialog *dialog)
 {
@@ -195,7 +181,7 @@ void config_view::init_signals_listas()
                                                             {
                                                             case 0:{
                                                                 //llamar vista para establecer un nuevo nip
-                                                                std::cout << "Settear nuevo nip" << std::endl;
+                                                                main_stack.set_visible_child(*nip_set_view);
                                                                 break;
                                                             }
                                                             case 1:{
@@ -364,6 +350,8 @@ void config_view::on_rest_app()
 
     Dialog->show();
 }
+
+
 
 config_view::~config_view()
 {

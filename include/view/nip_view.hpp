@@ -1,7 +1,6 @@
 #pragma once
 #include <gtkmm.h>
 #include "binaryfile.hpp"
-#include "config_view.hpp"
 #include <vector>
 
 class nip_view : public Gtk::Frame
@@ -164,41 +163,63 @@ private:
         "</child>"
         "</object>"
         "</interface>";
-    
+
+
+
     // referencia nodo padre
-
     Gtk::Box *&box_principal;
-    Gtk::Stack &main_stack;
-    Gtk::Window &main_window;
-    Gtk::Label *&lbl_main;
-    Gtk::Image *&img_main_logo;
-
 
     // Constructor desde XML
     Glib::RefPtr<Gtk::Builder> builder = Gtk::Builder::create();
 
     // referencias de XML
-
     Gtk::Box *box_nip = nullptr;
-    Gtk::Button *btn_nip_back = nullptr;
-    Gtk::PasswordEntry *ety_pin = nullptr;
     std::vector<Gtk::Button *> botonera_nip = {nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr};
     Gtk::Button *btn_nip_del = nullptr;
-    Gtk::Button *btn_nip_enter = nullptr;
-
+    
     // funciones internas
-
     inline bool is_nip_ok();
-    void on_btn_nip_enter();
+    virtual void on_btn_nip_enter();
+    virtual void on_btn_nip_back();
+    
+protected:
+    // referencia nodo padre compartida
+    Gtk::Stack &main_stack;
+    Gtk::Frame *&frame_config;
+    // referencias de XML compartidas
+    Gtk::Button *btn_nip_enter = nullptr;
+    Gtk::Button *btn_nip_back = nullptr;
+    Gtk::PasswordEntry *ety_pin = nullptr;
+    // opt/maxicajero/src/data
+    /*
+    id      desc
 
-    // salto hacia vista de configuracion
+    1       nip
+    2       razon social
+    3       direccion
+    4       rfc
+    5       Contacto
+    6       Agradecimiento
+    7       status impresion
+    8       status inalambrica
+    9       Mostrar Notificaciones
+    10      Mostrar Mensaje de agradeciemiento
+    11      Mostrar fecha
+    12      Mostrar direccion
+    13      Mostrar rfc
+    14      Mostrar vendedor
+    15      Mostrar contacto
 
-    std::unique_ptr<config_view> configView = std::make_unique<config_view>(box_principal, main_stack, main_window, lbl_main, img_main_logo);
+    16      Ruta Logo Inicio
+    17      Mensaje de inicio
+    18      Ruta de Carrousel de Img.
+    19      Temporizador de carrousel
+    */
+    std::binaryfile db = "data.bin";
+
 
 public:
-    nip_view(Gtk::Box *&box_principal_, Gtk::Stack &main_stack_, Gtk::Window &main_window_, Gtk::Label *&lbl_main_, Gtk::Image *&img_main_logo_);
+    nip_view(Gtk::Box *&box_principal_, Gtk::Stack &main_stack_, Gtk::Frame *&frame_config_);
     ~nip_view();
 
-    const std::string set_image_path();
-    const std::string set_label_main_text();
 };

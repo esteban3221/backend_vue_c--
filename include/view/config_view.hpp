@@ -6,13 +6,11 @@
 #include <crow.h>
 #include <crow/middlewares/session.h>
 
-using Session = crow::SessionMiddleware<crow::InMemoryStore>;
 class config_view : public Gtk::Frame
 {
 private:
     /* data */
-    const char *XML =
-                    "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
+    const char *XML = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
     "<interface>"
     "<requires lib=\"gtk\" version=\"4.0\"/>"
     "<object class=\"GtkBox\" id=\"box_configuracion\">"
@@ -1466,6 +1464,7 @@ private:
     Gtk::Window &main_window;
     Gtk::Label *&lbl_main;
     Gtk::Image *&img_main_logo;
+    Gtk::Frame *&nip_set_view;
 
     // archivo binario local
     // opt/maxicajero/src/data
@@ -1540,10 +1539,6 @@ private:
     void on_rest_app();
 
 public:
-    config_view(Gtk::Box *&box_principal_, Gtk::Stack &main_stack_, Gtk::Window &main_window_, Gtk::Label *&lbl_main_, Gtk::Image *&img_main_logo_);
+    config_view(Gtk::Box *&box_principal_, Gtk::Stack &main_stack_, Gtk::Window &main_window_, Gtk::Label *&lbl_main_, Gtk::Image *&img_main_logo_, Gtk::Frame *&nip_set_view_);
     ~config_view();
-
-    const std::string get_nip();
-    const std::string set_image_path();
-    const std::string set_label_main_text();
 };
