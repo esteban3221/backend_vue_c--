@@ -107,7 +107,7 @@ private:
     //Controllers
     // std::unique_ptr<test_controller> a = std::make_unique<test_controller>(app_,main_stack,box_principal);
     std::unique_ptr<session_controller> session = std::make_unique<session_controller>(app);
-    std::unique_ptr<venta_controller> venta = std::make_unique<venta_controller>();
+    std::unique_ptr<venta_controller> venta = std::make_unique<venta_controller>(app, main_stack , box_principal);
 
     //Views
     Gtk::Frame *nip_set_view = nullptr;

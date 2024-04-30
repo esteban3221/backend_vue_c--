@@ -70,6 +70,7 @@ main_controller::main_controller(/* args */)
     std::thread([&]() { this->app.port(44333).run(); }).detach();
 
     this->main_stack.set_visible_child(*this->box_principal);
+    //this->main_stack.set_visible_child(*this->venta);
 
     //señales
     this->btn_logo_nip->signal_clicked().connect(sigc::mem_fun (*this, &main_controller::entra_config));
