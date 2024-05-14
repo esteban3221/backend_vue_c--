@@ -87,7 +87,8 @@
         "coroutine": "cpp",
         "regex": "cpp",
         "*.ipp": "cpp",
-        "ssp_defines.h": "c"
+        "ssp_defines.h": "c",
+        "stdfloat": "cpp"
     },
     "C_Cpp.default.compilerPath": "/usr/bin/g++"
 }

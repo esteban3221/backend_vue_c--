@@ -4,6 +4,7 @@
 #include <crow/middlewares/session.h>
 #include <chrono>
 #include "SSPComs.h"
+#include <mutex>
 
 using Session = crow::SessionMiddleware<crow::InMemoryStore>;
 class venta_controller : public Gtk::Frame
@@ -15,9 +16,13 @@ private:
     SSP_POLL_DATA poll;
     SSP_PORT port;
 
+    Glib::Dispatcher m_Dispatcher;
+
+    //referencias vista principal
     crow::App<crow::CookieParser, Session> &app;
     Gtk::Stack &main_stack;
     Gtk::Box *&box_main , box_venta;
+
     Gtk::ListBox list_venta;
     Gtk::ListBoxRow BXRW1,BXRW2,BXRW3,BXRW4;
     Gtk::Box r1, r2, r3, r4;

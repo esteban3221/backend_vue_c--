@@ -1,5 +1,6 @@
 #pragma once
 #include "nip_view.hpp"
+#include "wrapbinary.hpp"
 
 class nip_sett_view : public nip_view 
 {

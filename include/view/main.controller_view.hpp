@@ -18,7 +18,6 @@
 class main_controller : public Gtk::Window
 {
 private:
-    std::binaryfile db = "data.bin";
     // Widgets del front principal
     const char *XML = "<interface>"
                       "<requires lib=\"gtk\" version=\"4.0\"/>"

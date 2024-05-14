@@ -5,7 +5,6 @@ nip_view::nip_view(Gtk::Box *&box_principal_, Gtk::Stack &main_stack_,Gtk::Frame
                                                                                main_stack(main_stack_),
                                                                                frame_config(frame_config_)
 {
-    db.init();
     builder->add_from_string(this->XML);
 
     this->box_nip = builder->get_widget<Gtk::Box>("box_nip");
@@ -29,9 +28,8 @@ nip_view::nip_view(Gtk::Box *&box_principal_, Gtk::Stack &main_stack_,Gtk::Frame
 
 inline bool nip_view::is_nip_ok()
 {
-    db.clear();
-    db.init();
-    return db.get_string(1) == ety_pin->get_text().operator std::string();
+    auto key {BinaryDB::select_string_(1)};
+    return key == ety_pin->get_text().operator std::string();
 }
 
 void nip_view::on_btn_nip_back()

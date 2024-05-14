@@ -1,7 +1,7 @@
 #pragma once
 #include <gtkmm.h>
 #include <vector>
-#include "binaryfile.hpp"
+#include "wrapbinary.hpp"
 #include <filesystem>
 #include <crow.h>
 #include <crow/middlewares/session.h>
@@ -1465,34 +1465,6 @@ private:
     Gtk::Label *&lbl_main;
     Gtk::Image *&img_main_logo;
     Gtk::Frame *&nip_set_view;
-
-    // archivo binario local
-    // opt/maxicajero/src/data
-    /*
-    id      desc
-
-    1       nip
-    2       razon social
-    3       direccion
-    4       rfc
-    5       Contacto
-    6       Agradecimiento
-    7       status impresion
-    8       status inalambrica
-    9       Mostrar Notificaciones
-    10      Mostrar Mensaje de agradeciemiento
-    11      Mostrar fecha
-    12      Mostrar direccion
-    13      Mostrar rfc
-    14      Mostrar vendedor
-    15      Mostrar contacto
-
-    16      Ruta Logo Inicio
-    17      Mensaje de inicio
-    18      Ruta de Carrousel de Img.
-    19      Temporizador de carrousel
-    */
-    std::binaryfile db = "data.bin";
 
     Glib::RefPtr<Gtk::Builder> builder = Gtk::Builder::create();
 

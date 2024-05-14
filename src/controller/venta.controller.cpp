@@ -12,23 +12,28 @@ venta_controller::venta_controller(crow::App<crow::CookieParser, Session> &app_,
 
 crow::response venta_controller::Test_venta(const crow::request &req)
 {
+    this->m_Dispatcher.emit();
     auto x = crow::json::load(req.body);
     if (!x || !x["value"])
     {
-        main_stack.set_visible_child(*box_main);
+        this->main_stack.set_visible_child(*box_main);
         return crow::response(crow::status::BAD_REQUEST);
     }
 
-    main_stack.set_visible_child(*this);
+    this->main_stack.set_visible_child(*this);
     auto total = x["value"].i() / 100;
 
+    std::this_thread::sleep_for(std::chrono::milliseconds(3));
+    this->ety_recibido.set_text("");
+    this->ety_faltante.set_text("");
+    this->ety_cambio.set_text("");
+
     this->lbl_mensaje_fin.set_visible(false);
-    this->BXRW4.set_visible(false);
-    ety_monto_total.set_text(std::to_string(total));
+    this->ety_monto_total.set_text(std::to_string(total));
 
     if (!this->init_perifericos())
     {
-        main_stack.set_visible_child(*box_main);
+        this->main_stack.set_visible_child(*box_main);
         return crow::response(crow::status::INTERNAL_SERVER_ERROR, "Periferico no se encuentra o esta ocupado.");
     }
 
@@ -37,50 +42,58 @@ crow::response venta_controller::Test_venta(const crow::request &req)
 
     while (sum < total)
     {
-        if (ssp_poll(ssp_setup, &poll) != SSP_RESPONSE_OK)
+        if (ssp_poll(this->ssp_setup, &this->poll) != SSP_RESPONSE_OK)
             printf("SSP_POLL_ERROR\n");
-        for (int i = 0; i < poll.event_count; ++i)
+        for (int i = 0; i < this->poll.event_count; ++i)
         {
-            switch (poll.events[i].event)
+            switch (this->poll.events[i].event)
             {
             case SSP_POLL_RESET:
                 printf("Unit Reset\n");
                 break;
             case SSP_POLL_READ:
-                if (poll.events[i].data > 0)
-                    channel = poll.events[i].data;
+                if (this->poll.events[i].data > 0)
+                    channel = this->poll.events[i].data;
                 break;
             case SSP_POLL_CREDIT:
-                channel = poll.events[i].data;
+                channel = this->poll.events[i].data;
                 break;
             case SSP_POLL_STACKED:
             {
-                printf("Stacked %d MXN$\n", DENOMINATION[channel]);
+                printf("Stacked %d MXN$\n", this->DENOMINATION[channel]);
                 sum += this->DENOMINATION[channel];
                 channel = 0;
-                if(sum < total)
-                    ety_faltante.set_text(std::to_string(total - sum));
-                else
-                    ety_faltante.set_text("0");
+                this->ety_recibido.set_text(std::to_string(sum));
+                (sum < total) ? this->ety_faltante.set_text(std::to_string(total - sum)) : this->ety_faltante.set_text("0");
                 break;
             }
             case SSP_POLL_FRAUD_ATTEMPT:
-                printf("Fraud Attempt %ld\n", poll.events[i].data);
+                printf("Fraud Attempt %ld\n", this->poll.events[i].data);
                 break;
-            case SSP_POLL_STACKER_FULL:{
-                CloseSSPPort(port);
+            case SSP_POLL_STACKER_FULL:
+            {
+                CloseSSPPort(this->port);
                 printf("Stacker Full\n");
-                return crow::response(crow::status::CONFLICT,"Stacker Full");
+                //return crow::response(crow::status::CONFLICT, "Stacker Full");
                 break;
             }
             }
         }
-        usleep(50000); // 500 ms delay between polls
+        std::this_thread::sleep_for(std::chrono::milliseconds(500));
     }
-    CloseSSPPort(port);
-    main_stack.set_visible_child(*box_main);
+    ssp_disable(this->ssp_setup);
+    CloseSSPPort(this->port);
 
-    return crow::response(crow::status::OK,"OK");
+    //ternaria no funciona en un thread hacia modificacion de gui
+    std::this_thread::sleep_for(std::chrono::milliseconds(3));
+    if (sum > total)  
+        this->ety_cambio.set_text(std::to_string(sum-total));
+    this->lbl_mensaje_fin.set_visible();
+    
+    std::this_thread::sleep_for(std::chrono::seconds(3));
+    this->main_stack.set_visible_child(*box_main);
+    this->m_Dispatcher.emit();
+    return crow::response(crow::status::OK, "OK");
 }
 
 venta_controller::~venta_controller()
@@ -89,7 +102,7 @@ venta_controller::~venta_controller()
 
 bool venta_controller::init_perifericos()
 {
-    //para validador de billetes
+    // para validador de billetes
     this->port = OpenSSPPort("/dev/ttyUSB0");
 
     this->ssp_setup.port = port;
@@ -99,8 +112,8 @@ bool venta_controller::init_perifericos()
     this->ssp_setup.EncryptionStatus = NO_ENCRYPTION;
 
     return ((ssp_setup_encryption(&ssp_setup, (unsigned long long)0x123456701234567LL) == SSP_RESPONSE_OK) &&
-           (ssp_enable(ssp_setup) == SSP_RESPONSE_OK) &&
-           (ssp_set_inhibits(ssp_setup, 0xFF, 0xFF) == SSP_RESPONSE_OK));
+            (ssp_enable(ssp_setup) == SSP_RESPONSE_OK) &&
+            (ssp_set_inhibits(ssp_setup, 0xFF, 0xFF) == SSP_RESPONSE_OK));
 }
 void venta_controller::init_ui()
 {
@@ -171,7 +184,6 @@ void venta_controller::init_ui()
     this->box_venta.set_spacing(20);
 
     this->lbl_mensaje_fin.set_visible(false);
-    this->BXRW4.set_visible(false);
 
     this->set_child(box_venta);
 }

@@ -2,31 +2,7 @@
 
 main_controller::main_controller(/* args */)
 {
-    /*
-    id      desc
 
-    1       nip
-    2       razon social
-    3       direccion
-    4       rfc
-    5       Contacto
-    6       Agradecimiento
-    7       status impresion
-    8       status inalambrica
-    9       Mostrar Notificaciones
-    10      Mostrar Mensaje de agradeciemiento
-    11      Mostrar fecha
-    12      Mostrar direccion
-    13      Mostrar rfc
-    14      Mostrar vendedor
-    15      Mostrar contacto
-
-    16      Ruta Logo Inicio
-    17      Mensaje de inicio
-    18      Ruta de Carrousel de Img.
-    19      Temporizador de carrousel
-    */
-    db.init();
     this->set_default_size(800, 480);
     this->set_title("MaxiCajero");
     
@@ -75,9 +51,9 @@ main_controller::main_controller(/* args */)
     //señales
     this->btn_logo_nip->signal_clicked().connect(sigc::mem_fun (*this, &main_controller::entra_config));
 
-    //extrapolacion de datos desdde Config
-    this->img_main_logo->property_file() = db.get_string(16);
-    this->lbl_main->set_text(db.get_string(17));
+    //extrapolacion de datos desde Config
+    this->img_main_logo->property_file() =  BinaryDB::select_string_(16);
+    this->lbl_main->set_text(BinaryDB::select_string_(17));
 }
 
 void main_controller::entra_config()
