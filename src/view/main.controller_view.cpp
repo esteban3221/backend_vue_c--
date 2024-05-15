@@ -52,8 +52,8 @@ main_controller::main_controller(/* args */)
     this->btn_logo_nip->signal_clicked().connect(sigc::mem_fun (*this, &main_controller::entra_config));
 
     //extrapolacion de datos desde Config
-    this->img_main_logo->property_file() =  BinaryDB::select_string_(16);
-    this->lbl_main->set_text(BinaryDB::select_string_(17));
+    this->img_main_logo->property_file() =  BinaryDB::select_<std::string>(16);
+    this->lbl_main->set_text(BinaryDB::select_<std::string>(17));
 }
 
 void main_controller::entra_config()

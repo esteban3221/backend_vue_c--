@@ -34,6 +34,7 @@ namespace BinaryDB
     */
     extern std::binaryfile BDB;
 
+    /// @brief Inicializa los datos por default en caso de no detectar una base de datos creada
     inline void init_()
     {
         BDB.clear();
@@ -64,20 +65,27 @@ namespace BinaryDB
         std::cout << "Se escribio archivo binario" << std::endl;
     }
 
+    /// @brief Inserta con deteccion de tipo Ej.(insert_<int>(1,true))
+    /// @tparam T (int , Float , Double , String) No acepta bool
+    /// @param data Dato a almacenar
     template <typename T>
-    inline void insert_(const int &id, const T &data)
+    inline void insert_(const T &data)
     {
 
         if (std::is_same<T, int>::value || std::is_same<T, float>::value)
-            BDB.adding_number<T>(id, data);
+            BDB.adding_number<T>(data);
         else if (std::is_same<T, std::string>::value)
-            BDB.adding_string(id, data);
+            BDB.adding_string(data);
         else
             throw "T no es ni un entero ni una cadena de caracteres.";
 
         BDB.save();
     }
 
+    /// @brief Actualiza dato por id
+    /// @tparam T Tipo de dato
+    /// @param id Identificador del dato.
+    /// @param data nuevo dato
     template <typename T>
     inline void update_(const int &id, const T &data)
     {
@@ -90,15 +98,36 @@ namespace BinaryDB
         BDB.save();
     }
 
-    template <typename T>
-    inline T select_number_(const int &id)
-    {
-        return BDB.get_number<T>(id);
-    }
+    // /// @brief Devuelve el numero almacenado
+    // /// @tparam T 
+    // /// @param id 
+    // /// @return 
+    // template <typename T>
+    // inline T select_number_(const int &id)
+    // {
+    //     return BDB.get_number<T>(id);
+    // }
 
-    inline std::string select_string_(const int &id)
+    // /// @brief Devuelve el String almacenado
+    // /// @param id 
+    // /// @return 
+    // inline std::string select_string_(const int &id)
+    // {
+    //     return BDB.get_string(id);
+    // }
+
+    /// @brief 
+    /// @tparam T 
+    /// @param id 
+    /// @return 
+    template <typename T>
+    inline T select_(const int &id)
     {
-        return BDB.get_string(id);
+        if constexpr (std::is_same_v<T, int> || std::is_same_v<T, float> || std::is_same_v<T, bool>)
+            return static_cast<T>(BDB.get_number<T>(id));
+
+        else if constexpr (std::is_same_v<T, std::string>)
+            return BDB.get_string(id);
     }
 
 } // namespace BinaryDB

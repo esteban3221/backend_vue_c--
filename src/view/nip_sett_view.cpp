@@ -20,7 +20,7 @@ void nip_sett_view::on_btn_nip_enter()
     if(this->paso == 0)
     {
         this->ety_pin->set_css_classes({"entry","title-1"});
-        if (BinaryDB::select_string_(1) == this->ety_pin->get_text().operator std::string())
+        if (BinaryDB::select_<std::string>(1) == this->ety_pin->get_text().operator std::string())
         {
             this->paso++;
             this->ety_pin->property_placeholder_text() = "Digite el nuevo pin";

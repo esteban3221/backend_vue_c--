@@ -16,14 +16,15 @@ include_directories(${jwt-cpp_INCLUDE_DIRS})
 set(SOURCES
     src/main.cpp
     src/db/sqlite.cpp
+    src/db/wrapbinary.cpp
     #========================================
 
     src/controller/test.controller.cpp
     src/controller/session.controller.cpp
     src/controller/venta.controller.cpp
+    #src/controller/base.controller.cpp
     #========================================
     
-    #src/controller/base.controller.cpp
     src/view/main.controller_view.cpp
     src/view/nip_view.cpp
     src/view/nip_sett_view.cpp
@@ -31,8 +32,6 @@ set(SOURCES
     #========================================
 
     src/model/usuarios.cpp
-
-    src/db/wrapbinary.cpp
 
     #========================================
     ${CMAKE_SOURCE_DIR}/lib/Encryption.c

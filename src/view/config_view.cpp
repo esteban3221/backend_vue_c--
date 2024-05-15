@@ -116,7 +116,7 @@ void config_view::init_signals_config()
                                                   "1 Min."});
 
     this->Drop_temporizador->property_model() = list_dropdown;
-    this->ety_mensaje_inicio->set_text(BinaryDB::select_string_(17));
+    this->ety_mensaje_inicio->set_text(BinaryDB::select_<std::string>(17));
     this->ety_mensaje_inicio->signal_changed().connect([this]()
                                                        {
         lbl_main->set_text(ety_mensaje_inicio->get_text());
@@ -124,12 +124,13 @@ void config_view::init_signals_config()
 
     this->btn_select_icon->signal_clicked().connect(sigc::mem_fun(*this, &config_view::on_button_file_clicked));
 
-    this->lbl_path_carrousel->set_text(BinaryDB::select_string_(18).empty() ? "Seleccionar Carpeta" : BinaryDB::select_string_(18));
-    this->lbl_path_icon->set_text(BinaryDB::select_string_(16).empty() ? "Seleccionar Imágen" : BinaryDB::select_string_(16));
+    this->lbl_path_carrousel->set_text(BinaryDB::select_<std::string>(18).empty() ? "Seleccionar Carpeta" : BinaryDB::select_<std::string>(18));
+    this->lbl_path_icon->set_text(BinaryDB::select_<std::string>(16).empty() ? "Seleccionar Imágen" : BinaryDB::select_<std::string>(16));
     this->lbl_path_icon->set_ellipsize(Pango::EllipsizeMode::START);
     this->lbl_path_carrousel->set_ellipsize(Pango::EllipsizeMode::START);
 
-    this->check_config_notifi->set_active(BinaryDB::select_number_<int>(9));
+    this->check_config_notifi->set_active(BinaryDB::select_<int>(9));
+
     this->check_config_notifi->signal_toggled().connect([this]()
                                                         { BinaryDB::update_<int>(9, check_config_notifi->get_active()); });
     this->list_configurable = builder->get_widget<Gtk::ListBox>("list_configurable");
@@ -194,10 +195,8 @@ void config_view::init_info_systema()
     const std::string a{parent + "board_vendor"};
     const std::string b{parent + "product_name"};
 
-    const auto model{(exec(a.c_str())).empty() ? exec("cat /proc/device-tree/model") : exec(a.c_str()) + " " + exec(b.c_str())};
-
     this->list_info_system[0]->set_text(exec("cat /etc/hostname"));
-    this->list_info_system[1]->set_text(model);
+    this->list_info_system[1]->set_text((exec(a.c_str())).empty() ? exec("cat /proc/device-tree/model") : exec(a.c_str()) + " " + exec(b.c_str()));
     this->list_info_system[2]->set_text(exec("lscpu | grep -E 'Nombre del modelo|Model name' | awk -F': ' '{print $2}'"));
     this->list_info_system[3]->set_text(exec("grep MemTotal /proc/meminfo | awk '{print $2/1024/1024 \" GB\"}' "));
     this->list_info_system[4]->set_text(exec("lsblk -o SIZE -b | head -2 | tail -1 | awk '{print $1/1024/1024/1024 \" GB\"}'"));
@@ -208,7 +207,7 @@ void config_view::init_signals_impresion()
     this->list_config = builder->get_widget<Gtk::ListBox>("list_config");
     this->list_config_visualizacion = builder->get_widget<Gtk::ListBox>("list_config_visualizacion");
     this->switch_impresion = builder->get_widget<Gtk::Switch>("switch_impresion");
-    this->switch_impresion->set_active(BinaryDB::select_number_<int>(7));
+    this->switch_impresion->set_active(BinaryDB::select_<int>(7));
 
     this->list_config->signal_row_activated().connect([this](Gtk::ListBoxRow *row)
                                                       {
@@ -222,7 +221,7 @@ void config_view::init_signals_impresion()
     for (size_t i = 0; i < list_view_ticket.size(); i++)
     {
         list_view_ticket[i] = builder->get_widget<Gtk::CheckButton>("check_config_" + std::to_string(i + 1));
-        list_view_ticket[i]->set_active(BinaryDB::select_number_<int>(i + 10));
+        list_view_ticket[i]->set_active(BinaryDB::select_<int>(i + 10));
         list_view_ticket[i]->signal_toggled().connect([this, i]()
                                                       {
             BinaryDB::update_<int>(i + 10, list_view_ticket[i]->get_active()); });
@@ -242,7 +241,7 @@ void config_view::inti_ety_datos()
     this->list_ety_datos[4] = builder->get_widget<Gtk::Entry>("ety_conf_thanks");
 
     for (int i = 0; i < list_ety_datos.size(); i++)
-        list_ety_datos[i]->set_text(BinaryDB::select_string_(i + 2));
+        list_ety_datos[i]->set_text(BinaryDB::select_<std::string>(i + 2));
 
     for (int i = 0; i < list_ety_datos.size(); i++)
         list_ety_datos[i]->signal_changed().connect([this, i]() {BinaryDB::update_(i+2,list_ety_datos[i]->get_text().operator std::string()); });

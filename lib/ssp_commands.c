@@ -500,5 +500,5 @@ SSP_RESPONSE_ENUM ssp_execute_command(SSP_COMMAND_SETUP setup, const unsigned ch
 }
 
 #ifdef __cplusplus
-}
+} // extern C
 #endif

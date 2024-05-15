@@ -28,7 +28,7 @@ nip_view::nip_view(Gtk::Box *&box_principal_, Gtk::Stack &main_stack_,Gtk::Frame
 
 inline bool nip_view::is_nip_ok()
 {
-    auto key {BinaryDB::select_string_(1)};
+    auto key {BinaryDB::select_<std::string>(1)};
     return key == ety_pin->get_text().operator std::string();
 }
 
