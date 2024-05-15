@@ -56,23 +56,14 @@ int  DownloadDataToTarget(const unsigned char* data, const unsigned long dlength
     itlFile = malloc(sizeof(ITL_FILE_DOWNLOAD));
     itlFile->fData = malloc(dlength);
     memcpy(itlFile->fData,data,dlength);
-
-	/*ramStatus.currentRamBlocks = 0;
-	ramStatus.ramState = rmd_RAM_DOWNLOAD_IDLE;
-	ramStatus.totalRamBlocks = 0;
-*/
-
     download_block = 0;
-	// check for ITL BV/SH type file
     if (itlFile->fData[0] == 'I' && itlFile->fData[1] == 'T' && itlFile->fData[2] == 'L') {
 
 		 numCurBytes = 0;
 		 for(i = 0; i <4; i++){
 			numCurBytes += (unsigned long)itlFile->fData[17 + i] << (8*(3-i));
 		 }
-		  //get the block size from header
 		 dBlockSize = (256*(unsigned short)itlFile->fData[0x3e]) + (unsigned short)itlFile->fData[0x3f];
-		// correct for NV9 type
 		 if(dBlockSize == 0) dBlockSize = 4096;
 
 		  itlFile->NumberOfBlocks = numCurBytes / dBlockSize;

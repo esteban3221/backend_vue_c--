@@ -5,12 +5,6 @@
 #include "Random.h"
 
 
-
-/*	Generates a large prime number by
-|	choosing a randomly large integer, and ensuring the value is odd
-|	then uses the miller-rabin primality test on it to see if it is prime
-|	if not the value gets increased until it is prime			*/
-
 unsigned long long GeneratePrime(void)
 {
 	unsigned long long tmp = 0;
@@ -18,13 +12,10 @@ unsigned long long GeneratePrime(void)
 	tmp	=  GenerateRandomNumber();
 	tmp	%= MAX_PRIME_NUMBER;
 
-	/*  ensure it is an odd number	*/
 	if ((tmp & 1)==0)
 		tmp += 1;
 
-	/* test for prime  */
 	if (MillerRabin(tmp,5)==true) return tmp;
-	/*  increment until prime  */
 	do
 	{
 		tmp+=2;
@@ -34,29 +25,22 @@ unsigned long long GeneratePrime(void)
 }
 
 
-/*	Performs the miller-rabin primality test on a guessed prime n.
-|	trials is the number of attempts to verify this, because the function
-|	is not 100% accurate it may be a composite.  However setting the trial
-|	value to around 5 should guarantee success even with very large primes		*/
-
 bool MillerRabin (long long n, long long trials)
 {
 	long long a = 0;
     long long i;
 	for (i=0; i<trials; i++)
 	{
-		a = (rand() % (n-3))+2;/* gets random value in [2..n-1] */
+		a = (rand() % (n-3))+2;
 
 		if (IsItPrime (n,a)==false)
 		{
 			return false;
-			/*n composite, return false */
 		}
-	} return true; /* n probably prime */
+	} return true; 
 }
 
 
-/* Checks the integer n for primality		*/
 
 bool IsItPrime (long long n, long long a)
 {
@@ -67,12 +51,6 @@ bool IsItPrime (long long n, long long a)
 		return false;
 
 }
-
-
-/*		Raises X to the power Y in modulus N
-		the values of X, Y, and N can be massive, and this can be
-		acheived by first calculating X to the power of 2 then
-		using power chaining over modulus N				*/
 
 long long XpowYmodN(long long x, long long y, long long N)
 {
@@ -92,11 +70,6 @@ long long XpowYmodN(long long x, long long y, long long N)
 	return result;
 
 }
-
-
-/*	Generates a random number by first getting the RTSC of the CPU, then
-|	thanks to Ilya O. Levin uses a Linear feedback shift register.
-|	The RTSC is then added to fill the 64-bits					*/
 
 unsigned long long GenerateRandomNumber(void)
 {
@@ -118,16 +91,6 @@ unsigned long long GenerateRandomNumber(void)
 
 	return ret;
 }
-
-
-
-
-
-
-
-/*	Returns the Read Time Stamp Counter of the CPU
-|	The instruction returns in registers EDX:EAX the count of ticks from processor reset.
-|	Added in Pentium. Opcode: 0F 31.				*/
 
 
 long long GetSeed( void )

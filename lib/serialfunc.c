@@ -1,25 +1,14 @@
 #define BSD_COMP
-#include <stdio.h>   /* Standard input/output definitions */
-#include <string.h>  /* String function definitions */
-#include <unistd.h>  /* UNIX standard function definitions */
-#include <fcntl.h>   /* File control definitions */
-#include <errno.h>   /* Error number definitions */
-#include <termios.h> /* POSIX terminal control definitions */
+#include <stdio.h>   
+#include <string.h>  
+#include <unistd.h>  
+#include <fcntl.h>   
+#include <errno.h>   
+#include <termios.h> 
 #include <sys/ioctl.h>
 #include "../inc/itl_types.h"
 #include "serialfunc.h"
-//#include <asm/termios.h>
 #define FIONREAD 0x541B
-//port is the device name ( eg /dev/ttyUSB0 )
-//returns -1 on error
-/*
-Name: OpenSSPPort
-Inputs:
-    char * port: The name of the port to use (eg /dev/ttyUSB0 for usb serial, /dev/ttyS0 for com port 1)
-Return:
-    -1 on error
-Notes:
-*/
 SSP_PORT OpenSSPPort(const char * port)
 {
 	int port_handle;
@@ -36,14 +25,6 @@ SSP_PORT OpenSSPPort(const char * port)
 	return port_handle;
 }
 
-/*
-Name: CloseSSPPort
-Inputs:
-    SSP_PORT port: The port you wish to close
-Return:
-    void
-Notes:
-*/
 void CloseSSPPort(const SSP_PORT port)
 {
 	if (port >= 0)
@@ -55,10 +36,6 @@ void CloseSSPPort(const SSP_PORT port)
 int WriteData(const unsigned char * data, unsigned long length, const SSP_PORT port)
 {
 	long n;
-	/*printf("OUT: ");
-	for (n = 0; n < length; ++n)
-        printf("%x ",(unsigned char)data[n]);
-    printf("\n");*/
 	long offset;
 	long bytes_left = length;
 	offset = 0;

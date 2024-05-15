@@ -22,19 +22,8 @@ int CompileSSPCommand(SSP_COMMAND* cmd,SSP_TX_RX_PACKET* ss)
 	ss->rxPtr = 0;
 	for(i = 0; i < 255; i++)
 		ss->rxData[i] = 0x00;
-
-
-
-
-
-
-	/* for sync commands reset the deq bit   */
 	if(cmd->CommandData[0] == SSP_CMD_SYNC)
 		sspSeq[cmd->SSPAddress] = 0x80;
-
-
-
-	/* is this a encrypted packet  */
 	if(cmd->EncryptionStatus){
 
 		if(!EncryptSSPPacket(cmd->SSPAddress ,cmd->CommandData,cmd->CommandData,&cmd->CommandDataLength,&cmd->CommandDataLength,(unsigned long long*)&cmd->Key))
@@ -42,31 +31,27 @@ int CompileSSPCommand(SSP_COMMAND* cmd,SSP_TX_RX_PACKET* ss)
 
 	}
 
-	/* create the packet from this data   */
 	ss->CheckStuff = 0;
 	ss->SSPAddress = cmd->SSPAddress;
 	ss->rxPtr = 0;
 	ss->txPtr = 0;
 	ss->rxBufferLength = 3;
-	ss->txBufferLength = cmd->CommandDataLength + 5;  /* the full ssp packet length   */
-	ss->txData[0] = SSP_STX;					/* ssp packet start   */
-	ss->txData[1] = cmd->SSPAddress | sspSeq[cmd->SSPAddress];  /* the address/seq bit */
-	ss->txData[2] = cmd->CommandDataLength;    /* the data length only (always > 0)  */
-	for(i = 0; i < cmd->CommandDataLength; i++)  /* add the command data  */
+	ss->txBufferLength = cmd->CommandDataLength + 5; 
+	ss->txData[0] = SSP_STX;
+	ss->txData[1] = cmd->SSPAddress | sspSeq[cmd->SSPAddress];  
+	ss->txData[2] = cmd->CommandDataLength;   
+	for(i = 0; i < cmd->CommandDataLength; i++)  
 		ss->txData[3 + i] = cmd->CommandData[i];
-	/* calc the packet CRC  (all bytes except STX)   */
 	crc = cal_crc_loop_CCITT_A(ss->txBufferLength - 3,&ss->txData[1] ,CRC_SSP_SEED,CRC_SSP_POLY);
 	ss->txData[3 + cmd->CommandDataLength] = (unsigned char)(crc & 0xFF);
 	ss->txData[4 + cmd->CommandDataLength] = (unsigned char)((crc >> 8) & 0xFF);
 
-
-	/* we now need to 'byte stuff' this buffered data   */
 	j = 0;
 	tBuffer[j++] = ss->txData[0];
 	for(i = 1; i < ss->txBufferLength; i++){
 		tBuffer[j] = ss->txData[i];
 		if (ss->txData[i] ==	SSP_STX){
-			tBuffer[++j] = SSP_STX;   /* SSP_STX found in data so add another to 'stuff it'  */
+			tBuffer[++j] = SSP_STX; 
 		}
 		j++;
 	}
@@ -77,19 +62,6 @@ int CompileSSPCommand(SSP_COMMAND* cmd,SSP_TX_RX_PACKET* ss)
 	return 1;
 }
 
-/*
-Name: SSPSendCommand
-Inputs:
-    SSP_PORT The port handle (returned from OpenSSPPort) of the port to use
-    SSP_COMMAND The command structure to be used.
-Return:
-    1 on success
-    0 on failure
-Notes:
-    In the ssp_command structure:
-    EncryptionStatus,SSPAddress,Timeout,RetryLevel,CommandData,CommandDataLength (and Key if using encrpytion) must be set before calling this function
-    ResponseStatus,ResponseData,ResponseDataLength will be altered by this function call.
-*/
 int  SSPSendCommand(const SSP_PORT port, SSP_COMMAND* cmd)
 {
     SSP_TX_RX_PACKET ssp;

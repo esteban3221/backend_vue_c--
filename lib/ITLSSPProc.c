@@ -51,17 +51,14 @@ int GetProcDLLVersion(unsigned char* ver)
 }
 
 
-/*    DLL function call to generate host intermediate numbers to send to slave  */
 int InitiateSSPHostKeys(SSP_KEYS *  keyArray, const unsigned char ssp_address)
 {
 
 
 	long long swap = 0;
 
-	/* create the two random prime numbers  */
 	keyArray->Generator = GeneratePrime();
 	keyArray->Modulus = GeneratePrime();
-	/* make sure Generator is larger than Modulus   */
 	if (keyArray->Generator > keyArray->Modulus)
 	{
 		swap = keyArray->Generator;
@@ -72,19 +69,11 @@ int InitiateSSPHostKeys(SSP_KEYS *  keyArray, const unsigned char ssp_address)
 
 	if(CreateHostInterKey(keyArray)== -1)
 		return 0;
-
-
-	/* reset the apcket counter here for a successful key neg  */
 	encPktCount[ssp_address] = 0;
 
 	return 1;
 }
 
-
-
-
-
-/* creates the host encryption key   */
 int CreateSSPHostEncryptionKey(SSP_KEYS* keyArray)
 {
 	keyArray->KeyHost = XpowYmodN(keyArray->SlaveInterKey,keyArray->HostRandom,keyArray->Modulus);
@@ -103,15 +92,13 @@ int CreateSSPHostEncryptionKey(SSP_KEYS* keyArray)
 
 	pkLength = *lengthIn + FIXED_PACKET_LENGTH;
 
-	/* find the length of packing data required */
 	if(pkLength % C_MAX_KEY_LENGTH != 0){
 		packLength = C_MAX_KEY_LENGTH - (pkLength % C_MAX_KEY_LENGTH);
 	}
 	pkLength += packLength;
 
-	tmpData[0] = *lengthIn; /* the length of the data without packing */
+	tmpData[0] = *lengthIn;
 
-	/* add in the encrypted packet count   */
 	for(i = 0; i < 4; i++)
 		tmpData[1 + i] = (unsigned char)((encPktCount[ptNum] >> (8*i) & 0xFF));
 
@@ -119,11 +106,8 @@ int CreateSSPHostEncryptionKey(SSP_KEYS* keyArray)
 	for(i = 0; i < *lengthIn; i++)
 		tmpData[i + 5] = dataIn[i];
 
-
-	/* add random packing data  */
 	for(i = 0; i < packLength; i++)
 		tmpData[5 + *lengthIn + i] =  (unsigned char)(rand() % 255);
-	/* add CRC to packet end   */
 
 	crc = cal_crc_loop_CCITT_A(pkLength - 2,tmpData,CRC_SSP_SEED,CRC_SSP_POLY);
 
@@ -133,11 +117,11 @@ int CreateSSPHostEncryptionKey(SSP_KEYS* keyArray)
 	if (aes_encrypt( C_AES_MODE_ECB,(unsigned char*)key,C_MAX_KEY_LENGTH,NULL,0,tmpData,&dataOut[1],pkLength) != E_AES_SUCCESS)
 							return 0;
 
-	pkLength++; /* increment as the final length will have an STEX command added   */
+	pkLength++; 
 	*lengthOut = pkLength;
 	dataOut[0] = SSP_STEX;
 
-	encPktCount[ptNum]++;  /* incremnet the counter after a successful encrypted packet   */
+	encPktCount[ptNum]++;
 
 	return 1;
 }
@@ -156,10 +140,6 @@ int CreateSSPHostEncryptionKey(SSP_KEYS* keyArray)
 }
 
 
-
-
-
-/* Creates a host intermediate key */
 int CreateHostInterKey(SSP_KEYS * keyArray)
 {
 

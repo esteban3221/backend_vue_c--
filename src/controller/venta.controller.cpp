@@ -111,7 +111,7 @@ bool venta_controller::init_perifericos()
     this->ssp_setup.SSPAddress = 0;
     this->ssp_setup.EncryptionStatus = NO_ENCRYPTION;
 
-    return ((ssp_setup_encryption(&ssp_setup, (unsigned long long)0x123456701234567LL) == SSP_RESPONSE_OK) &&
+    return ((ssp_setup_encryption(&ssp_setup, 0x0123456701234567L) == SSP_RESPONSE_OK) &&
             (ssp_enable(ssp_setup) == SSP_RESPONSE_OK) &&
             (ssp_set_inhibits(ssp_setup, 0xFF, 0xFF) == SSP_RESPONSE_OK));
 }
