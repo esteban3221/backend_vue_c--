@@ -31,8 +31,20 @@ set(SOURCES
     src/view/config_view.cpp
     #========================================
 
+    src/view/config/view_one.cpp
+    src/view/config/view_two.cpp
+    src/view/config/view_three.cpp
+    src/view/config/view_four.cpp
+    src/view/config/view_five.cpp
+    src/view/config/view_six.cpp
+
+    #========================================
+
     src/model/usuarios.cpp
 
+    #========================================
+    src/shared/config_text.cpp
+    src/shared/helper.cpp
     #========================================
     ${CMAKE_SOURCE_DIR}/lib/Encryption.c
     ${CMAKE_SOURCE_DIR}/lib/enctest.c
@@ -48,8 +60,10 @@ include_directories(include
                     inc/
                     include/controller
                     include/view
+                    include/view/config
                     include/db
                     include/model
+                    include/shared
 )
 
 

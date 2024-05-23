@@ -11,6 +11,8 @@
 #include "nip_view.hpp"
 #include "nip_sett_view.hpp"
 #include "config_view.hpp"
+//config
+#include "view_one.hpp"
 
 #include <memory>
 #include <gtkmm.h>
@@ -110,8 +112,11 @@ private:
 
     //Views
     Gtk::Frame *nip_set_view = nullptr;
-    Gtk::Frame *configView = Gtk::manage(new config_view(box_principal, main_stack, *this, lbl_main, img_main_logo, nip_set_view));
+    Gtk::Box *v1 = Gtk::manage(new view_one(main_stack, *this, lbl_main, img_main_logo, nip_set_view));
+    Gtk::Box *configView = Gtk::manage(new config_view(box_principal, main_stack, v1));
     Gtk::Frame *nip = Gtk::manage(new nip_view(box_principal, main_stack, configView));
+
+    
     
     
 

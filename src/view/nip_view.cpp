@@ -1,9 +1,9 @@
 #include "nip_view.hpp"
 
-nip_view::nip_view(Gtk::Box *&box_principal_, Gtk::Stack &main_stack_,Gtk::Frame *&frame_config_): 
+nip_view::nip_view(Gtk::Box *&box_principal_, Gtk::Stack &main_stack_,Gtk::Box *&view_config_): 
                                                                                box_principal(box_principal_),
                                                                                main_stack(main_stack_),
-                                                                               frame_config(frame_config_)
+                                                                               frame_config(view_config_)
 {
     builder->add_from_string(this->XML);
 

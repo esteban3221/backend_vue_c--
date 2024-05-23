@@ -1,7 +1,8 @@
 #include "nip_sett_view.hpp"
 
-nip_sett_view::nip_sett_view(Gtk::Box *&box_principal_, Gtk::Stack &main_stack_,Gtk::Frame *&frame_config_) :
-nip_view(box_principal_, main_stack_, frame_config_) , paso (0)
+nip_sett_view::nip_sett_view(Gtk::Box *&box_principal_, Gtk::Stack &main_stack_,Gtk::Box *&frame_config_) :
+nip_view(box_principal_, main_stack_, frame_config_) , 
+paso (0)
 {
     this->ety_pin->property_placeholder_text() = "Digite el pin antiguo";
 }

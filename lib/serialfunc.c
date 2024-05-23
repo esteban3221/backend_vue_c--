@@ -61,25 +61,18 @@ void SetupSSPPort(const SSP_PORT port)
 {
 	struct termios options;
 	tcgetattr(port,&options);
-	//9600 baud
+	
 	cfsetispeed(&options,B9600);
 	cfsetospeed(&options,B9600);
-	//no parity
+	
 	options.c_cflag &= ~PARENB;
-
-	//2 stop bits
 	options.c_cflag |= CSTOPB;
-	//	options.c_cflag &= ~CSTOPB;
 
-	//8 bits
 	options.c_cflag &= ~CSIZE;
 	options.c_cflag |= CS8;
 
-	//raw binary input / output
 	options.c_lflag &= ~(ICANON | ECHO | ECHOE | ISIG);
         options.c_oflag &= ~OPOST;
-
-        //no flow control
 	options.c_iflag = 0;
 	options.c_iflag &= ~(IXON | IXOFF | IXANY);
 	options.c_cflag &= ~CRTSCTS;

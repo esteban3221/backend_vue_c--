@@ -185,7 +185,7 @@ private:
 protected:
     // referencia nodo padre compartida
     Gtk::Stack &main_stack;
-    Gtk::Frame *&frame_config;
+    Gtk::Box *&frame_config;
     // referencias de XML compartidas
     Gtk::Button *btn_nip_enter = nullptr;
     Gtk::Button *btn_nip_back = nullptr;
@@ -193,7 +193,7 @@ protected:
 
 
 public:
-    nip_view(Gtk::Box *&box_principal_, Gtk::Stack &main_stack_, Gtk::Frame *&frame_config_);
+    nip_view(Gtk::Box *&box_principal_, Gtk::Stack &main_stack_, Gtk::Box *&view_config_);
     ~nip_view();
 
 };

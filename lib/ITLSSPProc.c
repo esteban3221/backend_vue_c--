@@ -175,18 +175,6 @@ void __attribute__ ((destructor)) my_fini(void)
     }
 }
 
-/*
-Name: NegotiateSSPEncryption
-Inputs:
-    SSP_PORT The port handle (returned from OpenSSPPort) of the port to use
-    char ssp_address: The ssp_address to negotiate on
-    SSP_FULL_KEY * key: The ssp encryption key to be used
-Return:
-    1 on success
-    0 on failure
-Notes:
-    Only the EncryptKey iin SSP_FULL_KEY will be set. The FixedKey needs to be set by the user
-*/
 int NegotiateSSPEncryption(SSP_PORT port, const char ssp_address, SSP_FULL_KEY * key)
 {
     SSP_KEYS temp_keys;

@@ -4,7 +4,7 @@
   <object class="GtkBox" id="box_configuracion">
     <property name="orientation">0</property>
     <child>
-      <object class="GtkBox">
+      <object class="GtkBox" id="left_box">
         <property name="spacing">5</property>
         <property name="orientation">1</property>
         <child>
@@ -109,7 +109,7 @@
                                       </object>
                                     </child>
                                     <child>
-                                      <object class="GtkLabel">
+                                      <object class="GtkLabel" id="lbl_path_icon">
                                         <property name="label">Selecciona Imagen</property>
                                         <property name="ellipsize">1</property>
                                       </object>
@@ -172,7 +172,7 @@
                                       </object>
                                     </child>
                                     <child>
-                                      <object class="GtkLabel">
+                                      <object class="GtkLabel" id="lbl_path_carrousel">
                                         <property name="label">Selecciona Carpeta</property>
                                         <property name="ellipsize">1</property>
                                       </object>

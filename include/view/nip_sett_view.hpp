@@ -10,6 +10,6 @@ private:
     uint16_t paso;
     std::string new_pin;
 public:
-    nip_sett_view(Gtk::Box *&box_principal_, Gtk::Stack &main_stack_, Gtk::Frame *&frame_config_);
+    nip_sett_view(Gtk::Box *&box_principal_, Gtk::Stack &main_stack_, Gtk::Box *&frame_config_);
     ~nip_sett_view();
 };

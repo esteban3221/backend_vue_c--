@@ -15,37 +15,22 @@ namespace model
     }
     bool usuarios::validaUsuario(const std::string &user, const std::string &passw)
     {
+        // old
         // this->sqlite3->command("select * from usuarios where username = '" + user + "' and password = '" + passw + "'");
         // this->sqlite3->command("select * from usuarios");
         
         //prepared
         this->sqlite3->command("select * from usuarios where username = ? and password = ?" , user.c_str() , passw.c_str());
 
-        for (const auto &i : sqlite3->get_result()["id"])
-        {
-                std::cout << i << " ";
-        }
-        std::cout << " \n";
-        for (const auto &i : sqlite3->get_result()["username"])
-        {
-                std::cout << i << " ";
-        }
-        std::cout << " \n";
-        for (const auto &i : sqlite3->get_result()["password"])
-        {
-                std::cout << i << " ";
-        }
-        std::cout << " \n";
-
         return not this->sqlite3->get_result().empty();
     }
     void usuarios::altaUsuario(const std::string &user, const std::string &passw)
     {
-        this->sqlite3->command("insert into usuarios(username, password) values ('" + user + "', '" + passw + "')");
+        this->sqlite3->command("insert into usuarios(username, password) values (?, ?)" , user.c_str() , passw.c_str());
     }
     void usuarios::bajaUsuario(const std::string &user)
     {
-        this->sqlite3->command("delete from usuarios where username = '" + user + "'");
+        this->sqlite3->command("delete from usuarios where username = ?" , user.c_str());
     }
     bool usuarios::modificaUsuario(const std::string &user, const std::string &passw)
     {

@@ -548,34 +548,19 @@ extern UINT8 aes_encrypt( const UINT8   aes_mode,
   p_plain  = plain_data;
   p_cipher = cipher_data;
 
-  // --- Electronic Codebook Mode (ECB) -------------------------------------
   if ( aes_mode == C_AES_MODE_ECB )
   {
-    // encrypt all 16 byte blocks
     for ( i = 0; i < num_blocks; i++ )
     {
-      // fill buffer with plain
       mem_copy( aes_buf, p_plain );
-
-      // encrypt buffer
       ret = aes_encrypt_16_byte_block( &aes_ctx, aes_buf, aes_buf );
       assert( ret == 0 );
-
-      // write cipher
       mem_copy( p_cipher, aes_buf );
-
-      // next block
       p_plain  += 16;
       p_cipher += 16;
     }
   }else
 	  return E_AES_WRONG_MODE;
-
-
-
-
-
-  // successful
   return E_AES_SUCCESS;
 
 }
@@ -591,7 +576,6 @@ extern UINT8 aes_decrypt( const UINT8   aes_mode,
                                 UINT8  *cipher_data,
                           const UINT32  data_length )
 {
-  // declarations
   aes_context aes_ctx; // aes context
   UINT8 aes_buf1[16];  // buffer for one 16-byte block
 //  UINT8 aes_buf2[16];  // buffer for one 16-byte block
