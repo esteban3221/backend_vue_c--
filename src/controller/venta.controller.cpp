@@ -42,7 +42,9 @@ crow::response venta_controller::Test_venta(const crow::request &req)
 
     while (sum < total)
     {
-        if (ssp_poll(this->ssp_setup, &this->poll) != SSP_RESPONSE_OK)
+        if (ssp_poll(this->ssp_setup_bill, &this->poll) != SSP_RESPONSE_OK)
+            printf("SSP_POLL_ERROR\n");
+        if (ssp_poll(this->ssp_setup_coin, &this->poll) != SSP_RESPONSE_OK)
             printf("SSP_POLL_ERROR\n");
         for (int i = 0; i < this->poll.event_count; ++i)
         {
@@ -72,7 +74,8 @@ crow::response venta_controller::Test_venta(const crow::request &req)
                 break;
             case SSP_POLL_STACKER_FULL:
             {
-                CloseSSPPort(this->port);
+                CloseSSPPort(this->port_bill);
+                CloseSSPPort(this->port_coin);
                 printf("Stacker Full\n");
                 //return crow::response(crow::status::CONFLICT, "Stacker Full");
                 break;
@@ -81,8 +84,10 @@ crow::response venta_controller::Test_venta(const crow::request &req)
         }
         std::this_thread::sleep_for(std::chrono::milliseconds(500));
     }
-    ssp_disable(this->ssp_setup);
-    CloseSSPPort(this->port);
+    ssp_disable(this->ssp_setup_bill);
+    ssp_disable(this->ssp_setup_coin);
+    CloseSSPPort(this->port_bill);
+    CloseSSPPort(this->port_coin);
 
     //ternaria no funciona en un thread hacia modificacion de gui
     std::this_thread::sleep_for(std::chrono::milliseconds(3));
@@ -102,18 +107,22 @@ venta_controller::~venta_controller()
 
 bool venta_controller::init_perifericos()
 {
-    // para validador de billetes
-    this->port = OpenSSPPort("/dev/ttyUSB0");
+    this->port_bill = OpenSSPPort("/dev/ttyUSB0");
+    this->port_coin = OpenSSPPort("/dev/ttyUSB1");
 
-    this->ssp_setup.port = port;
-    this->ssp_setup.Timeout = 1000;
-    this->ssp_setup.RetryLevel = 3;
-    this->ssp_setup.SSPAddress = 0;
-    this->ssp_setup.EncryptionStatus = NO_ENCRYPTION;
+    this->ssp_setup_bill.port = port_bill;
+    this->ssp_setup_coin.port = port_coin;
 
-    return ((ssp_setup_encryption(&ssp_setup, 0x0123456701234567L) == SSP_RESPONSE_OK) &&
-            (ssp_enable(ssp_setup) == SSP_RESPONSE_OK) &&
-            (ssp_set_inhibits(ssp_setup, 0xFF, 0xFF) == SSP_RESPONSE_OK));
+    this->ssp_setup_bill.SSPAddress = 0;
+    this->ssp_setup_coin.SSPAddress = 16;
+
+    this->ssp_setup_bill.Timeout = this->ssp_setup_coin.Timeout = 1000;
+    this->ssp_setup_bill.EncryptionStatus = this->ssp_setup_coin.EncryptionStatus = NO_ENCRYPTION;
+    this->ssp_setup_bill.RetryLevel = this->ssp_setup_coin.RetryLevel = 3;
+
+    return ((ssp_setup_encryption(&ssp_setup_bill, 0x0123456701234567L) == SSP_RESPONSE_OK) &&
+            (ssp_enable(ssp_setup_bill) == SSP_RESPONSE_OK) &&
+            (ssp_set_inhibits(ssp_setup_bill, 0xFF, 0xFF) == SSP_RESPONSE_OK));
 }
 void venta_controller::init_ui()
 {

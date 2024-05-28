@@ -201,8 +201,7 @@ void view_one::on_rest_app()
     auto chkb = Gtk::manage(new Gtk::CheckButton("Estoy consiente de la perdida completa de los datos del dispositivo."));
     Dialog->get_content_area()->append(*chkb);
 
-    chkb->signal_toggled().connect([btn, chkb]()
-                                   { btn->set_sensitive(chkb->get_active()); });
+    chkb->signal_toggled().connect([btn, chkb](){ btn->set_sensitive(chkb->get_active()); });
 
     Dialog->signal_response().connect([this](int response)
                                       {

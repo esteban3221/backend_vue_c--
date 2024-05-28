@@ -12,9 +12,11 @@ class venta_controller : public Gtk::Frame
 private:
     unsigned DENOMINATION[7] = {0,20,50,100,200,500,1000};
 
-    SSP_COMMAND_SETUP ssp_setup;
+    SSP_COMMAND_SETUP ssp_setup_bill;
+    SSP_COMMAND_SETUP ssp_setup_coin;
     SSP_POLL_DATA poll;
-    SSP_PORT port;
+    SSP_PORT port_bill;
+    SSP_PORT port_coin;
 
     Glib::Dispatcher m_Dispatcher;
 
