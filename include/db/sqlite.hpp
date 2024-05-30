@@ -22,7 +22,7 @@ namespace SQLite3
         SQLite(const std::string &DB_);
         ~SQLite();
         const bool open();
-        inline bool is_created();
+        const bool is_created();
         void command(std::string);
         const int get_rc() const;
         std::map<std::string, std::vector<std::string>> &get_result() const;
@@ -48,7 +48,7 @@ namespace SQLite3
             // Ejecuta la sentencia SQL
             while (sqlite3_step(stmt) == SQLITE_ROW)
             {
-                // Callback para procesar los resultados (similar a tu función callback)
+                // Callback para procesar los resultados (similar a la función callback)
                 int columns = sqlite3_column_count(stmt);
                 for (int i = 0; i < columns; i++)
                 {
@@ -65,11 +65,6 @@ namespace SQLite3
             {
                 std::string error = "Error al ejecutar la sentencia SQL: " + std::string(sqlite3_errmsg(db)) + "\nSQL: " + sql + "\n";
                 throw std::runtime_error(error);
-            }
-            else
-            {
-                std::cout << "Operación realizada correctamente" << std::endl;
-                std::cout << "SQL: " << sql << std::endl;
             }
         }
 

@@ -41,6 +41,7 @@ set(SOURCES
     #========================================
 
     src/model/usuarios.cpp
+    src/model/usuarios_roles.cpp
 
     #========================================
     src/shared/config_text.cpp

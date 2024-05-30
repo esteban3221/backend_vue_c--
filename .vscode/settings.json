@@ -89,7 +89,8 @@
         "*.ipp": "cpp",
         "ssp_defines.h": "c",
         "stdfloat": "cpp",
-        "filesystem": "cpp"
+        "filesystem": "cpp",
+        "text_encoding": "cpp"
     },
     "C_Cpp.default.compilerPath": "/usr/bin/g++",
     "C_Cpp.errorSquiggles": "enabled"

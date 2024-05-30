@@ -1,7 +1,10 @@
 #pragma once
 #include <gtkmm.h>
+#include "usuarios.hpp"
+#include "usuarios_config.hpp"
+#include "usuarios_roles.hpp"
 
-class view_five : public Gtk::Box
+class view_five : public Gtk::Box 
 {
 private:
     const char *PAGE4 =
@@ -14,7 +17,7 @@ private:
         "<property name=\"vexpand\">true</property>"
         "<property name=\"vexpand-set\">true</property>"
         "<child>"
-        "<object class=\"GtkTreeView\" id=\"tree_venta\">"
+        "<object class=\"GtkTreeView\" id=\"tree_usuarios\">"
         "<property name=\"enable-grid-lines\">2</property>"
         "<property name=\"enable-search\">false</property>"
         "</object>"
@@ -296,9 +299,14 @@ private:
     Gtk::CheckButton *ArrayFrameButton[19] = {nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr,
                                               nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr};
     sigc::connection m_signal_connection;
+    Model::Usuarios_Config m_Colunms_usuarios;
+    Glib::RefPtr<Gtk::ListStore> ModelUsuarios;
+    Gtk::TreeView *tree_usuarios = nullptr;
+    Gtk::TreeRow row;
 
     // Funciones internas
     void init_widgets();
+    void on_tree_detalle_usuario_row_activated(const Gtk::TreeModel::Path &path, Gtk::TreeViewColumn *column);
 
 public:
     view_five(/* args */);

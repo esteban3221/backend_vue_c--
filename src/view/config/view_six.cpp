@@ -19,7 +19,7 @@ view_six::view_six(/* args */)
         this->init_datos_red();
     this->poll_info_red = Glib::signal_timeout().connect([this]() -> bool
                                                          {
-        std::string SSID = Helper::System::exec("nmcli -t -f active,ssid dev wifi | grep -E '^(sí|yes):' | cut -d':' -f2");
+        std::string SSID = Helper::System::exec("nmcli -t -f name,device connection show --active | grep -v ':lo' | cut -d':' -f1");
         
         std::string IP_WLAN = Helper::System::exec(
         "for iface in wlan0 wlp2s0; do "

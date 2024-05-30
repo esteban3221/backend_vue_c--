@@ -3,9 +3,8 @@
 
 namespace SQLite3
 {
-    SQLite::SQLite(const std::string &file_database_) : FILE_DATABASE(file_database_)
+    SQLite::SQLite(const std::string &file_database_) : FILE_DATABASE(file_database_) , db(nullptr)
     {
-        this->db = nullptr;
     }
 
     SQLite::~SQLite()
@@ -15,47 +14,20 @@ namespace SQLite3
 
     const bool SQLite::open()
     {
-        // std::ifstream file(this->FILE_DATABASE);
-
-        // if (!file)
-        // {
-        //     this->rc = sqlite3_open(this->FILE_DATABASE.c_str(), &this->db);
-        //     command("CREATE TABLE usuarios ("
-        //             "id INTEGER PRIMARY KEY,"
-        //             "username TEXT NOT NULL UNIQUE,"
-        //             "password TEXT"
-        //             ")");
-        //     command("CREATE TABLE roles ("
-        //             "id INTEGER PRIMARY KEY AUTOINCREMENT,"
-        //             "rol TEXT"
-        //             ")");
-        //     command("CREATE TABLE usuario_roles ("
-        //             "id INTEGER PRIMARY KEY AUTOINCREMENT,"
-        //             "id_usuario INTEGER,"
-        //             "id_rol INTEGER,"
-        //             "FOREIGN KEY (id_usuario) REFERENCES usuarios (id),"
-        //             "FOREIGN KEY (id_rol) REFERENCES roles (id)"
-        //             ")");
-
-        //     return true;
-
         this->rc = sqlite3_open(this->FILE_DATABASE.c_str(), &this->db);
         if (this->rc)
         {
-            std::cout << "Error al abrir la base de datos: " << sqlite3_errmsg(this->db) << std::endl;
+            std::cerr << "Error al abrir la base de datos: " << sqlite3_errmsg(this->db) << std::endl;
             return false;
         }
         else
-        {
-            std::cout << "Base de datos abierta correctamente" << std::endl;
             return true;
-        }
     }
 
-    inline bool SQLite::is_created()
+    const bool SQLite::is_created()
     {
-        std::ifstream file(this->FILE_DATABASE);
-        return file ? true : false;
+        command("SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%'");
+        return not get_result().empty();
     }
 
     int SQLite::callback(void *NotUsed, int argc, char **argv, char **azColName)
@@ -76,11 +48,6 @@ namespace SQLite3
             std::string error = "SQL error: " + std::string(zErrMsg) + "\nSQL: " + sql + "\n";
             sqlite3_free(zErrMsg);
             throw std::runtime_error(error);
-        }
-        else
-        {
-            std::cout << "Operacion realizada correctamente" << std::endl;
-            std::cout << "SQL: " << sql << std::endl;
         }
     }
     
