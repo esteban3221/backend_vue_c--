@@ -5,6 +5,7 @@ venta_controller::venta_controller(crow::App<crow::CookieParser, Session> &app_,
                                                                                                                                   box_main(box_main_)
 {
     this->init_ui();
+    dispatcher.connect(sigc::mem_fun(*this, &venta_controller::on_dispatcher_emit));
 
     // test no requieren token EXCLUSIVO DE TEST
     CROW_ROUTE(app, "/test/venta").methods("POST"_method)(sigc::mem_fun(*this, &venta_controller::Test_venta));
@@ -12,98 +13,197 @@ venta_controller::venta_controller(crow::App<crow::CookieParser, Session> &app_,
 
 crow::response venta_controller::Test_venta(const crow::request &req)
 {
-    this->m_Dispatcher.emit();
     auto x = crow::json::load(req.body);
     if (!x || !x["value"])
     {
-        this->main_stack.set_visible_child(*box_main);
+        this->dispatch_to_gui([this] { this->main_stack.set_visible_child(*box_main); });
         return crow::response(crow::status::BAD_REQUEST);
     }
 
-    this->main_stack.set_visible_child(*this);
+    this->dispatch_to_gui([this] { this->main_stack.set_visible_child(*this); });
     auto total = x["value"].i() / 100;
 
     std::this_thread::sleep_for(std::chrono::milliseconds(3));
-    this->ety_recibido.set_text("");
-    this->ety_faltante.set_text("");
-    this->ety_cambio.set_text("");
+    this->dispatch_to_gui([this] {
+        this->lbl_mensaje_fin.set_text("Gracias por su compra.\n    No olvide su ticket");
+        this->lbl_mensaje_fin.set_visible(false);
 
-    this->lbl_mensaje_fin.set_visible(false);
-    this->ety_monto_total.set_text(std::to_string(total));
+        this->ety_recibido.set_text("");
+        this->ety_faltante.set_text("");
+        this->ety_cambio.set_text("");
 
-    if (!this->init_perifericos())
-    {
-        this->main_stack.set_visible_child(*box_main);
-        return crow::response(crow::status::INTERNAL_SERVER_ERROR, "Periferico no se encuentra o esta ocupado.");
-    }
+        this->btn_timeout_cancel.set_visible(false);
+        this->btn_timeout_retry.set_visible(false);
+    });
+    this->dispatch_to_gui([this, total] { this->ety_monto_total.set_text(std::to_string(total)); });
+
+    auto start = std::chrono::steady_clock::now();
+    auto end = start + std::chrono::seconds(1 * 60 + 2);
+
+    this->timeout.store(false);
+    this->payment_completed.store(false);
+
+    this->M_timeout_venta = Glib::signal_timeout().connect([this, start, end]() -> bool {
+        auto now = std::chrono::steady_clock::now();
+        auto remaining = std::chrono::duration_cast<std::chrono::seconds>(end - now).count();
+        
+        this->dispatch_to_gui([this, remaining] { 
+            this->lbl_timeout.set_text("Tiempo Restante: " + Helper::System::formatTime(remaining)); 
+        });
+
+        bool still_running = (remaining > 0 && !this->payment_completed.load());
+        if (!still_running) 
+        {
+            this->timeout.store(true);
+        }
+
+        return still_running;
+    }, 1000);
 
     long sum = 0;
     unsigned channel;
 
     while (sum < total)
     {
-        if (ssp_poll(this->ssp_setup_bill, &this->poll) != SSP_RESPONSE_OK)
-            printf("SSP_POLL_ERROR\n");
-        if (ssp_poll(this->ssp_setup_coin, &this->poll) != SSP_RESPONSE_OK)
-            printf("SSP_POLL_ERROR\n");
-        for (int i = 0; i < this->poll.event_count; ++i)
+        if(this->timeout.load())
         {
-            switch (this->poll.events[i].event)
-            {
-            case SSP_POLL_RESET:
-                printf("Unit Reset\n");
-                break;
-            case SSP_POLL_READ:
-                if (this->poll.events[i].data > 0)
-                    channel = this->poll.events[i].data;
-                break;
-            case SSP_POLL_CREDIT:
-                channel = this->poll.events[i].data;
-                break;
-            case SSP_POLL_STACKED:
-            {
-                printf("Stacked %d MXN$\n", this->DENOMINATION[channel]);
-                sum += this->DENOMINATION[channel];
-                channel = 0;
-                this->ety_recibido.set_text(std::to_string(sum));
-                (sum < total) ? this->ety_faltante.set_text(std::to_string(total - sum)) : this->ety_faltante.set_text("0");
-                break;
-            }
-            case SSP_POLL_FRAUD_ATTEMPT:
-                printf("Fraud Attempt %ld\n", this->poll.events[i].data);
-                break;
-            case SSP_POLL_STACKER_FULL:
-            {
-                CloseSSPPort(this->port_bill);
-                CloseSSPPort(this->port_coin);
-                printf("Stacker Full\n");
-                //return crow::response(crow::status::CONFLICT, "Stacker Full");
-                break;
-            }
-            }
+            this->lbl_mensaje_fin.set_text("¿Desea mas tiempo?");
+            this->lbl_mensaje_fin.set_visible();
+            this->btn_timeout_cancel.set_visible();
+            this->btn_timeout_retry.set_visible();
+
+            return crow::response(crow::status::NO_CONTENT, "{\"status\":\"Timeout\"}");
         }
-        std::this_thread::sleep_for(std::chrono::milliseconds(500));
+        std::this_thread::sleep_for(std::chrono::seconds(2));
+        sum += 5;
+        this->dispatch_to_gui([this, sum, total] {
+            this->ety_recibido.set_text(std::to_string(sum));
+            this->ety_faltante.set_text(sum < total ? std::to_string(total - sum) : "0");
+        });
     }
-    ssp_disable(this->ssp_setup_bill);
-    ssp_disable(this->ssp_setup_coin);
-    CloseSSPPort(this->port_bill);
-    CloseSSPPort(this->port_coin);
-
-    //ternaria no funciona en un thread hacia modificacion de gui
-    std::this_thread::sleep_for(std::chrono::milliseconds(3));
-    if (sum > total)  
-        this->ety_cambio.set_text(std::to_string(sum-total));
-    this->lbl_mensaje_fin.set_visible();
     
+    this->payment_completed.store(false);
+    this->M_timeout_venta.disconnect();
+
+    this->dispatch_to_gui([this, sum, total] {
+        if (sum > total) 
+            this->ety_cambio.set_text(std::to_string(sum - total));
+        this->lbl_mensaje_fin.set_visible(true);
+    });
+
     std::this_thread::sleep_for(std::chrono::seconds(3));
-    this->main_stack.set_visible_child(*box_main);
-    this->m_Dispatcher.emit();
-    return crow::response(crow::status::OK, "OK");
+    this->dispatch_to_gui([this] { this->main_stack.set_visible_child(*box_main); });
+
+    return crow::response(crow::status::OK, "{\"status\":\"Ok\"}");
 }
 
-venta_controller::~venta_controller()
-{
+void venta_controller::dispatch_to_gui(std::function<void()> func) {
+    {
+        std::lock_guard<std::mutex> lock(dispatch_queue_mutex);
+        dispatch_queue.push(func);
+    }
+    dispatcher.emit();
 }
+
+void venta_controller::on_dispatcher_emit() {
+    std::function<void()> func;
+    {
+        std::lock_guard<std::mutex> lock(dispatch_queue_mutex);
+        if (!dispatch_queue.empty()) {
+            func = dispatch_queue.front();
+            dispatch_queue.pop();
+        }
+    }
+    if (func) {
+        func();
+    }
+}
+
+venta_controller::~venta_controller() {
+    M_timeout_venta.disconnect();
+}
+
+// crow::response venta_controller::Test_venta(const crow::request &req)
+// {
+//     this->m_Dispatcher.emit();
+//     auto x = crow::json::load(req.body);
+//     if (!x || !x["value"])
+//     {
+//         this->main_stack.set_visible_child(*box_main);
+//         return crow::response(crow::status::BAD_REQUEST);
+//     }
+//     this->main_stack.set_visible_child(*this);
+//     auto total = x["value"].i() / 100;
+//     std::this_thread::sleep_for(std::chrono::milliseconds(3));
+//     this->ety_recibido.set_text("");
+//     this->ety_faltante.set_text("");
+//     this->ety_cambio.set_text("");
+//     this->lbl_mensaje_fin.set_visible(false);
+//     this->ety_monto_total.set_text(std::to_string(total));
+//     if (!this->init_perifericos())
+//     {
+//         this->main_stack.set_visible_child(*box_main);
+//         return crow::response(crow::status::INTERNAL_SERVER_ERROR, "Periferico no se encuentra o esta ocupado.");
+//     }
+//     long sum = 0;
+//     unsigned channel;
+//     while (sum < total)
+//     {
+//         if (ssp_poll(this->ssp_setup_bill, &this->poll) != SSP_RESPONSE_OK)
+//             printf("SSP_POLL_ERROR\n");
+//         if (ssp_poll(this->ssp_setup_coin, &this->poll) != SSP_RESPONSE_OK)
+//             printf("SSP_POLL_ERROR\n");
+//         for (int i = 0; i < this->poll.event_count; ++i)
+//         {
+//             switch (this->poll.events[i].event)
+//             {
+//             case SSP_POLL_RESET:
+//                 printf("Unit Reset\n");
+//                 break;
+//             case SSP_POLL_READ:
+//                 if (this->poll.events[i].data > 0)
+//                     channel = this->poll.events[i].data;
+//                 break;
+//             case SSP_POLL_CREDIT:
+//                 channel = this->poll.events[i].data;
+//                 break;
+//             case SSP_POLL_STACKED:
+//             {
+//                 printf("Stacked %d MXN$\n", this->DENOMINATION[channel]);
+//                 sum += this->DENOMINATION[channel];
+//                 channel = 0;
+//                 this->ety_recibido.set_text(std::to_string(sum));
+//                 (sum < total) ? this->ety_faltante.set_text(std::to_string(total - sum)) : this->ety_faltante.set_text("0");
+//                 break;
+//             }
+//             case SSP_POLL_FRAUD_ATTEMPT:
+//                 printf("Fraud Attempt %ld\n", this->poll.events[i].data);
+//                 break;
+//             case SSP_POLL_STACKER_FULL:
+//             {
+//                 printf("Stacker Full\n");
+//                 //return crow::response(crow::status::CONFLICT, "Stacker Full");
+//                 break;
+//             }
+//             }
+//         }
+//         std::this_thread::sleep_for(std::chrono::milliseconds(500));
+//     }
+//     ssp_disable(this->ssp_setup_bill);
+//     ssp_disable(this->ssp_setup_coin);
+//     CloseSSPPort(this->port_bill);
+//     CloseSSPPort(this->port_coin);
+//     //ternaria no funciona en un thread hacia modificacion de gui
+//     std::this_thread::sleep_for(std::chrono::milliseconds(3));
+//     if (sum > total)  
+//         this->ety_cambio.set_text(std::to_string(sum-total));
+//     this->lbl_mensaje_fin.set_visible(); 
+//     std::this_thread::sleep_for(std::chrono::seconds(3));
+//     this->main_stack.set_visible_child(*box_main);
+//     this->m_Dispatcher.emit();
+//     return crow::response(crow::status::OK, "OK");
+// }
+
 
 bool venta_controller::init_perifericos()
 {
@@ -133,9 +233,16 @@ void venta_controller::init_ui()
     this->box_venta.set_orientation(Gtk::Orientation::VERTICAL);
     this->box_venta.set_margin(15);
 
-    this->lbl_mensaje_fin.set_text("Gracias por su compra.\n    No olvide su ticket");
-    this->lbl_mensaje_fin.set_css_classes({"title-2", "dim-label"});
+    this->btn_timeout_cancel.set_label("Cancelar");
+    this->btn_timeout_retry.set_label("Reintentar");
 
+    this->box_action_timeout.append(this->lbl_timeout);
+    this->box_action_timeout.append(this->btn_timeout_cancel);
+    this->box_action_timeout.append(this->btn_timeout_retry);
+    this->box_action_timeout.set_orientation(Gtk::Orientation::HORIZONTAL);
+    this->box_action_timeout.set_homogeneous();
+
+    this->lbl_mensaje_fin.set_css_classes({"title-2", "dim-label"});
     this->lbl_monto_total.set_text("Total");
     this->lbl_monto_total.set_css_classes({"title-3"});
     this->lbl_recibido.set_text("Recibido");
@@ -144,6 +251,7 @@ void venta_controller::init_ui()
     this->lbl_faltante.set_css_classes({"title-3"});
     this->lbl_cambio.set_text("Cambio");
     this->lbl_cambio.set_css_classes({"title-3"});
+    this->lbl_timeout.set_text("Restante: 00:00");
 
     this->r1.append(lbl_monto_total);
     this->r1.append(ety_monto_total);
@@ -188,8 +296,10 @@ void venta_controller::init_ui()
     this->list_venta.append(this->BXRW4);
 
     list_venta.set_css_classes({"rich-list", "boxed-list"});
+
     this->box_venta.append(this->list_venta);
     this->box_venta.append(this->lbl_mensaje_fin);
+    this->box_venta.append(this->box_action_timeout);
     this->box_venta.set_spacing(20);
 
     this->lbl_mensaje_fin.set_visible(false);

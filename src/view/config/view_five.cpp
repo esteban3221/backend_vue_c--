@@ -40,9 +40,7 @@ void view_five::on_tree_detalle_usuario_row_activated(const Gtk::TreeModel::Path
         auto contenedor_roles = M_usuarios_roles.obten_roles_by_id_usuarios((*iter)[m_Colunms_usuarios.id].operator Glib::ustring())["id_rol"];
         
         for(auto &&i : contenedor_roles)
-        {
             this->ArrayFrameButton[std::stoi(i) - 1]->set_active();
-        }
     }
 }
 

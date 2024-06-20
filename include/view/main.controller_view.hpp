@@ -101,6 +101,8 @@ private:
 
     //interno
     int cont_click_logo = 0;
+    std::thread server_thread_;
+    std::atomic<bool> server_running_{false};
 
 
     crow::App<crow::CookieParser, Session> app{Session{crow::CookieParser::Cookie("session").max_age(/*15 minutos vida maxima de tokens*/ 15 * 60).path("/"), 64, crow::InMemoryStore{}}};
@@ -115,9 +117,6 @@ private:
     Gtk::Box *v1 = Gtk::manage(new view_one(main_stack, *this, lbl_main, img_main_logo, nip_set_view));
     Gtk::Box *configView = Gtk::manage(new config_view(box_principal, main_stack, v1));
     Gtk::Frame *nip = Gtk::manage(new nip_view(box_principal, main_stack, configView));
-
-    
-    
     
 
     // funciones padre

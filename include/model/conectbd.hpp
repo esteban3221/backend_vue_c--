@@ -10,7 +10,7 @@ public:
     std::shared_ptr<SQLite3::SQLite> sqlite3 = std::make_shared<SQLite3::SQLite>("maxicajero.db");
     connectSqlite(/* args */)
     {
-        sqlite3->open();
+        this->sqlite3->open();
         if (not this->sqlite3->is_created())
         {
             this->sqlite3->command("CREATE TABLE usuarios ("
@@ -60,6 +60,19 @@ public:
                     ROL_ADMIN += "(NULL,1," + std::to_string(i + 1) + ")";
             }
             this->sqlite3->command(ROL_ADMIN);
+
+            this->sqlite3->command("create table Level_Bill (Denominacion INT, Cant_Alm INT, Cant_Recy INT , Nivel_Inmo int)");
+            this->sqlite3->command("create table Level_Coin (Denominacion INT, Cant_Alm INT, Cant_Recy INT , Nivel_Inmo int)");
+            this->sqlite3->command("insert INTO Level_Bill values (20,0,0,0)");
+            this->sqlite3->command("insert INTO Level_Bill values (50,0,0,0)");
+            this->sqlite3->command("insert INTO Level_Bill values (100,0,0,0)");
+            this->sqlite3->command("insert INTO Level_Bill values (200,0,0,0)");
+            this->sqlite3->command("insert INTO Level_Bill values (500,0,0,0)");
+            this->sqlite3->command("insert INTO Level_Bill values (1000,0,0,0)");
+            this->sqlite3->command("insert INTO Level_Coin values (1,0,0,0)");
+            this->sqlite3->command("insert INTO Level_Coin values (2,0,0,0)");
+            this->sqlite3->command("insert INTO Level_Coin values (5,0,0,0)");
+            this->sqlite3->command("insert INTO Level_Coin values (10,0,0,0)");
         }    
     }
     ~connectSqlite(){}

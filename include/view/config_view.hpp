@@ -9,6 +9,7 @@
 #include "view_four.hpp"
 #include "view_five.hpp"
 #include "view_six.hpp"
+#include "view_seven.hpp"
 
 class config_view : public Gtk::Box
 {
@@ -74,6 +75,7 @@ private:
     std::unique_ptr<view_four> v4 = std::make_unique<view_four>();
     std::unique_ptr<view_five> v5 = std::make_unique<view_five>();
     std::unique_ptr<view_six> v6 = std::make_unique<view_six>();
+    std::unique_ptr<view_seven> v7 = std::make_unique<view_seven>();
 
 public:
     config_view(Gtk::Box *&box_principal_,Gtk::Stack &main_stack_,Gtk::Box *&view_one_);

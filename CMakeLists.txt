@@ -37,15 +37,18 @@ set(SOURCES
     src/view/config/view_four.cpp
     src/view/config/view_five.cpp
     src/view/config/view_six.cpp
+    src/view/config/view_seven.cpp
 
     #========================================
 
     src/model/usuarios.cpp
     src/model/usuarios_roles.cpp
+    src/model/niveles_dinero.cpp
 
     #========================================
     src/shared/config_text.cpp
     src/shared/helper.cpp
+    src/shared/niveles_almacenamiento.cpp
     #========================================
     ${CMAKE_SOURCE_DIR}/lib/Encryption.c
     ${CMAKE_SOURCE_DIR}/lib/enctest.c

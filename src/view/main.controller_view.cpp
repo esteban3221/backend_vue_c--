@@ -43,7 +43,10 @@ main_controller::main_controller(/* args */)
 
     this->main_stack.set_transition_type(Gtk::StackTransitionType::SLIDE_LEFT_RIGHT);
 
-    std::thread([&]() { this->app.port(44333).run(); }).detach();
+    
+    this->server_running_ = true;
+    this->server_thread_ = std::thread([this]() { this->app.port(44333).run(); });
+
 
     this->main_stack.set_visible_child(*this->box_principal);
     //this->main_stack.set_visible_child(*this->venta);
@@ -54,6 +57,14 @@ main_controller::main_controller(/* args */)
     //extrapolacion de datos desde Config
     this->img_main_logo->property_file() =  BinaryDB::select_<std::string>(16);
     this->lbl_main->set_text(BinaryDB::select_<std::string>(17));
+
+    //const Glib::RefPtr<Gdk::Monitor> &monitor
+    // Glib::RefPtr<Gdk::Display> display = Gdk::Monitor::get_display();
+    // std::cout << '\n' << display->get_monitors()->get_item_type() << '\n';
+
+    // auto monitor = Glib::RefPtr<Gdk::Monitor>::cast_dynamic(display);
+    // this->fullscreen_on_monitor(display);
+    
 }
 
 void main_controller::entra_config()
@@ -73,5 +84,11 @@ void main_controller::entra_config()
 
 main_controller::~main_controller()
 {
-    this->app.stop();
+        if (this->server_running_) {
+        this->app.stop();
+        if (this->server_thread_.joinable()) {
+            this->server_thread_.join();
+        }
+        this->server_running_ = false;
+    }
 }

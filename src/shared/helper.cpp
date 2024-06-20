@@ -26,5 +26,16 @@ namespace Helper
             result.erase(std::remove(result.begin(), result.end(), '\n'), result.end());
             return result;
         }
+
+        std::string formatTime(int seconds)
+        {
+            int minutes = seconds / 60;
+            int remainingSeconds = seconds % 60;
+
+            std::ostringstream oss;
+            oss << std::setw(2) << std::setfill('0') << minutes << ":"
+                << std::setw(2) << std::setfill('0') << remainingSeconds;
+            return oss.str();
+        }
     } // namespace System
 } // namespace Helper

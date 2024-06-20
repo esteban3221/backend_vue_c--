@@ -16,8 +16,6 @@ config_view::config_view(Gtk::Box *&box_principal_,
     stacconfig.set_margin(10);
     stacconfig.set_hexpand();
     stacconfig.set_transition_type(Gtk::StackTransitionType::CROSSFADE);
-    // view_one v1(main_stack,main_window,lbl_main,img_main_logo,nip_set_view);
-    //view_two v2;
 
     stacconfig.add(*view_one, "page 0", "General");
     stacconfig.add(*v3, "page 1", "Inf. del Sistema");
@@ -25,20 +23,13 @@ config_view::config_view(Gtk::Box *&box_principal_,
     stacconfig.add(*v4, "page 3", "Impresora");
     stacconfig.add(*v5, "page 4", "Usuarios");
     stacconfig.add(*v6, "page 5", "Red");
+    stacconfig.add(*v7, "page 6", "Fondo de Caja");
 
     this->append(*left_box);
     this->append(stacconfig);
 
     this->btn_back_config->signal_clicked().connect([this]() { main_stack.set_visible_child(*box_principal); });
-
-
 }
-
-
-
-
-
-
 
 // void config_view::test_creat_pdf(Gtk::ListBoxRow *row)
 // {
