@@ -61,7 +61,6 @@ main_controller::main_controller(/* args */)
     //const Glib::RefPtr<Gdk::Monitor> &monitor
     // Glib::RefPtr<Gdk::Display> display = Gdk::Monitor::get_display();
     // std::cout << '\n' << display->get_monitors()->get_item_type() << '\n';
-
     // auto monitor = Glib::RefPtr<Gdk::Monitor>::cast_dynamic(display);
     // this->fullscreen_on_monitor(display);
     

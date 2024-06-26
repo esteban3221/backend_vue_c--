@@ -8,6 +8,7 @@
 #include <atomic>
 
 #include "helper.hpp"
+#include "usuarios.hpp"
 
 using Session = crow::SessionMiddleware<crow::InMemoryStore>;
 class venta_controller : public Gtk::Frame
@@ -40,11 +41,16 @@ private:
     Glib::Dispatcher dispatcher;
     std::queue<std::function<void()>> dispatch_queue;
     std::mutex dispatch_queue_mutex;
-    int box_state;
     std::atomic<bool> timeout;
     std::atomic<bool> payment_completed;
+    int box_state;
+    
 
     crow::response Test_venta(const crow::request& req);
+
+    crow::response venta(const crow::request& req);
+    crow::response refill(const crow::request& req);
+    crow::response refound(const crow::request& req);
 
 
     void dispatch_to_gui(std::function<void()> func);

@@ -51,6 +51,9 @@ public:
                                    "(NULL,'Apagar equipo');");
             this->sqlite3->command("insert into usuarios values (null,'admin','admin');");
 
+            this->sqlite3->command("CREATE TABLE log (Id INT PRIMARY KEY, IdUser INT, Tipo text, Ingreso real, Cambio real, Total real, Estatus text, Fecha text , FOREIGN KEY (IdUser) REFERENCES usuarios (id))");
+            this->sqlite3->command("CREATE TABLE pagoPendiente (Id INT PRIMARY KEY, IdLog int, Remanente real, Estatus text, FOREIGN KEY (IdLog) REFERENCES log (Id))");
+
             std::string ROL_ADMIN{"INSERT INTO usuario_roles values"};
             for (size_t i = 0; i < 19; i++)
             {

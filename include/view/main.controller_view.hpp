@@ -105,7 +105,11 @@ private:
     std::atomic<bool> server_running_{false};
 
 
-    crow::App<crow::CookieParser, Session> app{Session{crow::CookieParser::Cookie("session").max_age(/*15 minutos vida maxima de tokens*/ 15 * 60).path("/"), 64, crow::InMemoryStore{}}};
+    crow::App<crow::CookieParser, Session> app{Session{
+        crow::CookieParser::Cookie("session")
+        .max_age(/*15 minutos vida maxima de tokens*/ 15 * 60)
+        .path("/"), 64, crow::InMemoryStore{}
+        }};
 
     //Controllers
     // std::unique_ptr<test_controller> a = std::make_unique<test_controller>(app_,main_stack,box_principal);

@@ -24,7 +24,6 @@ std::string session_controller::verTokens(const crow::request &req)
 
     std::string out;
     for (const auto &key : keys)
-        // .string(key) converts a value of any type to a string
         out += key + " | " + session.string(key) + '\n';
     return out;
 }
