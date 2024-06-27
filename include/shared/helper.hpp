@@ -39,10 +39,32 @@ namespace Helper
             Apagar_Equipo
         };
 
-        extern std::string userName;
+        static const std::vector<Rol> allRoles = {
+            Rol::Venta,
+            Rol::Pago,
+            Rol::Carga,
+            Rol::Retirada,
+            Rol::Cambio_M,
+            Rol::Cambio_A,
+            Rol::Ingresos,
+            Rol::Enviar_Casette,
+            Rol::Retirar_Casette,
+            Rol::Consulta_Efectivo,
+            Rol::Mov_Pendientes,
+            Rol::Consulta_Movimientos,
+            Rol::Cierre_Faltantes,
+            Rol::Estadisticas,
+            Rol::Fianza,
+            Rol::Mostrar_Reportes,
+            Rol::Configuracion,
+            Rol::Salir_Escritorio,
+            Rol::Apagar_Equipo
+        };
+
+
         std::string exec(const char *cmd);
         std::string formatTime(int seconds);
-        crow::status validUser(const crow::request &req, Session::context &session);
-        crow::status validPermissions(const crow::request &req, Session::context &session, const std::vector<Rol> &vecRol);
+        crow::status validUser(const crow::request &req, Session::context &session, std::string &userName);
+        std::pair<crow::status, std::string> validPermissions(const crow::request &req, Session::context &session, const std::vector<Rol> &vecRol);
     } // namespace System
 } // namespace Helper

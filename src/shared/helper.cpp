@@ -4,7 +4,6 @@ namespace Helper
 {
     namespace System
     {
-        std::string userName = "";
         std::string exec(const char *cmd)
         {
             std::array<char, 128> buffer;
@@ -39,7 +38,7 @@ namespace Helper
             return oss.str();
         }
 
-        crow::status validUser(const crow::request &req, Session::context &session)
+        crow::status validUser(const crow::request &req, Session::context &session, std::string &userName)
         {
             auto auth_header = req.get_header_value("Authorization");
             if (auth_header.empty() || auth_header.substr(0, 7) != "Bearer ")
@@ -55,10 +54,12 @@ namespace Helper
             return crow::status::UNAUTHORIZED;
         }
 
-        crow::status validPermissions(const crow::request &req, Session::context &session, const std::vector<Rol> &vecRol)
+        std::pair<crow::status, std::string> validPermissions(const crow::request &req, Session::context &session, const std::vector<Rol> &vecRol)
         {
-            if (auto status = validUser(req, session); status != crow::status::OK)
-                return status;
+            std::string userName;
+
+            if (auto status = validUser(req, session, userName); status != crow::status::OK)
+                return {status, userName};
             else
             {
                 Model::usuarios_roles rol;
@@ -76,10 +77,10 @@ namespace Helper
                 if (rolesNecesarios.empty())
                 {
                     userName.clear();
-                    return crow::status::OK; // Todos los roles necesarios están presentes, devuelve OK
+                    return {crow::status::OK, userName}; // Todos los roles necesarios están presentes, devuelve OK
                 }
             }
-            return crow::status::UNAUTHORIZED;
+            return {crow::status::UNAUTHORIZED, userName};
         }
     } // namespace System
 } // namespace Helper

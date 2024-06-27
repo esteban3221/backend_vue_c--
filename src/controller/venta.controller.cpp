@@ -107,9 +107,9 @@ crow::response venta_controller::venta(const crow::request &req)
         Helper::System::Rol::Pago
         }); 
     
-    status != crow::status::OK )
+    status.first != crow::status::OK )
     {
-        return crow::response(status);
+        return crow::response(status.first);
     }
     
     auto x = crow::json::load(req.body);

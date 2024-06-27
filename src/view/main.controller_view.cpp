@@ -7,7 +7,7 @@ main_controller::main_controller(/* args */)
     this->set_title("MaxiCajero");
     
     this->set_child(main_stack);
-
+    
     try
     {
         builder->add_from_string(this->XML);

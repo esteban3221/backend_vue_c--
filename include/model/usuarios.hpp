@@ -2,9 +2,14 @@
 #include "conectbd.hpp"
 #include <vector>
 #include <map>
+#include <gtkmm.h>
+#include "usuarios_config.hpp"
 
 namespace model
 {
+    extern Gtk::TreeView *tree_usuarios;
+    extern Glib::RefPtr<Gtk::ListStore> ModelUsuarios;
+    extern Model::Usuarios_Config m_Colunms_usuarios;
     class usuarios : public connectSqlite
     {
     private:
@@ -15,7 +20,7 @@ namespace model
 
         bool validaUsuario(const std::string &user, const std::string &passw);
         bool validaUsuario(const std::string &user);
-        void altaUsuario(const std::string &user,const std::string &passw);
+        std::string altaUsuario(const std::string &user,const std::string &passw);
         void bajaUsuario(const std::string &user);
         void bajaUsuario(const unsigned &id);
         bool modificaUsuario(const std::string &user, const std::string &passw);

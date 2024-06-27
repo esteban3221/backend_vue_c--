@@ -299,9 +299,8 @@ private:
     Gtk::CheckButton *ArrayFrameButton[19] = {nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr,
                                               nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr};
     sigc::connection m_signal_connection;
-    Model::Usuarios_Config m_Colunms_usuarios;
-    Glib::RefPtr<Gtk::ListStore> ModelUsuarios;
-    Gtk::TreeView *tree_usuarios = nullptr;
+    
+    
     Gtk::TreeRow row;
 
     // Funciones internas

@@ -2,6 +2,11 @@
 
 namespace model
 {
+    /// @brief ===============Atomicas====================
+    Gtk::TreeView *tree_usuarios = nullptr;
+    Glib::RefPtr<Gtk::ListStore> ModelUsuarios = nullptr;
+    Model::Usuarios_Config m_Colunms_usuarios;
+    //==================================================
     usuarios::usuarios()
     {
     }
@@ -24,9 +29,14 @@ namespace model
 
         return not this->sqlite3->get_result().empty();
     }
-    void usuarios::altaUsuario(const std::string &user, const std::string &passw)
+    std::string usuarios::altaUsuario(const std::string &user, const std::string &passw)
     {
+        this->sqlite3->command("SELECT * FROM usuarios WHERE username = ?", user.c_str());
+        if(this->sqlite3->get_result()["id"].size() > 0)
+            throw std::runtime_error("El usuario ya existe");
         this->sqlite3->command("insert into usuarios(username, password) values (?, ?)", user.c_str(), passw.c_str());
+        this->sqlite3->command("select id from usuarios ORDER BY id DESC");
+        return this->sqlite3->get_result()["id"][0];
     }
     void usuarios::bajaUsuario(const std::string &user)
     {
@@ -38,8 +48,8 @@ namespace model
     }
     bool usuarios::modificaUsuario(const std::string &user, const std::string &passw)
     {
-        // por saber si nos enviaran un username o un id
-        return true;
+        this->sqlite3->command("update usuarios set password = ? where username = ?", passw.c_str(), user.c_str());
+        return this->sqlite3->get_rc();
     }
     std::map<std::string, std::vector<std::string>> usuarios::obten_usuarios()
     {
