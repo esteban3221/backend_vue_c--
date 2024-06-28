@@ -15,7 +15,7 @@ config_view::config_view(Gtk::Box *&box_principal_,
     stackside->set_stack(stacconfig);
     stacconfig.set_margin(10);
     stacconfig.set_hexpand();
-    stacconfig.set_transition_type(Gtk::StackTransitionType::CROSSFADE);
+    stacconfig.set_transition_type(Gtk::StackTransitionType::SLIDE_UP_DOWN);
 
     stacconfig.add(*view_one, "page 0", "General");
     stacconfig.add(*v3, "page 1", "Inf. del Sistema");

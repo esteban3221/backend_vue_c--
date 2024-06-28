@@ -41,7 +41,7 @@ main_controller::main_controller(/* args */)
     this->main_stack.add(*this->configView);
     this->main_stack.add(*this->nip_set_view);
 
-    this->main_stack.set_transition_type(Gtk::StackTransitionType::SLIDE_LEFT_RIGHT);
+    this->main_stack.set_transition_type(Gtk::StackTransitionType::ROTATE_LEFT_RIGHT);
 
     
     this->server_running_ = true;
