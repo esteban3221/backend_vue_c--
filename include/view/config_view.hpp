@@ -2,6 +2,7 @@
 #include <gtkmm.h>
 #include <vector>
 #include "wrapbinary.hpp"
+
 #include <filesystem>
 
 #include "view_two.hpp"
@@ -11,6 +12,7 @@
 #include "view_six.hpp"
 #include "view_seven.hpp"
 
+using Session = crow::SessionMiddleware<crow::InMemoryStore>;
 class config_view : public Gtk::Box
 {
 private:

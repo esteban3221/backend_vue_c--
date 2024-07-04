@@ -23,6 +23,7 @@ set(SOURCES
     src/controller/session.controller.cpp
     src/controller/venta.controller.cpp
     #src/controller/base.controller.cpp
+    src/controller/configuracion.controller.cpp
     #========================================
     
     src/view/main.controller_view.cpp
@@ -44,6 +45,7 @@ set(SOURCES
     src/model/usuarios.cpp
     src/model/usuarios_roles.cpp
     src/model/niveles_dinero.cpp
+    src/model/config.cpp
 
     #========================================
     src/shared/config_text.cpp

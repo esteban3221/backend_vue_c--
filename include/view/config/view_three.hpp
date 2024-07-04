@@ -2,6 +2,7 @@
 #include <gtkmm.h>
 #include "wrapbinary.hpp"
 #include "config_text.hpp"
+#include "config.hpp"
 
 class view_three : public Gtk::Box
 {
@@ -133,7 +134,7 @@ private:
                         "</interface>";
 
     Glib::RefPtr<Gtk::Builder> builder = Gtk::Builder::create();
-    std::vector<Gtk::Entry *> list_ety_datos = {nullptr, nullptr, nullptr, nullptr, nullptr};
+    
     Gtk::Box *page_2 = nullptr;
 
     void inti_ety_datos();

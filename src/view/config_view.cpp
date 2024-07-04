@@ -34,17 +34,13 @@ config_view::config_view(Gtk::Box *&box_principal_,
 // void config_view::test_creat_pdf(Gtk::ListBoxRow *row)
 // {
 //     #ifdef CAIRO_HAS_PDF_SURFACE
-
 //     auto surface = Cairo::PdfSurface::create("Prueba pdf", 226.77, 600.0); // Tamaño A4
 //     auto cr = Cairo::Context::create(surface);
-
 //         cr->select_font_face("Sans", (Cairo::ToyFontFace::Slant) 0 , (Cairo::ToyFontFace::Weight) 0);
 //         cr->set_font_size(24);
 //         cr->move_to(50, 100);
 //         cr->show_text("Hola, Mundo!");
-
 //         cr->show_page();
-
 // #else
 //     std::cout << "You must compile cairo with PDF support for this example to work." << std::endl;
 // #endif

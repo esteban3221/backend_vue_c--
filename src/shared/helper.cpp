@@ -76,7 +76,6 @@ namespace Helper
                 }
                 if (rolesNecesarios.empty())
                 {
-                    userName.clear();
                     return {crow::status::OK, userName}; // Todos los roles necesarios están presentes, devuelve OK
                 }
             }

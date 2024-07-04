@@ -18,6 +18,30 @@ namespace SQLite3
         static int callback(void *, int, char **, char **);
         static inline std::map<std::string, std::vector<std::string>> result;
 
+        template <typename T>
+        void bindArgument(sqlite3_stmt *stmt, int index, T &&value)
+        {
+            if constexpr (std::is_integral_v<std::remove_reference_t<T>> || std::is_floating_point_v<std::remove_reference_t<T>>)
+            {
+                rc = sqlite3_bind_int(stmt, index, value);
+            }
+            // Exclusivamente tiene que ser const char *
+            // else if constexpr (std::is_same_v<std::remove_reference_t<T>, std::string>)
+            // {
+            //     std::string stringValue = value;
+            //     rc = sqlite3_bind_text(stmt, index, stringValue.c_str(), -1, SQLITE_STATIC);
+            // }
+            else if constexpr (std::is_same_v<std::remove_reference_t<T>, const char *>)
+            {
+                rc = sqlite3_bind_text(stmt, index, value, -1, SQLITE_STATIC);
+            }
+
+            if (rc != SQLITE_OK)
+            {
+                throw std::runtime_error("Error al bindear el argumento");
+            }
+        }
+
     public:
         SQLite(const std::string &DB_);
         ~SQLite();
@@ -65,30 +89,6 @@ namespace SQLite3
             {
                 std::string error = "Error al ejecutar la sentencia SQL: " + std::string(sqlite3_errmsg(db)) + "\nSQL: " + sql + "\n";
                 throw std::runtime_error(error);
-            }
-        }
-
-        template <typename T>
-        void bindArgument(sqlite3_stmt *stmt, int index, T &&value)
-        {
-            if constexpr (std::is_integral_v<std::remove_reference_t<T>> || std::is_floating_point_v<std::remove_reference_t<T>>)
-            {
-                rc = sqlite3_bind_int(stmt, index, value);
-            }
-            // Exclusivamente tiene que ser const char *
-            // else if constexpr (std::is_same_v<std::remove_reference_t<T>, std::string>)
-            // {
-            //     std::string stringValue = value;
-            //     rc = sqlite3_bind_text(stmt, index, stringValue.c_str(), -1, SQLITE_STATIC);
-            // }
-            else if constexpr (std::is_same_v<std::remove_reference_t<T>, const char *>)
-            {
-                rc = sqlite3_bind_text(stmt, index, value, -1, SQLITE_STATIC);
-            }
-
-            if (rc != SQLITE_OK)
-            {
-                throw std::runtime_error("Error al bindear el argumento");
             }
         }
     };

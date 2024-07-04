@@ -3,6 +3,7 @@
 #include <iomanip>
 #include "wrapbinary.hpp"
 #include "config_text.hpp"
+#include "config.hpp"
 
 class view_four : public Gtk::Box
 {
@@ -320,14 +321,10 @@ private:
     Glib::RefPtr<Gtk::Builder> builder = Gtk::Builder::create();
     Gtk::Box *page_3 = nullptr;
 
+    
+    Gtk::TextView *text_ticket = nullptr;
     Gtk::ListBox *list_config = nullptr;
     Gtk::ListBox *list_config_visualizacion = nullptr;
-    Gtk::ListBox *list_config_test = nullptr;
-
-    Gtk::Switch *switch_impresion = nullptr;
-    Gtk::TextView *text_ticket = nullptr;
-
-    std::vector<Gtk::CheckButton *> list_view_ticket = {nullptr, nullptr, nullptr, nullptr, nullptr, nullptr};
 
     // Internal
     void init_signals_impresion();

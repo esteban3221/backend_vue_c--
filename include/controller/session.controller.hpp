@@ -14,8 +14,8 @@ class session_controller : public sigc::trackable
 {
 private:
     //referencia de atributos principales
-    // crow::SimpleApp &app;
     crow::App<crow::CookieParser, Session> &app;
+    
     model::usuarios M_usuarios;
 
     crow::response login(const crow::request &req);
