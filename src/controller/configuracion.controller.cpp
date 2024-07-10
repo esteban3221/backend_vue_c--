@@ -20,7 +20,7 @@ crow::response configuracion_controller::actualizaImpresion(const crow::request 
     {
         auto &session = app.get_context<Session>(req);
 
-        if (auto status = Helper::System::validPermissions(req, session, Helper::System::allRoles);
+        if (auto status = Helper::User::validPermissions(req, session, Helper::User::allRoles);
             status.first != crow::status::OK)
         {
             return crow::response(status.first);
@@ -64,7 +64,7 @@ crow::response configuracion_controller::actualizaInformacion(const crow::reques
     {
         auto &session = app.get_context<Session>(req);
 
-        if (auto status = Helper::System::validPermissions(req, session, Helper::System::allRoles);
+        if (auto status = Helper::User::validPermissions(req, session, Helper::User::allRoles);
             status.first != crow::status::OK)
         {
             return crow::response(status.first);
@@ -100,8 +100,8 @@ crow::response configuracion_controller::getInformacion(const crow::request &req
 {
     auto &session = app.get_context<Session>(req);
 
-    if (auto status = Helper::System::validPermissions(req, session,
-                                                       {Helper::System::Rol::Configuracion});
+    if (auto status = Helper::User::validPermissions(req, session,
+                                                       {Helper::User::Rol::Configuracion});
         status.first != crow::status::OK)
     {
         return crow::response(status.first);
@@ -122,7 +122,7 @@ crow::response configuracion_controller::testImpresion(const crow::request &req)
 {
     auto &session = app.get_context<Session>(req);
 
-    if (auto status = Helper::System::validPermissions(req, session, {Helper::System::Rol::Configuracion});
+    if (auto status = Helper::User::validPermissions(req, session, {Helper::User::Rol::Configuracion});
         status.first != crow::status::OK)
     {
         return crow::response(status.first);
@@ -139,7 +139,7 @@ crow::response configuracion_controller::reiniciar(const crow::request &req)
 {
     auto &session = app.get_context<Session>(req);
 
-    if (auto status = Helper::System::validPermissions(req, session, {Helper::System::Rol::Apagar_Equipo});
+    if (auto status = Helper::User::validPermissions(req, session, {Helper::User::Rol::Apagar_Equipo});
         status.first != crow::status::OK)
     {
         return crow::response(status.first);
@@ -156,7 +156,7 @@ crow::response configuracion_controller::apagar(const crow::request &req)
 {
     auto &session = app.get_context<Session>(req);
 
-    if (auto status = Helper::System::validPermissions(req, session, {Helper::System::Rol::Apagar_Equipo});
+    if (auto status = Helper::User::validPermissions(req, session, {Helper::User::Rol::Apagar_Equipo});
         status.first != crow::status::OK)
     {
         return crow::response(status.first);
@@ -173,8 +173,8 @@ crow::response configuracion_controller::getInformacionSistema(const crow::reque
 {
     auto &session = app.get_context<Session>(req);
 
-    if (auto status = Helper::System::validPermissions(req, session,
-                                                       {Helper::System::Rol::Configuracion});
+    if (auto status = Helper::User::validPermissions(req, session,
+                                                       {Helper::User::Rol::Configuracion});
         status.first != crow::status::OK)
     {
         return crow::response(status.first);

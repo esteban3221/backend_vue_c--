@@ -2,12 +2,13 @@
 
 main_controller::main_controller(/* args */)
 {
+    this->maximize();
 
-    this->set_default_size(800, 480);
+    //this->set_default_size(800, 480);
     this->set_title("MaxiCajero");
-    
     this->set_child(main_stack);
-    
+    //this->set_decorated(false);
+
     try
     {
         builder->add_from_string(this->XML);
@@ -18,7 +19,7 @@ main_controller::main_controller(/* args */)
                                                false /* use_markup */, Gtk::MessageType::ERROR,
                                                Gtk::ButtonsType::OK, true /* modal */));
         m_pDialog->set_secondary_text(e.what());
-        m_pDialog->set_hide_on_close(true);
+        m_pDialog->set_hide_on_close(false);
         m_pDialog->signal_response().connect([&](int response_id) { this->m_pDialog->close(); });
 
         m_pDialog->show();

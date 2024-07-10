@@ -7,11 +7,16 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 find_package(Crow REQUIRED)
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(GTKMM gtkmm-4.0)
+pkg_check_modules(LIBNOTIFY REQUIRED libnotify)
 find_package(SQLite3 REQUIRED)
 find_library(SQLITE3_LIBRARY sqlite3 REQUIRED)
 find_package(jwt-cpp REQUIRED)
 
-include_directories(${jwt-cpp_INCLUDE_DIRS})
+include_directories(
+    ${jwt-cpp_INCLUDE_DIRS}
+    ${GTKMM_INCLUDE_DIRS}
+    ${LIBNOTIFY_INCLUDE_DIRS}
+)
 
 set(SOURCES
     src/main.cpp
@@ -21,9 +26,10 @@ set(SOURCES
 
     src/controller/test.controller.cpp
     src/controller/session.controller.cpp
-    src/controller/venta.controller.cpp
     #src/controller/base.controller.cpp
     src/controller/configuracion.controller.cpp
+
+    src/controller/accion/venta.controller.cpp
     #========================================
     
     src/view/main.controller_view.cpp
@@ -46,25 +52,27 @@ set(SOURCES
     src/model/usuarios_roles.cpp
     src/model/niveles_dinero.cpp
     src/model/config.cpp
+    src/model/acciones.cpp
 
     #========================================
     src/shared/config_text.cpp
     src/shared/helper.cpp
     src/shared/niveles_almacenamiento.cpp
     #========================================
-    ${CMAKE_SOURCE_DIR}/lib/Encryption.c
-    ${CMAKE_SOURCE_DIR}/lib/enctest.c
-    ${CMAKE_SOURCE_DIR}/lib/ITLSSPProc.c
-    ${CMAKE_SOURCE_DIR}/lib/Random.c
-    ${CMAKE_SOURCE_DIR}/lib/serialfunc.c
-    ${CMAKE_SOURCE_DIR}/lib/ssp_commands.c
-    ${CMAKE_SOURCE_DIR}/lib/SSPComs.c
-    ${CMAKE_SOURCE_DIR}/lib/SSPDownload.c
+    # ${CMAKE_SOURCE_DIR}/lib/Encryption.c
+    # ${CMAKE_SOURCE_DIR}/lib/enctest.c
+    # ${CMAKE_SOURCE_DIR}/lib/ITLSSPProc.c
+    # ${CMAKE_SOURCE_DIR}/lib/Random.c
+    # ${CMAKE_SOURCE_DIR}/lib/serialfunc.c
+    # ${CMAKE_SOURCE_DIR}/lib/ssp_commands.c
+    # ${CMAKE_SOURCE_DIR}/lib/SSPComs.c
+    # ${CMAKE_SOURCE_DIR}/lib/SSPDownload.c
 )
 
 include_directories(include 
                     inc/
                     include/controller
+                    include/controller/accion
                     include/view
                     include/view/config
                     include/db
@@ -73,13 +81,14 @@ include_directories(include
 )
 
 
-add_executable(back_api_c_plus_plus ${SOURCES})
+add_executable(Maxicajero ${SOURCES})
 
-target_link_libraries(back_api_c_plus_plus 
+target_link_libraries(Maxicajero 
                         PUBLIC PRIVATE 
                         ${GTKMM_LIBRARIES} 
+                        ${LIBNOTIFY_LIBRARIES}
                         Crow::Crow 
                         SQLite::SQLite3 
                         jwt-cpp::jwt-cpp 
 )
-target_include_directories(back_api_c_plus_plus PRIVATE ${GTKMM_INCLUDE_DIRS})
+target_include_directories(Maxicajero PRIVATE ${GTKMM_INCLUDE_DIRS})

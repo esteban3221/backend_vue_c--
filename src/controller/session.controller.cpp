@@ -4,14 +4,14 @@ session_controller::session_controller(crow::App<crow::CookieParser, Session> &a
 {
     dispatcher.connect(sigc::mem_fun(*this, &session_controller::on_dispatcher_emit));
     // test
-    CROW_ROUTE(app, "/session/verToken").methods("GET"_method)(sigc::mem_fun(*this, &session_controller::verTokens));
+    CROW_ROUTE(app, "/sesion/verToken").methods("GET"_method)(sigc::mem_fun(*this, &session_controller::verTokens));
 
-    CROW_ROUTE(app, "/session/login").methods("POST"_method)(sigc::mem_fun(*this, &session_controller::login));
-    CROW_ROUTE(app, "/session/logout").methods("POST"_method)(sigc::mem_fun(*this, &session_controller::logout));
+    CROW_ROUTE(app, "/sesion/login").methods("POST"_method)(sigc::mem_fun(*this, &session_controller::login));
+    CROW_ROUTE(app, "/sesion/logout").methods("POST"_method)(sigc::mem_fun(*this, &session_controller::logout));
 
-    CROW_ROUTE(app, "/session/altaUsuario").methods("POST"_method)(sigc::mem_fun(*this, &session_controller::altaUsuario));
-    CROW_ROUTE(app, "/session/bajaUsuario").methods("POST"_method)(sigc::mem_fun(*this, &session_controller::bajaUsuario));
-    CROW_ROUTE(app, "/session/modificaUsuario").methods("POST"_method)(sigc::mem_fun(*this, &session_controller::modificaUsuario));
+    CROW_ROUTE(app, "/sesion/altaUsuario").methods("POST"_method)(sigc::mem_fun(*this, &session_controller::altaUsuario));
+    CROW_ROUTE(app, "/sesion/bajaUsuario").methods("POST"_method)(sigc::mem_fun(*this, &session_controller::bajaUsuario));
+    CROW_ROUTE(app, "/sesion/modificaUsuario").methods("POST"_method)(sigc::mem_fun(*this, &session_controller::modificaUsuario));
 }
 
 session_controller::~session_controller()
@@ -96,7 +96,7 @@ crow::response session_controller::altaUsuario(const crow::request &req)
     {
         auto &session = app.get_context<Session>(req);
 
-        if (auto status = Helper::System::validPermissions(req, session, Helper::System::allRoles);
+        if (auto status = Helper::User::validPermissions(req, session, Helper::User::allRoles);
             status.first != crow::status::OK)
         {
             return crow::response(status.first);
@@ -117,7 +117,8 @@ crow::response session_controller::altaUsuario(const crow::request &req)
                 row[model::m_Colunms_usuarios.id] = id;
                 row[model::m_Colunms_usuarios.nombre] = username;
             });
-
+            Helper::System::showNotify("Usuarios","Se añadio un nuevo usuario.","dialog-information");
+            
             return crow::response(status.first);
         }
     }
@@ -147,7 +148,7 @@ crow::response session_controller::bajaUsuario(const crow::request &req)
     // }
     auto &session = app.get_context<Session>(req);
 
-    if (auto status = Helper::System::validPermissions(req, session, Helper::System::allRoles);
+    if (auto status = Helper::User::validPermissions(req, session, Helper::User::allRoles);
         status.first != crow::status::OK)
     {
         return crow::response(status.first);
@@ -168,6 +169,7 @@ crow::response session_controller::bajaUsuario(const crow::request &req)
             }
                 
         }
+        Helper::System::showNotify("Usuarios","Se elimino un usuario.","dialog-information");
         return crow::response(status.first);
     }
     return crow::response(crow::status::CONFLICT);
@@ -176,12 +178,18 @@ crow::response session_controller::modificaUsuario(const crow::request &req)
 {
     try
     {
+        auto bodyParams = crow::json::load(req.body);
         auto &session = app.get_context<Session>(req);
 
-        if (auto status = Helper::System::validPermissions(req, session, Helper::System::allRoles);
+        if (auto status = Helper::User::validPermissions(req, session, {});
             status.first != crow::status::OK)
         {
             return crow::response(status.first);
+        }
+        else if(std::string username{bodyParams["username"].s()}; 
+                username != status.second)
+        {
+            return crow::response(crow::status::CONFLICT,"Usuario distinto al que se quiere modificar.");
         }
         else
         {
@@ -189,10 +197,11 @@ crow::response session_controller::modificaUsuario(const crow::request &req)
             //     "username" : "prueba",
             //     "password" : "Nuevo password"
             // }
-            auto bodyParams = crow::json::load(req.body);
-            std::string username{bodyParams["username"].s()};
+            
+            
             std::string password{bodyParams["password"].s()};
             this->M_usuarios.modificaUsuario(username, password);
+            Helper::System::showNotify("Usuarios","Se modifico un usuario.","dialog-information");
             return crow::response(status.first);
         }
     }
@@ -206,7 +215,7 @@ crow::response session_controller::logout(const crow::request &req)
 
     auto &session = app.get_context<Session>(req);
     std::string username;
-    if (auto status = Helper::System::validUser(req, session, username);
+    if (auto status = Helper::User::validUser(req, session, username);
         status != crow::status::OK)
     {
         return crow::response(status);

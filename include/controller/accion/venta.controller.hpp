@@ -3,24 +3,17 @@
 #include <crow/app.h>
 #include <crow/middlewares/session.h>
 #include <chrono>
-#include "SSPComs.h"
 #include <mutex>
 #include <atomic>
 
 #include "helper.hpp"
-#include "usuarios.hpp"
+#include "acciones.hpp"
 
 using Session = crow::SessionMiddleware<crow::InMemoryStore>;
 class venta_controller : public Gtk::Frame
 {
 private:
     unsigned DENOMINATION[7] = {0,20,50,100,200,500,1000};
-
-    SSP_COMMAND_SETUP ssp_setup_bill;
-    SSP_COMMAND_SETUP ssp_setup_coin;
-    SSP_POLL_DATA poll;
-    SSP_PORT port_bill;
-    SSP_PORT port_coin;
 
     //Glib::Dispatcher m_Dispatcher;
     sigc::connection M_timeout_venta;
@@ -55,7 +48,7 @@ private:
 
     void dispatch_to_gui(std::function<void()> func);
     void init_ui();
-    bool init_perifericos();
+    // bool init_perifericos();
     void on_dispatcher_emit();
 
     /*

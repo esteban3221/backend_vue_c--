@@ -1,6 +1,7 @@
 #pragma once
 #include <gtkmm.h>
 #include "wrapbinary.hpp"
+#include "helper.hpp"
 
 class view_one : public Gtk::Box
 {

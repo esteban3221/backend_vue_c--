@@ -38,6 +38,25 @@ namespace Helper
             return oss.str();
         }
 
+        /// @brief
+        /// @param title
+        /// @param subtitle
+        /// @param type dialog-information
+        void showNotify(const char *title, const char *subtitle, const char *type)
+        {
+            if (BinaryDB::select_<int>(9) == true)
+            {
+                notify_init("MaxiCajero");
+                NotifyNotification *Notify = notify_notification_new(title, subtitle, type);
+                notify_notification_show(Notify, NULL);
+                g_object_unref(G_OBJECT(Notify));
+                notify_uninit();
+            }
+        }
+    } // namespace System
+
+    namespace User
+    {
         crow::status validUser(const crow::request &req, Session::context &session, std::string &userName)
         {
             auto auth_header = req.get_header_value("Authorization");
@@ -67,7 +86,7 @@ namespace Helper
                 std::unordered_set<Rol> rolesNecesarios(vecRol.begin(), vecRol.end());
                 for (const auto &rol_ : rolesPorUsuario["id_rol"]) // Suponiendo que los roles están bajo la clave "id_rol" en el mapa
                 {
-                    Helper::System::Rol rolUsuarioEnum = static_cast<Helper::System::Rol>(std::stoi(rol_));
+                    Helper::User::Rol rolUsuarioEnum = static_cast<Helper::User::Rol>(std::stoi(rol_));
 
                     if (rolesNecesarios.find(rolUsuarioEnum) != rolesNecesarios.end())
                     {
@@ -81,5 +100,7 @@ namespace Helper
             }
             return {crow::status::UNAUTHORIZED, userName};
         }
-    } // namespace System
+
+    } // namespace User
+
 } // namespace Helper

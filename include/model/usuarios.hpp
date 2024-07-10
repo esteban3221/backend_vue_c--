@@ -1,8 +1,5 @@
 #pragma once
 #include "conectbd.hpp"
-#include <vector>
-#include <map>
-#include <gtkmm.h>
 #include "usuarios_config.hpp"
 
 namespace model

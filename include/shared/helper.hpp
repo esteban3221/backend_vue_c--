@@ -10,11 +10,20 @@
 #include <crow.h>
 #include <crow/middlewares/session.h>
 #include <model/usuarios_roles.hpp>
+#include <libnotify/notify.h>
+#include "wrapbinary.hpp"
 
 using Session = crow::SessionMiddleware<crow::InMemoryStore>;
 namespace Helper
 {
     namespace System
+    {
+        std::string exec(const char *cmd);
+        std::string formatTime(int seconds);
+        void showNotify(const char *title, const char *subtitle, const char *type);
+    } // namespace System
+
+    namespace User
     {
         enum class Rol
         {
@@ -39,7 +48,7 @@ namespace Helper
             Apagar_Equipo
         };
 
-        static const std::vector<Rol> allRoles = {
+        static const std::vector<Helper::User::Rol> allRoles = {
             Rol::Venta,
             Rol::Pago,
             Rol::Carga,
@@ -58,13 +67,37 @@ namespace Helper
             Rol::Mostrar_Reportes,
             Rol::Configuracion,
             Rol::Salir_Escritorio,
-            Rol::Apagar_Equipo
-        };
+            Rol::Apagar_Equipo};
 
-
-        std::string exec(const char *cmd);
-        std::string formatTime(int seconds);
         crow::status validUser(const crow::request &req, Session::context &session, std::string &userName);
         std::pair<crow::status, std::string> validPermissions(const crow::request &req, Session::context &session, const std::vector<Rol> &vecRol);
-    } // namespace System
+    } // namespace User
+
 } // namespace Helper
+
+namespace Action
+{
+    enum class Type : unsigned
+    {
+        VENTA,
+        PAGO,
+        REFILL,
+        TRANSPASO,
+        CAMBIO,
+        INCOMPLETO,
+        PENDIENTE,
+        CANCELADO
+    };
+
+    static const std::array<std::string,8> typeVal =
+    {{
+        "VENTA",
+        "PAGO",
+        "REFILL",
+        "TRANSPASO",
+        "CAMBIO",
+        "INCOMPLETO",
+        "PENDIENTE",
+        "CANCELADO"
+    }};
+} // namespace Action

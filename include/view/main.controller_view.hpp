@@ -18,7 +18,7 @@
 #include <memory>
 #include <gtkmm.h>
 
-class main_controller : public Gtk::Window
+class main_controller : public Gtk::ApplicationWindow
 {
 private:
     // Widgets del front principal

@@ -14,18 +14,18 @@ view_one::view_one(Gtk::Stack &main_stack_,
 
     if (BinaryDB::BDB.length() == 0)
         BinaryDB::init_();
-        
+
     builder->add_from_string(this->PAGE0);
     this->page_0 = builder->get_widget<Gtk::Box>("page_0");
     this->set_homogeneous();
     this->append(*page_0);
-
 
     this->init_signals_config();
 }
 
 view_one::~view_one()
 {
+    BinaryDB::update_(17, ety_mensaje_inicio->get_text().operator std::string());
 }
 
 void view_one::init_signals_config()
@@ -85,12 +85,12 @@ void view_one::init_signals_config()
     this->ety_mensaje_inicio->signal_changed().connect([this]()
                                                        {
         lbl_main->set_text(ety_mensaje_inicio->get_text());
-        BinaryDB::update_(17, ety_mensaje_inicio->get_text().operator std::string()); 
-        });
+        BinaryDB::update_(17, ety_mensaje_inicio->get_text().operator std::string()); });
 
     this->check_config_notifi->set_active(BinaryDB::select_<int>(9));
 
-    this->check_config_notifi->signal_toggled().connect([this]() { BinaryDB::update_<int>(9, check_config_notifi->get_active()); });
+    this->check_config_notifi->signal_toggled().connect([this]()
+                                                        { BinaryDB::update_<int>(9, check_config_notifi->get_active()); });
     this->list_configurable = builder->get_widget<Gtk::ListBox>("list_configurable");
     this->list_configurable->signal_row_activated().connect([this](Gtk::ListBoxRow *row)
                                                             {
@@ -108,7 +108,6 @@ void view_one::init_signals_config()
                                                                     }
                                                                 } });
 }
-
 void view_one::on_file_dialog_response(int response_id, Gtk::FileChooserDialog *dialog)
 {
     switch (response_id)
@@ -136,7 +135,6 @@ void view_one::on_file_dialog_response(int response_id, Gtk::FileChooserDialog *
     }
     delete dialog;
 }
-
 void view_one::on_button_file_clicked()
 {
     auto dialog = new Gtk::FileChooserDialog(main_window,
@@ -160,7 +158,6 @@ void view_one::on_button_file_clicked()
 
     dialog->show();
 }
-
 void view_one::on_click_reboot()
 {
     Dialog.reset(new Gtk::MessageDialog(main_window, "Reinicio", false, Gtk::MessageType::QUESTION, Gtk::ButtonsType::CANCEL, true));
@@ -169,7 +166,7 @@ void view_one::on_click_reboot()
     Dialog->signal_response().connect([this](int response)
                                       {
         if(Gtk::ResponseType::OK == response)
-            std::cout << "reboot\n";
+            Helper::System::exec("shutdown -r");
 
         Dialog->close(); });
 
@@ -183,7 +180,7 @@ void view_one::on_click_shutdown()
     Dialog->signal_response().connect([this](int response)
                                       {
         if(Gtk::ResponseType::OK == response)
-            std::cout << "apagar\n";
+            Helper::System::exec("shutdown +1");
 
         Dialog->close(); });
 
@@ -201,7 +198,8 @@ void view_one::on_rest_app()
     auto chkb = Gtk::manage(new Gtk::CheckButton("Estoy consiente de la perdida completa de los datos del dispositivo."));
     Dialog->get_content_area()->append(*chkb);
 
-    chkb->signal_toggled().connect([btn, chkb](){ btn->set_sensitive(chkb->get_active()); });
+    chkb->signal_toggled().connect([btn, chkb]()
+                                   { btn->set_sensitive(chkb->get_active()); });
 
     Dialog->signal_response().connect([this](int response)
                                       {
