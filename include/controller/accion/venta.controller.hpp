@@ -18,6 +18,7 @@ private:
     //Glib::Dispatcher m_Dispatcher;
     sigc::connection M_timeout_venta;
     sigc::connection M_idle_venta;
+    sigc::connection M_idle_validator;
 
     //referencias vista principal
     crow::App<crow::CookieParser, Session> &app;
@@ -50,6 +51,8 @@ private:
     void init_ui();
     // bool init_perifericos();
     void on_dispatcher_emit();
+
+    Helper::Validator validator;
 
     /*
                       TEST

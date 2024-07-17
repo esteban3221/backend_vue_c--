@@ -2,12 +2,12 @@
 
 main_controller::main_controller(/* args */)
 {
-    this->maximize();
+    // this->set_default_size(800, 480);
 
-    //this->set_default_size(800, 480);
+    //this->maximize(); 
     this->set_title("MaxiCajero");
     this->set_child(main_stack);
-    //this->set_decorated(false);
+    // this->set_decorated(false);
 
     try
     {
@@ -20,7 +20,8 @@ main_controller::main_controller(/* args */)
                                                Gtk::ButtonsType::OK, true /* modal */));
         m_pDialog->set_secondary_text(e.what());
         m_pDialog->set_hide_on_close(false);
-        m_pDialog->signal_response().connect([&](int response_id) { this->m_pDialog->close(); });
+        m_pDialog->signal_response().connect([&](int response_id)
+                                             { this->m_pDialog->close(); });
 
         m_pDialog->show();
     }
@@ -44,38 +45,36 @@ main_controller::main_controller(/* args */)
 
     this->main_stack.set_transition_type(Gtk::StackTransitionType::ROTATE_LEFT_RIGHT);
 
-    
     this->server_running_ = true;
-    this->server_thread_ = std::thread([this]() { this->app.port(44333).run(); });
-
+    this->server_thread_ = std::thread([this]() { this->app.port(44333).loglevel(crow::LogLevel::Info).run(); });
 
     this->main_stack.set_visible_child(*this->box_principal);
-    //this->main_stack.set_visible_child(*this->venta);
+    // this->main_stack.set_visible_child(*this->venta);
 
-    //señales
-    this->btn_logo_nip->signal_clicked().connect(sigc::mem_fun (*this, &main_controller::entra_config));
+    // señales
+    this->btn_logo_nip->signal_clicked().connect(sigc::mem_fun(*this, &main_controller::entra_config));
 
-    //extrapolacion de datos desde Config
-    this->img_main_logo->property_file() =  BinaryDB::select_<std::string>(16);
+    // extrapolacion de datos desde Config
+    this->img_main_logo->property_file() = BinaryDB::select_<std::string>(16);
     this->lbl_main->set_text(BinaryDB::select_<std::string>(17));
 
-    //const Glib::RefPtr<Gdk::Monitor> &monitor
-    // Glib::RefPtr<Gdk::Display> display = Gdk::Monitor::get_display();
-    // std::cout << '\n' << display->get_monitors()->get_item_type() << '\n';
-    // auto monitor = Glib::RefPtr<Gdk::Monitor>::cast_dynamic(display);
-    // this->fullscreen_on_monitor(display);
-    
+    // const Glib::RefPtr<Gdk::Monitor> &monitor
+    //  Glib::RefPtr<Gdk::Display> display = Gdk::Monitor::get_display();
+    //  std::cout << '\n' << display->get_monitors()->get_item_type() << '\n';
+    //  auto monitor = Glib::RefPtr<Gdk::Monitor>::cast_dynamic(display);
+    //  this->fullscreen_on_monitor(display);
 }
 
 void main_controller::entra_config()
 {
-    if(this->cont_click_logo >= 4)
+    if (this->cont_click_logo >= 4)
     {
         this->main_stack.set_visible_child(*nip);
         this->cont_click_logo = 0;
         this->btn_pill->set_opacity(0);
     }
-    else{
+    else
+    {
         this->cont_click_logo++;
         this->btn_pill->set_opacity(1);
         this->btn_pill->set_label(std::to_string(this->cont_click_logo));
@@ -84,9 +83,11 @@ void main_controller::entra_config()
 
 main_controller::~main_controller()
 {
-        if (this->server_running_) {
+    if (this->server_running_)
+    {
         this->app.stop();
-        if (this->server_thread_.joinable()) {
+        if (this->server_thread_.joinable())
+        {
             this->server_thread_.join();
         }
         this->server_running_ = false;

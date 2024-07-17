@@ -12,6 +12,9 @@
 #include <model/usuarios_roles.hpp>
 #include <libnotify/notify.h>
 #include "wrapbinary.hpp"
+#include <future>
+#include <curl/curl.h>
+#include <atomic>
 
 using Session = crow::SessionMiddleware<crow::InMemoryStore>;
 namespace Helper
@@ -73,6 +76,52 @@ namespace Helper
         std::pair<crow::status, std::string> validPermissions(const crow::request &req, Session::context &session, const std::vector<Rol> &vecRol);
     } // namespace User
 
+    // Singleton
+    class Validator
+    {
+    private:
+        
+        static size_t write_data(void *buffer, size_t size, size_t nmemb, void *userp);
+
+        std::pair<long, std::string> PostAPIRequest(const std::string &uri, const std::string &deviceID, const std::string &jsonData);
+
+        std::string GetAPIRequest(const std::string &uri, const std::string &deviceID);
+
+        std::future<std::pair<long, std::string>> PostAPIRequestAsync(const std::string &uri, const std::string &deviceID, const std::string &jsonData);
+
+        std::future<std::string> GetAPIRequestAsync(const std::string &uri, const std::string &deviceID);
+
+        struct Denomination
+        {
+            int value;
+            std::string countryCode;
+            bool isInhibited;
+            bool isRecyclable;
+            int acceptRoute;
+            int stored;
+        };
+
+        // std::vector<Denomination> parseDenominations(const std::string &jsonData);
+        void handleDeviceStatus(const std::string &state, const std::string &deviceID);
+        void pollDeviceStatus(const std::string &deviceID);
+        void processCommand(const std::string &command, const std::string &deviceID);
+
+    public:
+
+        std::atomic<long> sumInput;
+        std::atomic<bool> pollInit;
+        const std::string COIN_VALIDATOR;
+        const std::string BILL_VALIDATOR;
+
+        bool isConected();
+
+        bool startPay();
+        bool stopPay();
+
+        Validator(/* args */);
+        ~Validator();
+    };
+
 } // namespace Helper
 
 namespace Action
@@ -89,15 +138,13 @@ namespace Action
         CANCELADO
     };
 
-    static const std::array<std::string,8> typeVal =
-    {{
-        "VENTA",
-        "PAGO",
-        "REFILL",
-        "TRANSPASO",
-        "CAMBIO",
-        "INCOMPLETO",
-        "PENDIENTE",
-        "CANCELADO"
-    }};
+    static const std::array<std::string, 8> typeVal =
+        {{"VENTA",
+          "PAGO",
+          "REFILL",
+          "TRANSPASO",
+          "CAMBIO",
+          "INCOMPLETO",
+          "PENDIENTE",
+          "CANCELADO"}};
 } // namespace Action

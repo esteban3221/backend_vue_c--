@@ -6,6 +6,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 find_package(Crow REQUIRED)
 find_package(PkgConfig REQUIRED)
+find_package(CURL REQUIRED)
 pkg_check_modules(GTKMM gtkmm-4.0)
 pkg_check_modules(LIBNOTIFY REQUIRED libnotify)
 find_package(SQLite3 REQUIRED)
@@ -90,5 +91,6 @@ target_link_libraries(Maxicajero
                         Crow::Crow 
                         SQLite::SQLite3 
                         jwt-cpp::jwt-cpp 
+                        CURL::libcurl
 )
 target_include_directories(Maxicajero PRIVATE ${GTKMM_INCLUDE_DIRS})
