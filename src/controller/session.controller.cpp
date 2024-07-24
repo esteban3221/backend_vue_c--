@@ -9,6 +9,8 @@ session_controller::session_controller(crow::App<crow::CookieParser, Session> &a
     CROW_ROUTE(app, "/sesion/login").methods("POST"_method)(sigc::mem_fun(*this, &session_controller::login));
     CROW_ROUTE(app, "/sesion/logout").methods("POST"_method)(sigc::mem_fun(*this, &session_controller::logout));
 
+    CROW_ROUTE(app, "/sesion/actualizaRol").methods("POST"_method)(sigc::mem_fun(*this, &session_controller::actualizaRol));
+
     CROW_ROUTE(app, "/sesion/altaUsuario").methods("POST"_method)(sigc::mem_fun(*this, &session_controller::altaUsuario));
     CROW_ROUTE(app, "/sesion/bajaUsuario").methods("POST"_method)(sigc::mem_fun(*this, &session_controller::bajaUsuario));
     CROW_ROUTE(app, "/sesion/modificaUsuario").methods("POST"_method)(sigc::mem_fun(*this, &session_controller::modificaUsuario));
@@ -112,13 +114,13 @@ crow::response session_controller::altaUsuario(const crow::request &req)
             std::string password{bodyParams["password"].s()};
             auto id = this->M_usuarios.altaUsuario(username, password);
 
-            this->dispatch_to_gui([this,id,username] {
+            this->dispatch_to_gui([this, id, username]
+                                  {
                 auto row = *(model::ModelUsuarios->append());
                 row[model::m_Colunms_usuarios.id] = id;
-                row[model::m_Colunms_usuarios.nombre] = username;
-            });
-            Helper::System::showNotify("Usuarios","Se añadio un nuevo usuario.","dialog-information");
-            
+                row[model::m_Colunms_usuarios.nombre] = username; });
+            Helper::System::showNotify("Usuarios", "Se añadio un nuevo usuario.", "dialog-information");
+
             return crow::response(status.first);
         }
     }
@@ -127,6 +129,7 @@ crow::response session_controller::altaUsuario(const crow::request &req)
         return crow::response(crow::status::CONFLICT, e.what());
     }
 }
+
 crow::response session_controller::bajaUsuario(const crow::request &req)
 {
     // auto auth_header = req.get_header_value("Authorization");
@@ -167,9 +170,8 @@ crow::response session_controller::bajaUsuario(const crow::request &req)
                 model::ModelUsuarios->erase(row.get_iter());
                 break;
             }
-                
         }
-        Helper::System::showNotify("Usuarios","Se elimino un usuario.","dialog-information");
+        Helper::System::showNotify("Usuarios", "Se elimino un usuario.", "dialog-information");
         return crow::response(status.first);
     }
     return crow::response(crow::status::CONFLICT);
@@ -186,10 +188,10 @@ crow::response session_controller::modificaUsuario(const crow::request &req)
         {
             return crow::response(status.first);
         }
-        else if(std::string username{bodyParams["username"].s()}; 
-                username != status.second)
+        else if (std::string username{bodyParams["username"].s()};
+                 username != status.second)
         {
-            return crow::response(crow::status::CONFLICT,"Usuario distinto al que se quiere modificar.");
+            return crow::response(crow::status::CONFLICT, "Usuario distinto al que se quiere modificar.");
         }
         else
         {
@@ -197,11 +199,10 @@ crow::response session_controller::modificaUsuario(const crow::request &req)
             //     "username" : "prueba",
             //     "password" : "Nuevo password"
             // }
-            
-            
+
             std::string password{bodyParams["password"].s()};
             this->M_usuarios.modificaUsuario(username, password);
-            Helper::System::showNotify("Usuarios","Se modifico un usuario.","dialog-information");
+            Helper::System::showNotify("Usuarios", "Se modifico un usuario.", "dialog-information");
             return crow::response(status.first);
         }
     }
@@ -228,8 +229,65 @@ crow::response session_controller::logout(const crow::request &req)
     return crow::response(crow::status::CONFLICT);
 }
 
+crow::response session_controller::actualizaRol(const crow::request &req)
+{
+    auto &session = app.get_context<Session>(req);
 
-void session_controller::dispatch_to_gui(std::function<void()> func) {
+    if (auto status = Helper::User::validPermissions(req, session, Helper::User::allRoles);
+        status.first != crow::status::OK)
+    {
+        return crow::response(status.first);
+    }
+    else
+    {
+    // {
+    //     "roles": {
+    //         "Venta": false,
+    //         "Pago": false,
+    //         "Carga": false,
+    //         "Retirada": false,
+    //         "CambioM": false,
+    //         "CambioA": false,
+    //         "Ingresos": false,
+    //         "EnviarCasette": false,
+    //         "RetiradaCasette": false,
+    //         "ConsultaEfectivo": false,
+    //         "MovPendientes": false,
+    //         "ConsultaMovimientos": false,
+    //         "CierreFaltantes": false,
+    //         "Estadisticas": false,
+    //         "Fianza": false,
+    //         "Reportes": false,
+    //         "Configuracion": false,
+    //         "SalirEscritorio": false,
+    //         "Apagar": false
+    //     }
+    // }
+    // {
+    //     "usuario": {
+    //         "nombre": "Usuario1"
+    //     }
+    // }
+
+        auto bodyParams = crow::json::load(req.body);
+        auto usuario = bodyParams["usuario"];
+        auto roles = bodyParams["roles"];
+        std::vector<bool> values;
+
+        Model::usuarios_roles uR;
+        for (const auto &item : roles)
+            values.push_back(item.b());
+        
+        uR.modificaRolesUsuario(usuario["nombre"].s(), values);
+
+        Helper::System::showNotify("Usuarios", "Se actualizaron permisos.", "dialog-information");
+        return crow::response(status.first);
+    }
+    return crow::response(crow::status::CONFLICT);
+}
+
+void session_controller::dispatch_to_gui(std::function<void()> func)
+{
     {
         std::lock_guard<std::mutex> lock(dispatch_queue_mutex);
         dispatch_queue.push(func);
@@ -237,16 +295,19 @@ void session_controller::dispatch_to_gui(std::function<void()> func) {
     dispatcher.emit();
 }
 
-void session_controller::on_dispatcher_emit() {
+void session_controller::on_dispatcher_emit()
+{
     std::function<void()> func;
     {
         std::lock_guard<std::mutex> lock(dispatch_queue_mutex);
-        if (!dispatch_queue.empty()) {
+        if (!dispatch_queue.empty())
+        {
             func = dispatch_queue.front();
             dispatch_queue.pop();
         }
     }
-    if (func) {
+    if (func)
+    {
         func();
     }
 }

@@ -12,5 +12,7 @@ namespace Model
         ~usuarios_roles();
         std::map<std::string, std::vector<std::string>> obten_roles_by_id_usuarios(const std::string &id);
         std::map<std::string, std::vector<std::string>> obten_roles_by_usuarios(const std::string &username);
+
+        void modificaRolesUsuario(const std::string &username, const std::vector<bool> &values);
     };
 } // namespace Model

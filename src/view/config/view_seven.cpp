@@ -8,6 +8,19 @@ void view_seven::init_widgets()
     int sum_bill_cant = 0;
     int sum_bill_recy = 0;
 
+    Helper::Validator validator;
+
+    auto m1 = validator.PostAPIRequestAsync("ConnectDevice",validator.BILL_VALIDATOR, "").get();
+    auto m2 = validator.PostAPIRequestAsync("StartDevice",validator.BILL_VALIDATOR, "").get();
+
+    auto responseBill = validator.GetAPIRequestAsync("GetAllLevels",validator.BILL_VALIDATOR).get();
+    auto x = crow::json::load(responseBill);
+
+
+    crow::json::rvalue levelsBill;
+    if (x)
+        levelsBill = x["levels"];
+
     // Bill
     for (size_t i = 0; i < 7; i++)
     {
@@ -16,13 +29,23 @@ void view_seven::init_widgets()
 
         if (i < 6)
         {
-            std::get<0>(Levels::Bill::vecu)[i] = std::stoi(contenedor_bill["Cant_Alm"][i]);
+            if (levelsBill)
+            {
+                std::get<0>(Levels::Bill::vecu)[i] = levelsBill[i]["stored"].i();
+                Levels::Bill::Cnt_almacenado[i]->set_text(std::to_string(std::get<0>(Levels::Bill::vecu)[i]));
+            }
+            else
+            {
+                std::get<0>(Levels::Bill::vecu)[i] = std::stoi(contenedor_bill["Cant_Alm"][i]);
+                Levels::Bill::Cnt_almacenado[i]->set_text(contenedor_bill["Cant_Alm"][i]);
+            }
+            
             std::get<1>(Levels::Bill::vecu)[i] = std::stoi(contenedor_bill["Cant_Recy"][i]);
 
             sum_bill_cant += std::get<0>(Levels::Bill::vecu)[i];
             sum_bill_recy += std::get<1>(Levels::Bill::vecu)[i];
 
-            Levels::Bill::Cnt_almacenado[i]->set_text(contenedor_bill["Cant_Alm"][i]);
+            
             Levels::Bill::Cnt_Reciclador[i]->set_text(contenedor_bill["Cant_Recy"][i]);
 
             Levels::Bill::Niveles_inmobilidad[i] = this->builder->get_widget<Gtk::SpinButton>("lbl_bill_spin_" + std::to_string(i));
@@ -51,7 +74,16 @@ void view_seven::init_widgets()
     Levels::Bill::Cnt_almacenado[6]->set_text(std::to_string(sum_bill_cant));
     Levels::Bill::Cnt_Reciclador[6]->set_text(std::to_string(sum_bill_recy));
 
+    validator.PostAPIRequestAsync("ConnectDevice",validator.COIN_VALIDATOR, "").get();
+    validator.PostAPIRequestAsync("StartDevice",validator.COIN_VALIDATOR, "").get();
+
+    auto responseCoin = validator.GetAPIRequestAsync("GetAllLevels",validator.COIN_VALIDATOR).get();
     auto contenedor_coin = this->nd.get_niveles_coin();
+    auto y = crow::json::load(responseCoin);
+
+    crow::json::rvalue levelsCoin;
+    if (y)
+        levelsCoin = y["levels"];
 
     // Coin
     int sum_coin_cant = 0;
@@ -64,13 +96,23 @@ void view_seven::init_widgets()
 
         if (i < 4)
         {
-            std::get<0>(Levels::Coin::vecu)[i] = std::stoi(contenedor_coin["Cant_Alm"][i]);
+
+            if (y)
+            {
+                std::get<0>(Levels::Coin::vecu)[i] = levelsCoin[i]["stored"].i();
+                Levels::Coin::Cnt_almacenado[i]->set_text(std::to_string(std::get<0>(Levels::Coin::vecu)[i]));
+            }
+            else
+            {
+                std::get<0>(Levels::Coin::vecu)[i] = std::stoi(contenedor_coin["Cant_Alm"][i]);
+                Levels::Coin::Cnt_almacenado[i]->set_text(contenedor_coin["Cant_Alm"][i]);
+            }
+
             std::get<1>(Levels::Coin::vecu)[i] = std::stoi(contenedor_coin["Cant_Recy"][i]);
 
             sum_coin_cant += std::get<0>(Levels::Coin::vecu)[i];
             sum_coin_recy += std::get<1>(Levels::Coin::vecu)[i];
 
-            Levels::Coin::Cnt_almacenado[i]->set_text(contenedor_coin["Cant_Alm"][i]);
             Levels::Coin::Cnt_Reciclador[i]->set_text(contenedor_coin["Cant_Recy"][i]);
 
             Levels::Coin::Niveles_inmobilidad[i] = this->builder->get_widget<Gtk::SpinButton>("lbl_coin_spin_" + std::to_string(i));

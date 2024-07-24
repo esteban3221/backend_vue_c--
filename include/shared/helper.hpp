@@ -87,10 +87,6 @@ namespace Helper
 
         std::string GetAPIRequest(const std::string &uri, const std::string &deviceID);
 
-        std::future<std::pair<long, std::string>> PostAPIRequestAsync(const std::string &uri, const std::string &deviceID, const std::string &jsonData);
-
-        std::future<std::string> GetAPIRequestAsync(const std::string &uri, const std::string &deviceID);
-
         struct Denomination
         {
             int value;
@@ -112,6 +108,9 @@ namespace Helper
         std::atomic<bool> pollInit;
         const std::string COIN_VALIDATOR;
         const std::string BILL_VALIDATOR;
+
+        std::future<std::pair<long, std::string>> PostAPIRequestAsync(const std::string &uri, const std::string &deviceID, const std::string &jsonData);
+        std::future<std::string> GetAPIRequestAsync(const std::string &uri, const std::string &deviceID);
 
         bool isConected();
 

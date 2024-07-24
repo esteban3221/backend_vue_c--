@@ -31,7 +31,7 @@ namespace model
     }
     std::string usuarios::altaUsuario(const std::string &user, const std::string &passw)
     {
-        this->sqlite3->command("SELECT * FROM usuarios WHERE username = ?", user.c_str());
+        this->sqlite3->command("SELECT * FROM usuarios WHERE username = ? LIMIT 1", user.c_str());
         if(this->sqlite3->get_result()["id"].size() > 0)
             throw std::runtime_error("El usuario ya existe");
         this->sqlite3->command("insert into usuarios(username, password) values (?, ?)", user.c_str(), passw.c_str());

@@ -202,7 +202,7 @@ namespace Helper
             {
                 try
                 {
-                    std::cout << " TEST " << deviceStatusJson << std::endl;
+                    //std::cout << " TEST " << deviceStatusJson << std::endl;
                     auto responseObjects = crow::json::load(deviceStatusJson);
 
                     for (const auto &responseObject : responseObjects)
@@ -216,11 +216,8 @@ namespace Helper
                         else if (responseObject.has("eventTypeAsString"))
                         {
                             state = responseObject["eventTypeAsString"].s();
-                            if (responseObject["eventTypeAsString"] == "STACKED")
-                                std::cout << "Se recibio :" << responseObject["value"].i() / 100 << '\n';
-                            if (responseObject["eventTypeAsString"] == "COIN_CREDIT")
-                                std::cout << "Se recibio :" << responseObject["value"].i() / 100 << '\n';
-
+                            std::cout << "Se recibio :" << responseObject["value"].i() / 100 << '\n';
+                            if (responseObject["eventTypeAsString"].s() == "ESCROW" || responseObject["eventTypeAsString"].s() == "COIN_CREDIT")
                                 sumInput.store(sumInput.load() + (responseObject["value"].i() / 100));
                         }
 
@@ -932,67 +929,64 @@ namespace Helper
     {
         this->pollInit.store(true);
         this->sumInput.store(0);
-        // auto pollingThread1 = async(std::launch::async, &Validator::pollDeviceStatus, this, BILL_VALIDATOR);
-        // auto pollingThread2 = async(std::launch::async, &Validator::pollDeviceStatus, this, COIN_VALIDATOR);
+
+        // Utilizamos std::future en lugar de std::thread para asegurarnos de que los hilos se unan correctamente.
         std::thread pollingThread1(&Validator::pollDeviceStatus, this, BILL_VALIDATOR);
         std::thread pollingThread2(&Validator::pollDeviceStatus, this, COIN_VALIDATOR);
-
-        // Para asegurar que los hilos se junten antes de que el programa termine
         pollingThread1.detach();
         pollingThread2.detach();
 
-        auto connectResponse1 = PostAPIRequestAsync("ConnectDevice", BILL_VALIDATOR);
-        auto connectResponse2 = PostAPIRequestAsync("ConnectDevice", COIN_VALIDATOR);
-
-        auto r1 = connectResponse1.get();
-        auto r2 = connectResponse2.get();
-
-        if (r1.first != 200 || r2.first != 200)
+        // Función lambda para manejar las solicitudes API y verificar la respuesta
+        auto apiRequest = [this](const std::string &endpoint, const std::string &validator)
         {
-            std::cerr << r1.second << std::endl;
-            std::cerr << r2.second << std::endl;
+            auto response = PostAPIRequestAsync(endpoint, validator).get();
+            std::cout << response.second << std::endl;
+            if (response.first != 200)
+            {
+                return false;
+            }
+            return true;
+        };
+
+        std::this_thread::sleep_for(std::chrono::seconds(2));
+        // Manejar las conexiones a los dispositivos
+        if (!apiRequest("ConnectDevice", BILL_VALIDATOR) || !apiRequest("ConnectDevice", COIN_VALIDATOR))
+        {
             this->pollInit.store(false);
             return false;
         }
 
-        std::this_thread::sleep_for(std::chrono::milliseconds(500));
+        std::this_thread::sleep_for(std::chrono::seconds(2));
 
-        connectResponse1 = PostAPIRequestAsync("StartDevice", BILL_VALIDATOR);
-        connectResponse2 = PostAPIRequestAsync("StartDevice", COIN_VALIDATOR);
-
-        r1 = connectResponse1.get();
-        r2 = connectResponse2.get();
-
-        if (r1.first != 200 || r2.first != 200)
+        // Iniciar los dispositivos
+        if (!apiRequest("StartDevice", BILL_VALIDATOR) || !apiRequest("StartDevice", COIN_VALIDATOR))
         {
-            std::cerr << r1.second << std::endl;
-            std::cerr << r2.second << std::endl;
+            this->pollInit.store(false);
             return false;
         }
-        std::this_thread::sleep_for(std::chrono::milliseconds(500));
-        connectResponse1 = PostAPIRequestAsync("EnablePayout", BILL_VALIDATOR);
-        connectResponse2 = PostAPIRequestAsync("EnablePayout", COIN_VALIDATOR);
 
-        r1 = connectResponse1.get();
-        r2 = connectResponse2.get();
+        std::this_thread::sleep_for(std::chrono::seconds(2));
 
-        if (r1.first != 200 || r2.first != 200)
+        // Habilitar el pago
+        if (!apiRequest("EnablePayout", BILL_VALIDATOR) || !apiRequest("EnablePayout", COIN_VALIDATOR))
         {
-            std::cerr << r1.second << std::endl;
-            std::cerr << r2.second << std::endl;
+            this->pollInit.store(false);
             return false;
         }
-        std::this_thread::sleep_for(std::chrono::milliseconds(500));
-        connectResponse1 = PostAPIRequestAsync("EnableAcceptor", BILL_VALIDATOR);
-        connectResponse2 = PostAPIRequestAsync("EnableAcceptor", COIN_VALIDATOR);
 
-        r1 = connectResponse1.get();
-        r2 = connectResponse2.get();
+        std::this_thread::sleep_for(std::chrono::seconds(2));
 
-        if (r1.first != 200 || r2.first != 200)
+        // Habilitar el aceptador
+        if (!apiRequest("EnableAcceptor", BILL_VALIDATOR) || !apiRequest("EnableAcceptor", COIN_VALIDATOR))
         {
-            std::cerr << r1.second << std::endl;
-            std::cerr << r2.second << std::endl;
+            this->pollInit.store(false);
+            return false;
+        }
+
+        // Habilitar el aceptador
+        if (!apiRequest("RefillMode", BILL_VALIDATOR) || !apiRequest("RefillMode", COIN_VALIDATOR))
+        {
+            this->pollInit.store(false);
             return false;
         }
 

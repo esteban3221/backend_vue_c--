@@ -4,6 +4,7 @@
 #include <sigc++/sigc++.h>
 #include <map>
 #include "usuarios.hpp"
+#include "usuarios_roles.hpp"
 #include <glibmm.h>
 #include <jwt-cpp/jwt.h>
 #include "helper.hpp"
@@ -23,6 +24,9 @@ private:
     crow::response bajaUsuario(const crow::request &req);
     crow::response modificaUsuario(const crow::request &req);
     crow::response logout(const crow::request &req);
+
+    crow::response actualizaRol(const crow::request &req);
+
 
     Glib::Dispatcher dispatcher;
     std::queue<std::function<void()>> dispatch_queue;

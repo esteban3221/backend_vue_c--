@@ -42,6 +42,22 @@ private:
 
     crow::response Test_venta(const crow::request& req);
 
+    void reset_gui();
+
+    void update_total(int total);
+
+    void initialize_timeout(int total);
+
+    bool start_payment(Helper::Validator &validator);
+
+    bool process_payment(Helper::Validator &validator, int total);
+
+    void finalize_payment(Helper::Validator &validator, int total);
+
+    void handle_payment_error(Acciones& accion, const std::pair<int, std::string>& status, const std::string& total, const std::string& sum);
+
+    void handle_timeout(Acciones& accion, const std::pair<int, std::string>& status, const std::string& total, const std::string& sum);
+
     crow::response venta(const crow::request& req);
     crow::response refill(const crow::request& req);
     crow::response refound(const crow::request& req);
@@ -52,7 +68,7 @@ private:
     // bool init_perifericos();
     void on_dispatcher_emit();
 
-    Helper::Validator validator;
+    
 
     /*
                       TEST

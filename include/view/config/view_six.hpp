@@ -187,7 +187,7 @@ private:
                       "</object>"
                       "</child>"
                       "<child>"
-                      "<object class=\"GtkButton\">"
+                      "<object class=\"GtkButton\" id=\"btnRed\">"
                       "<property name=\"label\">Configuración</property>"
                       "<property name=\"margin-top\">40</property>"
                       "<property name=\"halign\">3</property>"
@@ -204,6 +204,7 @@ private:
   Gtk::Box *page_5 = nullptr;
 
   Gtk::EditableLabel *lbl_red[5] = {nullptr, nullptr, nullptr, nullptr, nullptr};
+  Gtk::Button *btnRed = nullptr;
   sigc::connection poll_info_red;
 
   void init_datos_red();

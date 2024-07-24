@@ -2,6 +2,8 @@
 #include <gtkmm.h>
 #include "niveles_almacenamiento.hpp"
 #include "niveles_dinero.hpp"
+#include "helper.hpp"
+#include <crow.h>
 
 class view_seven : public Gtk::Box
 {

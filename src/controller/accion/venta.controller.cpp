@@ -8,48 +8,64 @@ venta_controller::venta_controller(crow::App<crow::CookieParser, Session> &app_,
     dispatcher.connect(sigc::mem_fun(*this, &venta_controller::on_dispatcher_emit));
 
     // test no requieren token EXCLUSIVO DE TEST
-    CROW_ROUTE(app, "/test/venta").methods("POST"_method)(sigc::mem_fun(*this, &venta_controller::Test_venta));
+    // CROW_ROUTE(app, "/test/venta").methods("POST"_method)(sigc::mem_fun(*this, &venta_controller::Test_venta));
 
     CROW_ROUTE(app, "/accion/venta").methods("POST"_method)(sigc::mem_fun(*this, &venta_controller::venta));
-
-    // if(!validator.isConected())
-    // {
-    //     g_printerr("Error al conectar los validadores\n");
-    // }
 }
 
-crow::response venta_controller::Test_venta(const crow::request &req)
+// crow::response venta_controller::Test_venta(const crow::request &req)
+// {
+//     auto x = crow::json::load(req.body);
+//     if (!x || !x["value"])
+//     {
+//         this->dispatch_to_gui([this]
+//                               { this->main_stack.set_visible_child(*box_main); });
+//         return crow::response(crow::status::BAD_REQUEST);
+//     }
+//     Helper::Validator validator;
+//     if (!start_payment(validator))
+//     {
+//         handle_payment_error();
+//         return crow::response(crow::status::CONFLICT, "{\"status\":\"Error al inicializar los validadores\"}");
+//     }
+//     this->dispatch_to_gui([this] { this->main_stack.set_visible_child(*this); });
+//     auto total = x["value"].i() / 100;
+//     std::this_thread::sleep_for(std::chrono::milliseconds(1));
+//     reset_gui();
+//     update_total(total);
+//     initialize_timeout(total);
+//     if (!process_payment(validator, total))
+//     {
+//         handle_timeout();
+//         return crow::response(crow::status::NO_CONTENT, "{\"status\":\"Timeout\"}");
+//     }
+//     finalize_payment(validator, total);
+//     return crow::response(crow::status::OK, "{\"status\":\"Ok\"}");
+// }
+
+void venta_controller::reset_gui()
 {
-    auto x = crow::json::load(req.body);
-    if (!x || !x["value"])
-    {
-        this->dispatch_to_gui([this] { this->main_stack.set_visible_child(*box_main); });
-        return crow::response(crow::status::BAD_REQUEST);
-    }
-
-    this->dispatch_to_gui([this] { this->main_stack.set_visible_child(*this); });
-    auto total = x["value"].i() / 100;
-
-
-
-    std::this_thread::sleep_for(std::chrono::milliseconds(1));
     this->dispatch_to_gui([this]
                           {
         this->lbl_mensaje_fin.set_text("Gracias por su compra.\n    No olvide su ticket");
         this->lbl_mensaje_fin.set_visible(false);
-
         this->ety_recibido.set_text("");
         this->ety_faltante.set_text("");
         this->ety_cambio.set_text("");
-
         this->btn_timeout_cancel.set_visible(false);
         this->btn_timeout_retry.set_visible(false); });
+}
 
-    this->dispatch_to_gui([this, total] { this->ety_monto_total.set_text(std::to_string(total)); });
+void venta_controller::update_total(int total)
+{
+    this->dispatch_to_gui([this, total]
+                          { this->ety_monto_total.set_text(std::to_string(total)); });
+}
 
+void venta_controller::initialize_timeout(int total)
+{
     auto start = std::chrono::steady_clock::now();
     auto end = start + std::chrono::seconds(5 * 60 + 2);
-
     this->timeout.store(false);
     this->payment_completed.store(false);
 
@@ -57,192 +73,262 @@ crow::response venta_controller::Test_venta(const crow::request &req)
                                                            {
         auto now = std::chrono::steady_clock::now();
         auto remaining = std::chrono::duration_cast<std::chrono::seconds>(end - now).count();
-        
-        this->dispatch_to_gui([this, remaining] { 
-            this->lbl_timeout.set_text("Tiempo Restante: " + Helper::System::formatTime(remaining)); 
+
+        this->dispatch_to_gui([this, remaining] {
+            this->lbl_timeout.set_text("Tiempo Restante: " + Helper::System::formatTime(remaining));
         });
 
         bool still_running = (remaining > 0 && !this->payment_completed.load());
-        if (!still_running) 
+        if (!still_running) {
             this->timeout.store(true);
-        
+        }
 
-        return still_running; }
-        , 1000);
+        return still_running; }, 1000);
+}
 
+bool venta_controller::start_payment(Helper::Validator &validator)
+{
     if (!validator.startPay())
     {
         this->lbl_mensaje_fin.set_text("!Error al inicializar los validadores¡");
-            this->lbl_mensaje_fin.set_visible();
-            this->M_timeout_venta.disconnect();
-            this->timeout.store(true);
-            validator.pollInit.store(false);
-            validator.stopPay();
+        this->lbl_mensaje_fin.set_visible();
+        this->M_timeout_venta.disconnect();
+        this->timeout.store(true);
+        validator.pollInit.store(false);
+        validator.stopPay();
         std::this_thread::sleep_for(std::chrono::seconds(3));
-        this->dispatch_to_gui([this] { this->main_stack.set_visible_child(*box_main); });
-
-        return crow::response(crow::status::CONFLICT, "{\"status\":\"Error al inicializar los validadores\"}");
+        this->dispatch_to_gui([this]
+                              { this->main_stack.set_visible_child(*box_main); });
+        return false;
     }
-
     validator.pollInit.store(true);
     validator.sumInput.store(0);
+    return true;
+}
 
+bool venta_controller::process_payment(Helper::Validator &validator, int total)
+{
     while (validator.sumInput.load() < total)
     {
         if (this->timeout.load())
         {
             this->lbl_mensaje_fin.set_text("Cancelación por exceso de tiempo.");
             this->lbl_mensaje_fin.set_visible();
-            // se tiene que rembolsar el dinero
-            // this->btn_timeout_cancel.set_visible();
-            // this->btn_timeout_retry.set_visible();
-
-            return crow::response(crow::status::NO_CONTENT, "{\"status\":\"Timeout\"}");
+            std::this_thread::sleep_for(std::chrono::seconds(3));
+            this->dispatch_to_gui([this]
+                                  { this->main_stack.set_visible_child(*box_main); });
+            return false;
         }
 
         std::this_thread::sleep_for(std::chrono::milliseconds(200));
-        this->dispatch_to_gui([this, total]
-                            {
-                                auto sum = validator.sumInput.load();
-                                this->ety_recibido.set_text(std::to_string(sum));
-                                this->ety_faltante.set_text(sum < total ? std::to_string(total - sum) : "0"); 
-                            });
+        this->dispatch_to_gui([this, total, &validator]
+                              {
+            auto sum = validator.sumInput.load();
+            this->ety_recibido.set_text(std::to_string(sum));
+            this->ety_faltante.set_text(sum < total ? std::to_string(total - sum) : "0"); });
     }
+    return true;
+}
 
-
+void venta_controller::finalize_payment(Helper::Validator &validator, int total)
+{
     validator.stopPay();
     this->payment_completed.store(false);
     this->M_timeout_venta.disconnect();
 
-    this->dispatch_to_gui([this, total]
-        {
-            if (validator.sumInput.load() > total) 
-                this->ety_cambio.set_text(std::to_string(validator.sumInput.load() - total));
-            this->lbl_mensaje_fin.set_visible(true); 
-        });
+    this->dispatch_to_gui([this, total, &validator]
+                          {
+        if (validator.sumInput.load() > total) {
+            this->ety_cambio.set_text(std::to_string(validator.sumInput.load() - total));
+        }
+        this->lbl_mensaje_fin.set_visible(true); });
 
     std::this_thread::sleep_for(std::chrono::seconds(3));
-    this->dispatch_to_gui([this] { this->main_stack.set_visible_child(*box_main); });
-
-    return crow::response(crow::status::OK, "{\"status\":\"Ok\"}");
+    this->dispatch_to_gui([this]
+                          { this->main_stack.set_visible_child(*box_main); });
 }
+
+void venta_controller::handle_payment_error(Acciones &accion, const std::pair<int, std::string> &status, const std::string &total, const std::string &sum)
+{
+    this->lbl_mensaje_fin.set_text("¡Error al inicializar los validadores!");
+    this->lbl_mensaje_fin.set_visible();
+    this->M_timeout_venta.disconnect();
+    this->timeout.store(true);
+    std::this_thread::sleep_for(std::chrono::seconds(3));
+    this->dispatch_to_gui([this]
+                          { this->main_stack.set_visible_child(*box_main); });
+
+    accion.insertLog(status.second,
+                     Action::Type::VENTA,
+                     total,
+                     sum,
+                     std::to_string(stoi(sum) - stoi(total)),
+                     "ERROR");
+}
+
+void venta_controller::handle_timeout(Acciones &accion, const std::pair<int, std::string> &status, const std::string &total, const std::string &sum)
+{
+    this->lbl_mensaje_fin.set_text("Cancelación por exceso de tiempo.");
+    this->lbl_mensaje_fin.set_visible();
+    std::this_thread::sleep_for(std::chrono::seconds(3));
+    this->dispatch_to_gui([this]
+                          { this->main_stack.set_visible_child(*box_main); });
+
+    accion.insertLog(status.second,
+                     Action::Type::VENTA,
+                     total,
+                     sum,
+                     std::to_string(stoi(sum) - stoi(total)),
+                     "TIMEOUT");
+}
+
+// crow::response venta_controller::venta(const crow::request &req)
+// {
+//     auto &session = app.get_context<Session>(req);
+//     if (auto status = Helper::User::validPermissions(req, session,
+//                                                      {Helper::User::Rol::Venta,
+//                                                       Helper::User::Rol::Pago});
+//         status.first != crow::status::OK)
+//     {
+//         return crow::response(status.first);
+//     }
+//     else
+//     {
+//         auto x = crow::json::load(req.body);
+//         if (!x || !x["value"])
+//         {
+//             this->dispatch_to_gui([this]
+//                                   { this->main_stack.set_visible_child(*box_main); });
+//             return crow::response(crow::status::BAD_REQUEST);
+//         }
+//         Acciones accion;
+//         this->dispatch_to_gui([this]
+//                               { this->main_stack.set_visible_child(*this); });
+//         auto total = x["value"].i() / 100;
+//         std::this_thread::sleep_for(std::chrono::milliseconds(3));
+//         this->dispatch_to_gui([this]
+//                               {
+//         this->lbl_mensaje_fin.set_text("Gracias por su compra.\n    No olvide su ticket");
+//         this->lbl_mensaje_fin.set_visible(false);
+//         this->ety_recibido.set_text("");
+//         this->ety_faltante.set_text("");
+//         this->ety_cambio.set_text("");
+//         this->btn_timeout_cancel.set_visible(false);
+//         this->btn_timeout_retry.set_visible(false); });
+//         this->dispatch_to_gui([this, total]
+//                               { this->ety_monto_total.set_text(std::to_string(total)); });
+//         auto start = std::chrono::steady_clock::now();
+//         auto end = start + std::chrono::seconds(5 * 60 + 2);
+//         this->timeout.store(false);
+//         this->payment_completed.store(false);
+//         this->M_timeout_venta = Glib::signal_timeout().connect([this, start, end]() -> bool
+//                                                                {
+//         auto now = std::chrono::steady_clock::now();
+//         auto remaining = std::chrono::duration_cast<std::chrono::seconds>(end - now).count();
+//         this->dispatch_to_gui([this, remaining] {
+//             this->lbl_timeout.set_text("Tiempo Restante: " + Helper::System::formatTime(remaining));
+//         });
+//         bool still_running = (remaining > 0 && !this->payment_completed.load());
+//         if (!still_running)
+//             this->timeout.store(true);
+//         return still_running; }, 1000);
+//         long sum = 0;
+//         unsigned channel;
+//         while (sum < total)
+//         {
+//             if (this->timeout.load())
+//             {
+//                 this->lbl_mensaje_fin.set_text("Se alcanzo el tiempo maximo de espera.");
+//                 this->lbl_mensaje_fin.set_visible();
+//                 this->btn_timeout_cancel.set_visible();
+//                 this->btn_timeout_retry.set_visible();
+//                 accion.insertLog(
+//                     status.second,
+//                     Action::Type::VENTA,
+//                     std::to_string(total),
+//                     std::to_string(sum),
+//                     std::to_string(sum - total),
+//                     "TIMEOUT");
+//                 aqui tambien se va a pagos pendientes.
+//                 return crow::response(crow::status::GATEWAY_TIMEOUT, "Timeout");
+//             }
+//             std::this_thread::sleep_for(std::chrono::seconds(2));
+//             sum += 5;
+//             this->dispatch_to_gui([this, sum, total]
+//                                   {
+//             this->ety_recibido.set_text(std::to_string(sum));
+//             this->ety_faltante.set_text(sum < total ? std::to_string(total - sum) : "0"); });
+//         }
+//         this->payment_completed.store(false);
+//         this->M_timeout_venta.disconnect();
+//         this->dispatch_to_gui([this, sum, total]
+//                               {
+//         if (sum > total)
+//             this->ety_cambio.set_text(std::to_string(sum - total));
+//         this->lbl_mensaje_fin.set_visible(true); });
+//         accion.insertLog(
+//             status.second,
+//             Action::Type::VENTA,
+//             std::to_string(total),
+//             std::to_string(sum),
+//             std::to_string(sum - total),
+//             "Completado");
+//         std::this_thread::sleep_for(std::chrono::seconds(3));
+//         this->dispatch_to_gui([this]
+//                               { this->main_stack.set_visible_child(*box_main); });
+//     }
+//     return crow::response();
+// }
 
 crow::response venta_controller::venta(const crow::request &req)
 {
     auto &session = app.get_context<Session>(req);
 
-    if (auto status = Helper::User::validPermissions(req, session,
-                                                     {Helper::User::Rol::Venta,
-                                                      Helper::User::Rol::Pago});
+    if (auto status = Helper::User::validPermissions(req, session, {Helper::User::Rol::Venta, Helper::User::Rol::Pago});
         status.first != crow::status::OK)
-    {
-        return crow::response(status.first);
-    }
+    { return crow::response(status.first); }
     else
     {
         auto x = crow::json::load(req.body);
         if (!x || !x["value"])
         {
-            this->dispatch_to_gui([this]
-                                  { this->main_stack.set_visible_child(*box_main); });
+            this->dispatch_to_gui([this] { this->main_stack.set_visible_child(*box_main); });
             return crow::response(crow::status::BAD_REQUEST);
         }
+
+        Helper::Validator validator;
         Acciones accion;
 
-        this->dispatch_to_gui([this]
-                              { this->main_stack.set_visible_child(*this); });
-        auto total = x["value"].i() / 100;
-
-        std::this_thread::sleep_for(std::chrono::milliseconds(3));
-        this->dispatch_to_gui([this]
-                              {
-        this->lbl_mensaje_fin.set_text("Gracias por su compra.\n    No olvide su ticket");
-        this->lbl_mensaje_fin.set_visible(false);
-
-        this->ety_recibido.set_text("");
-        this->ety_faltante.set_text("");
-        this->ety_cambio.set_text("");
-
-        this->btn_timeout_cancel.set_visible(false);
-        this->btn_timeout_retry.set_visible(false); });
-        this->dispatch_to_gui([this, total]
-                              { this->ety_monto_total.set_text(std::to_string(total)); });
-
-        auto start = std::chrono::steady_clock::now();
-        auto end = start + std::chrono::seconds(5 * 60 + 2);
-
-        this->timeout.store(false);
-        this->payment_completed.store(false);
-
-        this->M_timeout_venta = Glib::signal_timeout().connect([this, start, end]() -> bool
-                                                               {
-        auto now = std::chrono::steady_clock::now();
-        auto remaining = std::chrono::duration_cast<std::chrono::seconds>(end - now).count();
-        
-        this->dispatch_to_gui([this, remaining] { 
-            this->lbl_timeout.set_text("Tiempo Restante: " + Helper::System::formatTime(remaining)); 
-        });
-
-        bool still_running = (remaining > 0 && !this->payment_completed.load());
-        if (!still_running) 
-            this->timeout.store(true);
-        
-
-        return still_running; }, 1000);
-
-        long sum = 0;
-        unsigned channel;
-
-        while (sum < total)
+        if (!start_payment(validator))
         {
-            if (this->timeout.load())
-            {
-                this->lbl_mensaje_fin.set_text("Se alcanzo el tiempo maximo de espera.");
-                this->lbl_mensaje_fin.set_visible();
-                // this->btn_timeout_cancel.set_visible();
-                // this->btn_timeout_retry.set_visible();
-
-                accion.insertLog(
-                    status.second,
-                    Action::Type::VENTA,
-                    std::to_string(total),
-                    std::to_string(sum),
-                    std::to_string(sum - total),
-                    "TIMEOUT");
-                //aqui tambien se va a pagos pendientes.
-                return crow::response(crow::status::GATEWAY_TIMEOUT, "Timeout");
-            }
-            std::this_thread::sleep_for(std::chrono::seconds(2));
-            sum += 5;
-            this->dispatch_to_gui([this, sum, total]
-                                  {
-            this->ety_recibido.set_text(std::to_string(sum));
-            this->ety_faltante.set_text(sum < total ? std::to_string(total - sum) : "0"); });
+            handle_payment_error(accion, status, std::to_string(x["value"].i() / 100), "0");
+            return crow::response(crow::status::CONFLICT, "{\"status\":\"Error al inicializar los validadores\"}");
         }
 
-        this->payment_completed.store(false);
-        this->M_timeout_venta.disconnect();
+        this->dispatch_to_gui([this] { this->main_stack.set_visible_child(*this); });
 
-        this->dispatch_to_gui([this, sum, total]
-                              {
-        if (sum > total) 
-            this->ety_cambio.set_text(std::to_string(sum - total));
-        this->lbl_mensaje_fin.set_visible(true); });
+        int total = x["value"].i() / 100;
+        reset_gui();
+        update_total(total);
+        initialize_timeout(total);
 
-        accion.insertLog(
-            status.second,
-            Action::Type::VENTA,
-            std::to_string(total),
-            std::to_string(sum),
-            std::to_string(sum - total),
-            "Completado");
+        if (!process_payment(validator, total))
+        {
+            handle_timeout(accion, status, std::to_string(total), std::to_string(validator.sumInput.load()));
+            return crow::response(crow::status::NO_CONTENT, "{\"status\":\"Timeout\"}");
+        }
 
-        std::this_thread::sleep_for(std::chrono::seconds(3));
-        this->dispatch_to_gui([this]
-                              { this->main_stack.set_visible_child(*box_main); });
+        finalize_payment(validator, total);
+
+        accion.insertLog(status.second,
+                         Action::Type::VENTA,
+                         std::to_string(total),
+                         std::to_string(validator.sumInput.load()),
+                         std::to_string(validator.sumInput.load() - total),
+                         "Completado");
+
+        return crow::response(crow::status::OK, "{\"status\":\"Ok\"}");
     }
-
-    return crow::response();
 }
 
 crow::response venta_controller::refill(const crow::request &req)

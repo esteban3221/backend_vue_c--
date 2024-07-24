@@ -42,12 +42,14 @@ crow::response configuracion_controller::actualizaImpresion(const crow::request 
                                   {
                 Config::switch_impresion->set_active(bodyParams["remoto"].b());
 
-                Config::list_view_ticket[0]->set_active(bodyParams["remoto"].b());
+                Config::list_view_ticket[0]->set_active(bodyParams["agradecimiento"].b());
                 Config::list_view_ticket[1]->set_active(bodyParams["fecha"].b());
                 Config::list_view_ticket[2]->set_active(bodyParams["direccion"].b());
                 Config::list_view_ticket[3]->set_active(bodyParams["rfc"].b());
                 Config::list_view_ticket[4]->set_active(bodyParams["vendedor"].b());
                 Config::list_view_ticket[5]->set_active(bodyParams["contacto"].b()); });
+
+                Helper::System::showNotify("Impresion","Se actualizo configuración de impresion.","dialog-information");
 
             return crow::response(status.first);
         }
@@ -86,6 +88,8 @@ crow::response configuracion_controller::actualizaInformacion(const crow::reques
                                           Config::list_ety_datos[i]->set_text(a[i].c_str());
                                       }
                                   });
+
+            Helper::System::showNotify("Información","Se actualizaron datos de la empresa.","dialog-information");
 
             return crow::response(status.first);
         }
@@ -131,6 +135,9 @@ crow::response configuracion_controller::testImpresion(const crow::request &req)
     {
         std::string command = "echo \"" + Config::TextView::preview_ticket() + "\" | lp";
         std::system(command.c_str());
+
+        Helper::System::showNotify("Impresión","Se imprimio hoja de prueba.","dialog-information");
+        
         return crow::response(crow::status::OK);
     }
 }
@@ -148,6 +155,9 @@ crow::response configuracion_controller::reiniciar(const crow::request &req)
     {
         Helper::System::exec("shutdown -r +1");
         app.stop();
+        Helper::System::showNotify("Sistema","Se reiniciara el sistema en un minuto.\n"
+        "Servicio de api rest esta desactivado y no recibira mas solicitudes.",
+        "dialog-information");
         return crow::response(crow::status::OK);
     }
 }
@@ -165,6 +175,9 @@ crow::response configuracion_controller::apagar(const crow::request &req)
     {
         Helper::System::exec("shutdown +1");
         app.stop();
+        Helper::System::showNotify("Sistema","Se apagara el sistema en un minuto.\n"
+        "Servicio de api rest esta desactivado y no recibira mas solicitudes.",
+        "dialog-information");
         return crow::response(crow::status::OK);
     }
 }

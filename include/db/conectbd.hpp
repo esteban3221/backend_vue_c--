@@ -39,7 +39,7 @@ public:
                                    "(NULL,'Enviar a casette'),\n"
                                    "(NULL,'Retirada a casette'),\n"
                                    "(NULL,'Consulta de efectivo'),\n"
-                                   "(NULL,'MOv. Pendientes'),\n"
+                                   "(NULL,'Mov. Pendientes'),\n"
                                    "(NULL,'Consulta de Movimientos'),\n"
                                    "(NULL,'Cierre con Faltantes'),\n"
                                    "(NULL,'Estadisticas'),\n"

@@ -12,40 +12,45 @@ void view_six::init_datos_red()
 view_six::view_six(/* args */)
 {
     builder->add_from_string(this->PAGE5);
+
     this->page_5 = this->builder->get_widget<Gtk::Box>("page_5");
+    this->btnRed = this->builder->get_widget<Gtk::Button>("btnRed");
+
+    this->btnRed->signal_clicked().connect([]()
+                                           { std::system("nm-connection-editor &"); });
+
     this->append(*page_5);
     this->page_5->set_hexpand();
 
-        this->init_datos_red();
+    this->init_datos_red();
     this->poll_info_red = Glib::signal_timeout().connect([this]() -> bool
                                                          {
-        std::string SSID = Helper::System::exec("nmcli -t -f name,device connection show --active | grep -v ':lo' | cut -d':' -f1");
+        const std::string SSID = Helper::System::exec("nmcli -t -f name,device connection show --active | grep -v ':lo' | cut -d':' -f1");
         
-        std::string IP_WLAN = Helper::System::exec(
+        const std::string IP_WLAN = Helper::System::exec(
         "for iface in wlan0 wlp2s0; do "
         "  ip=$(ip -o -4 addr show $iface 2>/dev/null | awk '{print $4}' | cut -d/ -f1); "
         "  if [ ! -z \"$ip\" ]; then echo $ip; break; fi; "
         "done");
 
-        std::string MAC_WLAN = Helper::System::exec(
+        const std::string MAC_WLAN = Helper::System::exec(
             "for iface in wlan0 wlp2s0; do "
             "  mac=$(cat /sys/class/net/$iface/address 2>/dev/null); "
             "  if [ ! -z \"$mac\" ]; then echo $mac; break; fi; "
             "done");
 
-
-
-        std::string IP_ETHERNET = Helper::System::exec(
+        const std::string IP_ETHERNET = Helper::System::exec(
             "for iface in eth0 end0 enp0s31f6 enp0s20f0u1u4; do "
             "  ip=$(ip -o -4 addr show $iface 2>/dev/null | awk '{print $4}' | cut -d/ -f1); "
             "  if [ ! -z \"$ip\" ]; then echo $ip; break; fi; "
             "done");
 
-        std::string MAC_ETHERNET = Helper::System::exec(
+        const std::string MAC_ETHERNET = Helper::System::exec(
             "for iface in eth0 end0 enp0s31f6 enp0s20f0u1u4; do "
             "  mac=$(cat /sys/class/net/$iface/address 2>/dev/null); "
             "  if [ ! -z \"$mac\" ]; then echo $mac; break; fi; "
             "done");
+            
             // Especifico de la RPI 4
             this->lbl_red[4]->set_text(SSID.empty() ? "No conectado." : SSID);
             this->lbl_red[0]->set_text(IP_WLAN.empty() ? "- - - -" : IP_WLAN);
