@@ -240,34 +240,34 @@ crow::response session_controller::actualizaRol(const crow::request &req)
     }
     else
     {
-    // {
-    //     "roles": {
-    //         "Venta": false,
-    //         "Pago": false,
-    //         "Carga": false,
-    //         "Retirada": false,
-    //         "CambioM": false,
-    //         "CambioA": false,
-    //         "Ingresos": false,
-    //         "EnviarCasette": false,
-    //         "RetiradaCasette": false,
-    //         "ConsultaEfectivo": false,
-    //         "MovPendientes": false,
-    //         "ConsultaMovimientos": false,
-    //         "CierreFaltantes": false,
-    //         "Estadisticas": false,
-    //         "Fianza": false,
-    //         "Reportes": false,
-    //         "Configuracion": false,
-    //         "SalirEscritorio": false,
-    //         "Apagar": false
-    //     }
-    // }
-    // {
-    //     "usuario": {
-    //         "nombre": "Usuario1"
-    //     }
-    // }
+        // {
+        //     "roles": {
+        //         "Venta": false,
+        //         "Pago": false,
+        //         "Carga": false,
+        //         "Retirada": false,
+        //         "CambioM": false,
+        //         "CambioA": false,
+        //         "Ingresos": false,
+        //         "EnviarCasette": false,
+        //         "RetiradaCasette": false,
+        //         "ConsultaEfectivo": false,
+        //         "MovPendientes": false,
+        //         "ConsultaMovimientos": false,
+        //         "CierreFaltantes": false,
+        //         "Estadisticas": false,
+        //         "Fianza": false,
+        //         "Reportes": false,
+        //         "Configuracion": false,
+        //         "SalirEscritorio": false,
+        //         "Apagar": false
+        //     }
+        // }
+        // {
+        //     "usuario": {
+        //         "nombre": "Usuario1"
+        //     }
+        // }
 
         auto bodyParams = crow::json::load(req.body);
         auto usuario = bodyParams["usuario"];
@@ -277,7 +277,7 @@ crow::response session_controller::actualizaRol(const crow::request &req)
         Model::usuarios_roles uR;
         for (const auto &item : roles)
             values.push_back(item.b());
-        
+
         uR.modificaRolesUsuario(usuario["nombre"].s(), values);
 
         Helper::System::showNotify("Usuarios", "Se actualizaron permisos.", "dialog-information");
