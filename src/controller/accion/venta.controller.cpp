@@ -132,20 +132,21 @@ bool venta_controller::process_payment(Helper::Validator &validator, int total)
 
 void venta_controller::finalize_payment(Helper::Validator &validator, int total)
 {
-    validator.stopPay();
     this->payment_completed.store(false);
     this->M_timeout_venta.disconnect();
 
     this->dispatch_to_gui([this, total, &validator]
                           {
         if (validator.sumInput.load() > total) {
-            this->ety_cambio.set_text(std::to_string(validator.sumInput.load() - total));
+            auto cambio = validator.sumInput.load() - total;
+            this->ety_cambio.set_text(std::to_string(cambio));
+            validator.calculateChange(cambio);
         }
         this->lbl_mensaje_fin.set_visible(true); });
 
     std::this_thread::sleep_for(std::chrono::seconds(3));
-    this->dispatch_to_gui([this]
-                          { this->main_stack.set_visible_child(*box_main); });
+    this->dispatch_to_gui([this] { this->main_stack.set_visible_child(*box_main); });
+    validator.stopPay();
 }
 
 void venta_controller::handle_payment_error(Acciones &accion, const std::pair<int, std::string> &status, const std::string &total, const std::string &sum)

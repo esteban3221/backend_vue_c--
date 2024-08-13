@@ -14,6 +14,8 @@ session_controller::session_controller(crow::App<crow::CookieParser, Session> &a
     CROW_ROUTE(app, "/sesion/altaUsuario").methods("POST"_method)(sigc::mem_fun(*this, &session_controller::altaUsuario));
     CROW_ROUTE(app, "/sesion/bajaUsuario").methods("POST"_method)(sigc::mem_fun(*this, &session_controller::bajaUsuario));
     CROW_ROUTE(app, "/sesion/modificaUsuario").methods("POST"_method)(sigc::mem_fun(*this, &session_controller::modificaUsuario));
+
+    CROW_ROUTE(app, "/testConexion").methods("GET"_method)(sigc::mem_fun(*this, &session_controller::testConexion));
 }
 
 session_controller::~session_controller()
@@ -284,6 +286,12 @@ crow::response session_controller::actualizaRol(const crow::request &req)
         return crow::response(status.first);
     }
     return crow::response(crow::status::CONFLICT);
+}
+
+crow::response session_controller::testConexion(const crow::request &req)
+{
+    std::this_thread::sleep_for(std::chrono::seconds(3));
+    return crow::response(crow::status::OK);
 }
 
 void session_controller::dispatch_to_gui(std::function<void()> func)

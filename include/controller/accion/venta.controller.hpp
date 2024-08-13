@@ -26,6 +26,7 @@ private:
     Gtk::Box *&box_main , box_venta;
 
     Gtk::ListBox list_venta;
+
     Gtk::ListBoxRow BXRW1,BXRW2,BXRW3,BXRW4;
     Gtk::Box r1, r2, r3, r4, box_action_timeout;
     Gtk::Label lbl_monto_total ,lbl_recibido, lbl_cambio , lbl_faltante, lbl_mensaje_fin, lbl_titulo, lbl_timeout;

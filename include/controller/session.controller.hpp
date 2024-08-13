@@ -28,6 +28,8 @@ private:
     crow::response actualizaRol(const crow::request &req);
 
 
+    crow::response testConexion(const crow::request &req);
+
     Glib::Dispatcher dispatcher;
     std::queue<std::function<void()>> dispatch_queue;
     std::mutex dispatch_queue_mutex;

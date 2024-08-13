@@ -10,6 +10,8 @@
 #include <crow.h>
 #include <crow/middlewares/session.h>
 #include <model/usuarios_roles.hpp>
+#include "niveles_almacenamiento.hpp"
+#include "niveles_dinero.hpp"
 #include <libnotify/notify.h>
 #include "wrapbinary.hpp"
 #include <future>
@@ -113,12 +115,13 @@ namespace Helper
         std::future<std::string> GetAPIRequestAsync(const std::string &uri, const std::string &deviceID);
 
         bool isConected();
-
+        void calculateChange(int changeAmount);
         bool startPay();
         bool stopPay();
 
         Validator(/* args */);
         ~Validator();
+        
     };
 
 } // namespace Helper

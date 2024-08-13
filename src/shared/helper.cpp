@@ -202,7 +202,7 @@ namespace Helper
             {
                 try
                 {
-                    //std::cout << " TEST " << deviceStatusJson << std::endl;
+                    // std::cout << " TEST " << deviceStatusJson << std::endl;
                     auto responseObjects = crow::json::load(deviceStatusJson);
 
                     for (const auto &responseObject : responseObjects)
@@ -217,7 +217,10 @@ namespace Helper
                         {
                             state = responseObject["eventTypeAsString"].s();
                             std::cout << "Se recibio :" << responseObject["value"].i() / 100 << '\n';
-                            if (responseObject["eventTypeAsString"].s() == "ESCROW" || responseObject["eventTypeAsString"].s() == "COIN_CREDIT")
+                            if (responseObject["eventTypeAsString"].s() == "ESCROW" ||
+                                responseObject["eventTypeAsString"].s() == "COIN_CREDIT" ||
+                                responseObject["eventTypeAsString"].s() == "VALUE_ADDED")
+
                                 sumInput.store(sumInput.load() + (responseObject["value"].i() / 100));
                         }
 
@@ -984,11 +987,14 @@ namespace Helper
         }
 
         // Habilitar el aceptador
-        if (!apiRequest("RefillMode", BILL_VALIDATOR) || !apiRequest("RefillMode", COIN_VALIDATOR))
-        {
-            this->pollInit.store(false);
-            return false;
-        }
+        // if (!apiRequest("RefillMode", BILL_VALIDATOR) || !apiRequest("RefillMode", COIN_VALIDATOR))
+        // {
+        //     this->pollInit.store(false);
+        //     return false;
+        // }
+
+        processCommand("RefillMode NV200 true", BILL_VALIDATOR);
+        processCommand("RefillMode SMART_COIN_SYSTEM true", COIN_VALIDATOR);
 
         return true;
     }
@@ -1017,7 +1023,7 @@ namespace Helper
         return true;
     }
 
-    Validator::Validator(/* args */) : pollInit(false), BILL_VALIDATOR("NV200"), COIN_VALIDATOR("NV4000")
+    Validator::Validator(/* args */) : pollInit(false), BILL_VALIDATOR("NV200"), COIN_VALIDATOR("SMART_COIN_SYSTEM")
     {
         std::string device = "0";
         std::string ssp = "0";
@@ -1065,4 +1071,73 @@ namespace Helper
     {
         stopPay();
     }
+
+    void Validator::calculateChange(int changeAmount)
+    {
+        std::vector<std::pair<int, int>> changeToGive; // Par de <value, amount>
+
+        // Denominaciones de billetes y monedas
+        int billDenominations[] = {20, 50, 100, 200, 500, 1000};
+        int coinDenominations[] = {1, 2, 5, 10};
+
+        // Primero usamos billetes para maximizar la cantidad de monedas
+        for (size_t i = 0; i < 6; i++)
+        {
+            int value = billDenominations[i];
+            int stored = std::get<0>(Levels::Bill::vecu)[i];
+
+            if (stored > 0)
+            {
+                int needed = changeAmount / value;
+                int toGive = std::min(needed, stored);
+                if (toGive > 0)
+                {
+                    changeToGive.push_back({value, toGive});
+                    changeAmount -= toGive * value;
+                    std::get<0>(Levels::Bill::vecu)[i] -= toGive;
+                }
+            }
+        }
+
+        // Luego usamos monedas para el cambio restante
+        for (size_t i = 0; i < 4; i++)
+        {
+            int value = coinDenominations[i];
+            int stored = std::get<0>(Levels::Coin::vecu)[i];
+
+            if (stored > 0)
+            {
+                int needed = changeAmount / value;
+                int toGive = std::min(needed, stored);
+                if (toGive > 0)
+                {
+                    changeToGive.push_back({value, toGive});
+                    changeAmount -= toGive * value;
+                    std::get<0>(Levels::Coin::vecu)[i] -= toGive;
+                }
+            }
+        }
+
+        if (changeAmount > 0)
+        {
+            std::cerr << "No se puede dar el cambio exacto. Faltan: " << changeAmount << std::endl;
+            return;
+        }
+
+        // Realizar los pagos utilizando las denominaciones calculadas
+        for (const auto &[value, amount] : changeToGive)
+        {
+            if (value >= 20) // Usamos 20 como límite para considerar billetes
+            {
+                std::cout << "PayoutByDenomination NV200SP " << value*100 << " MXN " << amount << '\n';
+                processCommand("PayoutByDenomination NV200SP " + std::to_string(value*100) + " MXN " + std::to_string(amount), BILL_VALIDATOR);
+            }
+            else
+            {
+                std::cout << "PayoutByDenomination NV4000 " << value*100 << " MXN " << amount << '\n';
+                processCommand("PayoutByDenomination NV4000 " + std::to_string(value*100) + " MXN " + std::to_string(amount), COIN_VALIDATOR);
+            }
+        }
+    }
+
 } // namespace Helper
