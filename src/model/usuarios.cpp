@@ -14,11 +14,11 @@ namespace model
     usuarios::~usuarios()
     {
     }
-    bool usuarios::validaUsuario(const std::string &user)
-    {
-        this->sqlite3->command("select * from usuarios where username = ?", user);
-        return not this->sqlite3->get_result().empty();
-    }
+    // bool usuarios::validaUsuario(const std::string &user)
+    // {
+    //     this->sqlite3->command("select * from usuarios where username = ?", user);
+    //     return not this->sqlite3->get_result().empty();
+    // }
     bool usuarios::validaUsuario(const std::string &user, const std::string &passw)
     {
         // old
@@ -28,6 +28,13 @@ namespace model
         this->sqlite3->command("select * from usuarios where username = ? and password = ?", user.c_str(), passw.c_str());
 
         return not this->sqlite3->get_result().empty();
+    }
+
+    std::map<std::string, std::vector<std::string>> usuarios::validaUsuario(const std::string &passw)
+    {
+        this->sqlite3->command("select * from usuarios where password = ?", passw.c_str());
+
+        return this->sqlite3->get_result();
     }
     std::string usuarios::altaUsuario(const std::string &user, const std::string &passw)
     {

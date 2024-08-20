@@ -44,7 +44,6 @@ crow::response session_controller::login(const crow::request &req)
         auto &session = app.get_context<Session>(req);
         auto bodyParams = req.get_body_params();
         std::string grantType{bodyParams.pop("grant_type")};
-        std::string username{bodyParams.pop("username")};
         std::string password{bodyParams.pop("password")};
 
         auto token = jwt::create()
@@ -52,17 +51,17 @@ crow::response session_controller::login(const crow::request &req)
                          .set_issuer("auth0")
                          .sign(jwt::algorithm::hs256{Glib::DateTime::create_now_local().format("%Y%m%d%H%M%S-%A")});
 
-        if (grantType == "password")
+        if (auto usuario = this->M_usuarios.validaUsuario(password); grantType == "password")
         {
-            if (this->M_usuarios.validaUsuario(username, password))
+            if (not usuario.empty())
             {
-                session.set(username, token);
+                session.set(usuario["username"][0], token);
 
                 crow::json::wvalue response_json;
                 response_json["access_token"] = token;
                 response_json["expires_in"] = 15 * 60 * 1'000;
                 response_json["token_type"] = "bearer";
-                response_json["userName"] = username;
+                response_json["userName"] = usuario["username"][0];
                 return crow::response{response_json};
             }
             else
@@ -70,15 +69,15 @@ crow::response session_controller::login(const crow::request &req)
         }
         else if (grantType == "fingerprint")
         {
-            if (this->M_usuarios.validaUsuario(username))
+            if (not this->M_usuarios.validaUsuario(usuario["username"][0]).empty())
             {
-                session.set(username, token);
+                session.set(usuario["username"][0], token);
 
                 crow::json::wvalue response_json;
                 response_json["access_token"] = token;
                 response_json["expires_in"] = 15 * 60 * 1'000;
                 response_json["token_type"] = "bearer";
-                response_json["userName"] = username;
+                response_json["userName"] = usuario["username"][0];
                 return crow::response{response_json};
             }
             else
@@ -131,7 +130,6 @@ crow::response session_controller::altaUsuario(const crow::request &req)
         return crow::response(crow::status::CONFLICT, e.what());
     }
 }
-
 crow::response session_controller::bajaUsuario(const crow::request &req)
 {
     // auto auth_header = req.get_header_value("Authorization");
@@ -230,7 +228,6 @@ crow::response session_controller::logout(const crow::request &req)
     }
     return crow::response(crow::status::CONFLICT);
 }
-
 crow::response session_controller::actualizaRol(const crow::request &req)
 {
     auto &session = app.get_context<Session>(req);
@@ -287,13 +284,10 @@ crow::response session_controller::actualizaRol(const crow::request &req)
     }
     return crow::response(crow::status::CONFLICT);
 }
-
 crow::response session_controller::testConexion(const crow::request &req)
 {
-    std::this_thread::sleep_for(std::chrono::seconds(3));
     return crow::response(crow::status::OK);
 }
-
 void session_controller::dispatch_to_gui(std::function<void()> func)
 {
     {

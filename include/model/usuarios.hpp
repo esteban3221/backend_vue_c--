@@ -1,6 +1,7 @@
 #pragma once
 #include "conectbd.hpp"
 #include "usuarios_config.hpp"
+#include <utility>
 
 namespace model
 {
@@ -16,7 +17,8 @@ namespace model
         ~usuarios();
 
         bool validaUsuario(const std::string &user, const std::string &passw);
-        bool validaUsuario(const std::string &user);
+        // bool validaUsuario(const std::string &user);
+        std::map<std::string, std::vector<std::string>> validaUsuario(const std::string &passw);
         std::string altaUsuario(const std::string &user,const std::string &passw);
         void bajaUsuario(const std::string &user);
         void bajaUsuario(const unsigned &id);
