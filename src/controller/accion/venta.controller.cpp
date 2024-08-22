@@ -147,7 +147,8 @@ void venta_controller::finalize_payment(Helper::Validator &validator, int total)
         this->lbl_mensaje_fin.set_visible(true); });
 
     std::this_thread::sleep_for(std::chrono::seconds(3));
-    this->dispatch_to_gui([this] { this->main_stack.set_visible_child(*box_main); });
+    this->dispatch_to_gui([this]
+                          { this->main_stack.set_visible_child(*box_main); });
     validator.stopPay();
 }
 
@@ -304,7 +305,8 @@ crow::response venta_controller::venta(const crow::request &req)
 
         Helper::Validator validator;
         Acciones accion;
-
+        this->lbl_titulo.set_text("Venta");
+        this->lbl_titulo.set_css_classes({"title-1"});
         if (!start_payment(validator))
         {
             handle_payment_error(accion, status, std::to_string(x["value"].i() / 100), "0");
@@ -334,7 +336,12 @@ crow::response venta_controller::venta(const crow::request &req)
                          std::to_string(validator.sumInput.load() - total),
                          "Completado");
 
-        return crow::response(crow::status::OK, "{\"status\":\"Ok\"}");
+        crow::json::wvalue responseJson;
+        responseJson["total"] = std::to_string(total);
+        responseJson["recibido"] = std::to_string(validator.sumInput.load());
+        responseJson["cambio"] = std::to_string(validator.sumInput.load() - total);
+
+        return crow::response(crow::status::OK, responseJson);
     }
 }
 
@@ -355,8 +362,8 @@ crow::response venta_controller::refound(const crow::request &req)
 {
     auto &session = app.get_context<Session>(req);
 
-    if (auto status = Helper::User::validPermissions(req, session, { Helper::User::Rol::Pago});
-        status.first != crow::status::OK)
+    auto status = Helper::User::validPermissions(req, session, {Helper::User::Rol::Pago});
+    if (status.first != crow::status::OK)
     {
         return crow::response(status.first);
     }
@@ -369,15 +376,27 @@ crow::response venta_controller::refound(const crow::request &req)
     Helper::Validator validator;
     Acciones accion;
 
-    return validator.calculateChange(x["value"].i());
-}
+    start_payment(validator);
+    this->lbl_titulo.set_text("Pago");
+    this->lbl_titulo.set_css_classes({"title-1"});
 
+    accion.insertLog(status.second,
+                     Action::Type::PAGO,
+                     "0",
+                     std::to_string(validator.sumInput.load()),
+                     std::to_string(x["value"].i() / 100),
+                     "Completado");
+
+    auto status_ = validator.calculateChange(x["value"].i() / 100);
+    std::this_thread::sleep_for(std::chrono::seconds(10));
+    return status_;
+}
 crow::response venta_controller::cambioM(const crow::request &req)
 {
     auto &session = app.get_context<Session>(req);
 
-    if (auto status = Helper::User::validPermissions(req, session, { Helper::User::Rol::Pago});
-        status.first != crow::status::OK)
+    auto status = Helper::User::validPermissions(req, session, {Helper::User::Rol::Pago});
+    if (status.first != crow::status::OK)
     {
         return crow::response(status.first);
     }
@@ -390,7 +409,20 @@ crow::response venta_controller::cambioM(const crow::request &req)
     Helper::Validator validator;
     Acciones accion;
 
-    return validator.calculateChange(x["value"].i());
+    start_payment(validator);
+    this->lbl_titulo.set_text("Cambio");
+    this->lbl_titulo.set_css_classes({"title-1"});
+
+    accion.insertLog(status.second,
+                     Action::Type::CAMBIO,
+                     "0",
+                     std::to_string(validator.sumInput.load()),
+                     std::to_string(x["value"].i() / 100),
+                     "Completado");
+
+    auto status_ = validator.calculateChange(x["value"].i() / 100);
+    std::this_thread::sleep_for(std::chrono::seconds(10));
+    return status_;
 }
 
 void venta_controller::dispatch_to_gui(std::function<void()> func)
