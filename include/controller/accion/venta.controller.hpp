@@ -63,6 +63,7 @@ private:
     crow::response refill(const crow::request& req);
     crow::response refound(const crow::request& req);
 
+    crow::response cambioM(const crow::request &req);
 
     void dispatch_to_gui(std::function<void()> func);
     void init_ui();

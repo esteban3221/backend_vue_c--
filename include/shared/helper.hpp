@@ -115,7 +115,7 @@ namespace Helper
         std::future<std::string> GetAPIRequestAsync(const std::string &uri, const std::string &deviceID);
 
         bool isConected();
-        void calculateChange(int changeAmount);
+        crow::response calculateChange(int changeAmount);
         bool startPay();
         bool stopPay();
 

@@ -11,6 +11,8 @@ venta_controller::venta_controller(crow::App<crow::CookieParser, Session> &app_,
     // CROW_ROUTE(app, "/test/venta").methods("POST"_method)(sigc::mem_fun(*this, &venta_controller::Test_venta));
 
     CROW_ROUTE(app, "/accion/venta").methods("POST"_method)(sigc::mem_fun(*this, &venta_controller::venta));
+    CROW_ROUTE(app, "/accion/pago").methods("POST"_method)(sigc::mem_fun(*this, &venta_controller::refound));
+    CROW_ROUTE(app, "/accion/cambioM").methods("POST"_method)(sigc::mem_fun(*this, &venta_controller::refound));
 }
 
 // crow::response venta_controller::Test_venta(const crow::request &req)
@@ -285,15 +287,18 @@ crow::response venta_controller::venta(const crow::request &req)
 {
     auto &session = app.get_context<Session>(req);
 
-    if (auto status = Helper::User::validPermissions(req, session, {Helper::User::Rol::Venta, Helper::User::Rol::Pago});
+    if (auto status = Helper::User::validPermissions(req, session, {Helper::User::Rol::Venta});
         status.first != crow::status::OK)
-    { return crow::response(status.first); }
+    {
+        return crow::response(status.first);
+    }
     else
     {
         auto x = crow::json::load(req.body);
         if (!x || !x["value"])
         {
-            this->dispatch_to_gui([this] { this->main_stack.set_visible_child(*box_main); });
+            this->dispatch_to_gui([this]
+                                  { this->main_stack.set_visible_child(*box_main); });
             return crow::response(crow::status::BAD_REQUEST);
         }
 
@@ -306,7 +311,8 @@ crow::response venta_controller::venta(const crow::request &req)
             return crow::response(crow::status::CONFLICT, "{\"status\":\"Error al inicializar los validadores\"}");
         }
 
-        this->dispatch_to_gui([this] { this->main_stack.set_visible_child(*this); });
+        this->dispatch_to_gui([this]
+                              { this->main_stack.set_visible_child(*this); });
 
         int total = x["value"].i() / 100;
         reset_gui();
@@ -337,7 +343,6 @@ crow::response venta_controller::refill(const crow::request &req)
     auto &session = app.get_context<Session>(req);
 
     if (auto status = Helper::User::validPermissions(req, session, {Helper::User::Rol::Venta, Helper::User::Rol::Pago});
-
         status.first != crow::status::OK)
     {
         return crow::response(status.first);
@@ -348,7 +353,44 @@ crow::response venta_controller::refill(const crow::request &req)
 
 crow::response venta_controller::refound(const crow::request &req)
 {
-    return crow::response();
+    auto &session = app.get_context<Session>(req);
+
+    if (auto status = Helper::User::validPermissions(req, session, { Helper::User::Rol::Pago});
+        status.first != crow::status::OK)
+    {
+        return crow::response(status.first);
+    }
+    auto x = crow::json::load(req.body);
+    if (!x || !x["value"])
+    {
+        return crow::response(crow::status::BAD_REQUEST);
+    }
+
+    Helper::Validator validator;
+    Acciones accion;
+
+    return validator.calculateChange(x["value"].i());
+}
+
+crow::response venta_controller::cambioM(const crow::request &req)
+{
+    auto &session = app.get_context<Session>(req);
+
+    if (auto status = Helper::User::validPermissions(req, session, { Helper::User::Rol::Pago});
+        status.first != crow::status::OK)
+    {
+        return crow::response(status.first);
+    }
+    auto x = crow::json::load(req.body);
+    if (!x || !x["value"])
+    {
+        return crow::response(crow::status::BAD_REQUEST);
+    }
+
+    Helper::Validator validator;
+    Acciones accion;
+
+    return validator.calculateChange(x["value"].i());
 }
 
 void venta_controller::dispatch_to_gui(std::function<void()> func)

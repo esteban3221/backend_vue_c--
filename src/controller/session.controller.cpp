@@ -40,7 +40,7 @@ crow::response session_controller::login(const crow::request &req)
     {
         if (req.body.empty())
             return crow::response(crow::status::BAD_REQUEST);
-
+        
         auto &session = app.get_context<Session>(req);
         auto bodyParams = req.get_body_params();
         std::string grantType{bodyParams.pop("grant_type")};

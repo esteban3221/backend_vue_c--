@@ -1072,7 +1072,7 @@ namespace Helper
         stopPay();
     }
 
-    void Validator::calculateChange(int changeAmount)
+    crow::response Validator::calculateChange(int changeAmount)
     {
         std::vector<std::pair<int, int>> changeToGive; // Par de <value, amount>
 
@@ -1120,8 +1120,9 @@ namespace Helper
 
         if (changeAmount > 0)
         {
-            std::cerr << "No se puede dar el cambio exacto. Faltan: " << changeAmount << std::endl;
-            return;
+            std::string error {"No se puede dar el cambio exacto. Faltan: " + std::to_string(changeAmount) };
+            std::cerr << error << std::endl;
+            return crow::response(crow::status::CONFLICT, error);
         }
 
         // Realizar los pagos utilizando las denominaciones calculadas
@@ -1138,6 +1139,7 @@ namespace Helper
                 processCommand("PayoutByDenomination NV4000 " + std::to_string(value*100) + " MXN " + std::to_string(amount), COIN_VALIDATOR);
             }
         }
+        return crow::response(crow::status::OK, "Accion Completada Satisfactoriamente");
     }
 
 } // namespace Helper
