@@ -153,7 +153,7 @@ crow::response configuracion_controller::reiniciar(const crow::request &req)
     }
     else
     {
-        Helper::System::exec("shutdown -r +1");
+        Helper::System::exec("shutdown -r +1 &");
         app.stop();
         Helper::System::showNotify("Sistema","Se reiniciara el sistema en un minuto.\n"
         "Servicio de api rest esta desactivado y no recibira mas solicitudes.",
@@ -173,7 +173,7 @@ crow::response configuracion_controller::apagar(const crow::request &req)
     }
     else
     {
-        Helper::System::exec("shutdown +1");
+        Helper::System::exec("shutdown +1 &");
         app.stop();
         Helper::System::showNotify("Sistema","Se apagara el sistema en un minuto.\n"
         "Servicio de api rest esta desactivado y no recibira mas solicitudes.",
