@@ -143,6 +143,7 @@ void venta_controller::finalize_payment(Helper::Validator &validator, int total)
             auto cambio = validator.sumInput.load() - total;
             this->ety_cambio.set_text(std::to_string(cambio));
             validator.calculateChange(cambio);
+            std::this_thread::sleep_for(std::chrono::seconds(3));
         }
         this->lbl_mensaje_fin.set_visible(true); });
 

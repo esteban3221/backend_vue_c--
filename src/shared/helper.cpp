@@ -1023,13 +1023,14 @@ namespace Helper
         return true;
     }
 
-    Validator::Validator(/* args */) : pollInit(false), BILL_VALIDATOR("NV200"), COIN_VALIDATOR("SMART_COIN_SYSTEM")
+    Validator::Validator(/* args */) : pollInit(false), BILL_VALIDATOR("SPECTRAL_DEVICE"), COIN_VALIDATOR("SMART_COIN_SYSTEM")
     {
         std::string device = "0";
         std::string ssp = "0";
 
         // Change "ComPort" to be the port name on your machine and change "LogFilePath"
-        std::string openDeviceRequestData = "{\"ComPort\":\"/dev/ttyUSB" + device + "\",\"SspAddress\":" + ssp + ",\"LogFilePath\":\"./log\"}";
+        std::string openDeviceRequestData = "{\"ComPort\":\"/dev/ttyUSB"+ device+"\",\"SspAddress\":" + ssp + ",\"LogFilePath\":\"./log\"}";
+        //std::string openDeviceRequestDataCoin = "{\"ComPort\":\"/dev/ttyUSB1\",\"SspAddress\":" + ssp + ",\"LogFilePath\":\"./log\"}";
 
         auto initResponse1 = PostAPIRequestAsync("InitialiseDevice", BILL_VALIDATOR);
         auto initResponse2 = PostAPIRequestAsync("InitialiseDevice", COIN_VALIDATOR);
@@ -1041,8 +1042,15 @@ namespace Helper
         std::cout << re2.second << std::endl;
 
         auto openResponse1 = PostAPIRequestAsync("OpenDevice", BILL_VALIDATOR, openDeviceRequestData);
+        // auto openResponse2 = PostAPIRequestAsync("OpenDevice", COIN_VALIDATOR, openDeviceRequestDataCoin);
         auto r1 = openResponse1.get();
         std::cout << r1.second << std::endl;
+
+        // auto r2 = openResponse2.get();
+        // std::cout << r2.second << std::endl;
+
+        // if(r1.first == 400 || r2.first == 400)
+        //     throw "Error al iniciar los validadores";
 
         if (r1.first == 400)
         {
@@ -1121,7 +1129,7 @@ namespace Helper
         if (changeAmount > 0)
         {
             std::string error {"No se puede dar el cambio exacto. Faltan: " + std::to_string(changeAmount) };
-            std::cerr << error << std::endl;
+            throw error;
             return crow::response(crow::status::CONFLICT, error);
         }
 

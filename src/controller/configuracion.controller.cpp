@@ -186,8 +186,7 @@ crow::response configuracion_controller::getInformacionSistema(const crow::reque
 {
     auto &session = app.get_context<Session>(req);
 
-    if (auto status = Helper::User::validPermissions(req, session,
-                                                       {Helper::User::Rol::Configuracion});
+    if (auto status = Helper::User::validPermissions(req, session, {Helper::User::Rol::Configuracion});
         status.first != crow::status::OK)
     {
         return crow::response(status.first);
